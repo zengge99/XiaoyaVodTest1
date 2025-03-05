@@ -8,7 +8,7 @@ public class Logger {
     static boolean dbg = true;
     public static void log(String message, boolean force) {
         if(!dbg && !force){
-            //return;
+            return;
         }
         String filePath = "/storage/emulated/0/TV/log.txt";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {

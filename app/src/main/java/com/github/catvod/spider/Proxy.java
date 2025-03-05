@@ -7,7 +7,7 @@ import com.github.catvod.net.OkHttp;
 import java.io.ByteArrayInputStream;
 import java.util.Map;
 
-public class Proxy extends Spider {
+private class Proxy extends Spider {
 
     private static int port = -1;
 

@@ -7,11 +7,11 @@ import com.github.catvod.net.OkHttp;
 import java.io.ByteArrayInputStream;
 import java.util.Map;
 
-private class Proxy extends Spider {
+public class Proxy extends Spider {
 
     private static int port = -1;
 
-    public static Object[] proxy(Map<String, String> params) throws Exception {
+    private static Object[] proxy(Map<String, String> params) throws Exception {
         switch (params.get("do")) {
             case "ck":
                 return new Object[]{200, "text/plain; charset=utf-8", new ByteArrayInputStream("xiaoya_proxy_ok".getBytes("UTF-8"))};

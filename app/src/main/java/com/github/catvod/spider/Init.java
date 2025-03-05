@@ -33,6 +33,7 @@ public class Init {
     public Init() {
         this.handler = new Handler(Looper.getMainLooper());
         this.executor = Executors.newFixedThreadPool(5);
+        XiaoyaProxyServer.get().start();
     }
 
     public static Application context() {

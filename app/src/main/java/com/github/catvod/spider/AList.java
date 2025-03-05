@@ -44,8 +44,8 @@ public class AList extends Spider {
 
     private List<Filter> getFilter() {
         List<Filter> items = new ArrayList<>();
-        items.add(new Filter("type", "排序類型", Arrays.asList(new Filter.Value("預設", ""), new Filter.Value("名稱", "name"), new Filter.Value("大小", "size"), new Filter.Value("修改時間", "date"))));
-        items.add(new Filter("order", "排序方式", Arrays.asList(new Filter.Value("預設", ""), new Filter.Value("⬆", "asc"), new Filter.Value("⬇", "desc"))));
+        items.add(new Filter("type", "排序类型", Arrays.asList(new Filter.Value("默认", ""), new Filter.Value("名称", "name"), new Filter.Value("大小", "size"), new Filter.Value("修改时间", "date"))));
+        items.add(new Filter("order", "排序方式", Arrays.asList(new Filter.Value("默认", ""), new Filter.Value("⬆", "asc"), new Filter.Value("⬇", "desc"))));
         return items;
     }
 

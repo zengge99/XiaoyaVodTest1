@@ -53,6 +53,7 @@ public class AList extends Spider {
         if (drives != null && !drives.isEmpty()) return;
         if (ext.startsWith("http")) ext = OkHttp.string(ext);
         String ext1 = "{\"drives\": " + ext + "}";
+        Logger.log(ext1);
         Drive drive = Drive.objectFrom(ext1);
         drives = drive.getDrives();
         vodPic = drive.getVodPic();

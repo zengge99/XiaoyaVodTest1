@@ -25,15 +25,16 @@ jobs:
         with:
           java-version: '18'
           distribution: 'temurin'
-      - name: Download baksmali
-        run: |
-          mkdir -p jar/3rd
-          wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.5.2.jar -O jar/3rd/baksmali-2.5.2.jar
       - name: Clone project
         run: |
           rm -rf project
           rm -rf jar/xiaoya_proxy.jar
           git clone --recurse-submodules https://github.com/zengge99/XiaoyaVod project
+      - name: Download baksmali
+        working-directory: ./project
+        run: |
+          mkdir -p jar/3rd
+          wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.5.2.jar -O jar/3rd/baksmali-2.5.2.jar
       - name: Customize Spider
         working-directory: ./project
         run: |

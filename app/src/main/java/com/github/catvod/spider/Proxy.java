@@ -11,7 +11,7 @@ public class Proxy extends Spider {
 
     private static int port = -1;
 
-    public static Object[] myProxy(Map<String, String> params) throws Exception {
+    public static Object[] Proxy(Map<String, String> params) throws Exception {
         switch (params.get("do")) {
             case "ck":
                 return new Object[]{200, "text/plain; charset=utf-8", new ByteArrayInputStream("xiaoya_proxy_ok".getBytes("UTF-8"))};

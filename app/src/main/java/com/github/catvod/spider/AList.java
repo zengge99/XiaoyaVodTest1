@@ -120,6 +120,7 @@ public class AList extends Spider {
     public String detailContent(List<String> ids) throws Exception {
         fetchRule();
         String id = ids.get(0);
+        Logger.log(id);
         String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
         String path = id.substring(0, id.lastIndexOf("/"));
         String name = path.substring(path.lastIndexOf("/") + 1);

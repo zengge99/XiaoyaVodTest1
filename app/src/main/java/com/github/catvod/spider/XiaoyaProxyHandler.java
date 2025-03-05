@@ -499,7 +499,7 @@ public class XiaoyaProxyHandler {
             case "gen":
                 return genProxy(params);
             default:
-                return Proxy.myProxy(params);
+                return Proxy.Proxy(params);
         }
     }
 

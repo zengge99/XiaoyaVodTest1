@@ -57,7 +57,7 @@ jobs:
           md5=($(md5sum ../jar/xiaoya_proxy.jar))
           echo $md5 > ../jar/xiaoya_proxy.jar.md5
       - name: Upload APK
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v3
         with:
           name: Spider
           path: ./jar/xiaoya_proxy.jar

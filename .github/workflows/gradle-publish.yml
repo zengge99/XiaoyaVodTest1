@@ -25,6 +25,10 @@ jobs:
         with:
           java-version: '18'
           distribution: 'temurin'
+      - name: Download baksmali
+        run: |
+          mkdir -p jar/3rd
+          wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-2.5.2.jar -O jar/3rd/baksmali-2.5.2.jar
       - name: Clone project
         run: |
           rm -rf project

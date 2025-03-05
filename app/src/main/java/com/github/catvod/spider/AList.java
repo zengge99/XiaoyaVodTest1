@@ -50,11 +50,10 @@ public class AList extends Spider {
     }
 
     private void fetchRule() {
+        Logger.log(ext);
         if (drives != null && !drives.isEmpty()) return;
         if (ext.startsWith("http")) ext = OkHttp.string(ext);
-        String ext1 = "{\"drives\": " + ext + "}";
-        Logger.log(ext1);
-        Drive drive = Drive.objectFrom(ext1);
+        Drive drive = Drive.objectFrom(ext);
         drives = drive.getDrives();
         vodPic = drive.getVodPic();
     }

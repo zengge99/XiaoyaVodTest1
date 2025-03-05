@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.TreeMap;
 
 import okhttp3.Response;
-import static com.github.catvod.spider.NanoHTTPD.Response.Status;
-import static com.github.catvod.spider.NanoHTTPD.newFixedLengthResponse;
+import static fi.iki.elonen.NanoHTTPD.Response.Status;
+import static fi.iki.elonen.NanoHTTPD.newFixedLengthResponse;
 import okhttp3.Request;
 import okhttp3.Headers;
 import java.util.concurrent.ExecutorService;

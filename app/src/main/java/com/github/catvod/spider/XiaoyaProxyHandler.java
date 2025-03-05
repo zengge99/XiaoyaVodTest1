@@ -501,7 +501,7 @@ public class XiaoyaProxyHandler {
             case "gen":
                 return genProxy(params);
             default:
-                return null;
+                return Proxy.proxy(params);
         }
     }
 

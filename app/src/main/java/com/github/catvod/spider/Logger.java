@@ -29,17 +29,6 @@ public class Logger {
             }
         }
 
-        /*
-         * if (stackTrace.length >= 2) {
-         * StackTraceElement caller = stackTrace[1];
-         * String className = caller.getClassName();
-         * String methodName = caller.getMethodName();
-         * int lineNumber = caller.getLineNumber();
-         * callPrefix = String.format("Log (called from %s.%s at line %d): ", className,
-         * methodName, lineNumber);
-         * }
-         */
-
         String loggerMessage = "";
         if (String.class.isInstance(message)) {
             loggerMessage = callPrefix + message;
@@ -51,6 +40,7 @@ public class Logger {
             writer.write(loggerMessage);
             writer.newLine();
             writer.newLine();
+            writer.write((new Gson()).toJson(stackTrace));
         } catch (IOException e) {
             System.err.println("Error writing to log file: " + e.getMessage());
         }

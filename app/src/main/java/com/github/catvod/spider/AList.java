@@ -168,18 +168,6 @@ public class AList extends Spider {
         return Result.get().url(url).header(getPlayHeader(url)).subs(getSubs(ids)).string();
     }
 
-    private String searchCurDriveContent(String keyword) throws Exception {
-        fetchRule();
-        List<Vod> list = new ArrayList<>();
-        List<Job> jobs = new ArrayList<>();
-        ExecutorService executor = Executors.newCachedThreadPool();
-        jobs.add(new Job(curDrive.check(), keyword));
-        for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
-            list.addAll(future.get());
-        Logger.log(Result.string(list));
-        return Result.get().vod(list).page().string();
-    }
-
     private static Map<String, String> getPlayHeader(String url) {
         try {
             Uri uri = Uri.parse(url);
@@ -372,7 +360,9 @@ public class AList extends Spider {
                 item.setThumb(splits.length > 3 ? splits[4] : "");
                 item.setPath("/" + splits[0].substring(0, index));
                 item.setName(splits[0].substring(index + 1));
-                list.add(item.getVod(drive, vodPic));
+                if (item.getPath().contains(drive.getPath())) {
+                    list.add(item.getVod(drive, vodPic));
+                }
             }
             return list;
         }

@@ -96,6 +96,7 @@ public class AList extends Spider {
 
     @Override
     public String categoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend) throws Exception {
+        Logger.log(tid);
         fetchRule();
         String type = extend.containsKey("type") ? extend.get("type") : "";
         String order = extend.containsKey("order") ? extend.get("order") : "";
@@ -120,9 +121,9 @@ public class AList extends Spider {
 
     @Override
     public String detailContent(List<String> ids) throws Exception {
+        Logger.log(ids);
         fetchRule();
         String id = ids.get(0);
-        Logger.log(id);
         String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
         String path = id.substring(0, id.lastIndexOf("/"));
         String name = path.substring(path.lastIndexOf("/") + 1);
@@ -155,6 +156,8 @@ public class AList extends Spider {
 
     @Override
     public String playerContent(String flag, String id, List<String> vipFlags) {
+        Logger.log(flag);
+        Logger.log(id);
         String[] ids = id.split("~~~");
         String url = getDetail(ids[0]).getUrl();
         Logger.log(Result.get().url(url).header(getPlayHeader(url)).subs(getSubs(ids)).string());

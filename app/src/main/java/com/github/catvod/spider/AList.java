@@ -53,7 +53,6 @@ public class AList extends Spider {
         if (drives != null && !drives.isEmpty()) return;
         if (ext.startsWith("http")) ext = OkHttp.string(ext);
         String ext1 = "{\"drives\":" + ext + "}";
-        Logger.log(ext1);
         Drive drive = Drive.objectFrom(ext1);
         drives = drive.getDrives();
         vodPic = drive.getVodPic();
@@ -85,11 +84,13 @@ public class AList extends Spider {
 
     @Override
     public String homeContent(boolean filter) throws Exception {
+        Logger.log(homeContent);
         fetchRule();
         List<Class> classes = new ArrayList<>();
         LinkedHashMap<String, List<Filter>> filters = new LinkedHashMap<>();
         for (Drive drive : drives) if (!drive.hidden()) classes.add(drive.toType());
         for (Class item : classes) filters.put(item.getTypeId(), getFilter());
+        Logger.log(Result.string(classes, filters));
         return Result.string(classes, filters);
     }
 
@@ -113,6 +114,7 @@ public class AList extends Spider {
 
         for (Item item : folders) list.add(item.getVod(tid, vodPic));
         for (Item item : files) list.add(item.getVod(tid, vodPic));
+        Logger.log(Result.get().vod(list).page().string());
         return Result.get().vod(list).page().string();
     }
 
@@ -135,6 +137,7 @@ public class AList extends Spider {
         List<String> playUrls = new ArrayList<>();
         for (Item item : parents) if (item.isMedia(drive.isNew())) playUrls.add(item.getName() + "$" + item.getVodId(path) + findSubs(path, parents));
         vod.setVodPlayUrl(TextUtils.join("#", playUrls));
+        Logger.log(Result.string(vod));
         return Result.string(vod);
     }
 
@@ -146,6 +149,7 @@ public class AList extends Spider {
         ExecutorService executor = Executors.newCachedThreadPool();
         for (Drive drive : drives) if (drive.search()) jobs.add(new Job(drive.check(), keyword));
         for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS)) list.addAll(future.get());
+        Logger.log(Result.string(list));
         return Result.string(list);
     }
 
@@ -153,6 +157,7 @@ public class AList extends Spider {
     public String playerContent(String flag, String id, List<String> vipFlags) {
         String[] ids = id.split("~~~");
         String url = getDetail(ids[0]).getUrl();
+        Logger.log(Result.get().url(url).header(getPlayHeader(url)).subs(getSubs(ids)).string());
         return Result.get().url(url).header(getPlayHeader(url)).subs(getSubs(ids)).string();
     }
 

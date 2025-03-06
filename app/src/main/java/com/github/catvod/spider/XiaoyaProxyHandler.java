@@ -100,7 +100,7 @@ public class XiaoyaProxyHandler {
             currentThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
                 @Override
                 public void uncaughtException(Thread t, Throwable e) {
-                    Logger.log("未捕获的异常1：" + e.getMessage(), true);
+                    Logger.log("未捕获的异常1：" + e.getMessage());
                 }
             });
 
@@ -207,7 +207,7 @@ public class XiaoyaProxyHandler {
             currentThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
                 @Override
                 public void uncaughtException(Thread t, Throwable e) {
-                    Logger.log("未捕获的异常2：" + e.getMessage(), true);
+                    Logger.log("未捕获的异常2：" + e.getMessage());
                 }
             });
             return _downloadTask(url,headers,range,sliceNum);

@@ -168,6 +168,18 @@ public class AList extends Spider {
         return Result.get().url(url).header(getPlayHeader(url)).subs(getSubs(ids)).string();
     }
 
+    private String searchCurDriveContent(String keyword) throws Exception {
+        fetchRule();
+        List<Vod> list = new ArrayList<>();
+        List<Job> jobs = new ArrayList<>();
+        ExecutorService executor = Executors.newCachedThreadPool();
+        jobs.add(new Job(curDrive.check(), keyword));
+        for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
+            list.addAll(future.get());
+        Logger.log(Result.string(list));
+        return Result.get().vod(list).page().string();
+    }
+
     private static Map<String, String> getPlayHeader(String url) {
         try {
             Uri uri = Uri.parse(url);
@@ -184,7 +196,7 @@ public class AList extends Spider {
 
     private String xiaoyaCategoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)
             throws Exception {
-        return searchContent("滤镜", false);
+        return searchCurDriveContent("滤镜");
     }
 
     private String alistCategoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)
@@ -348,8 +360,8 @@ public class AList extends Spider {
                 int index = splits[0].lastIndexOf("/");
                 boolean file = Util.isMedia(splits[0]);
                 Item item = new Item();
-                //item.setType(file ? 0 : 1);
-                item.setType(0); //海报模式总是认为是文件模式，直接点击播放
+                // item.setType(file ? 0 : 1);
+                item.setType(0); // 海报模式总是认为是文件模式，直接点击播放
                 item.setThumb(splits.length > 3 ? splits[4] : "");
                 item.setPath("/" + splits[0].substring(0, index));
                 item.setName(splits[0].substring(index + 1));

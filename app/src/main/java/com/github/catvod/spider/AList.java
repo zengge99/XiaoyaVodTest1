@@ -148,8 +148,10 @@ public class AList extends Spider {
         ExecutorService executor = Executors.newCachedThreadPool();
         for (Drive drive : drives) {
             Logger.log(drive);
-            if (drive.search())
+            if (drive.search()) {
+                Logger.log(drive);
                 jobs.add(new Job(drive.check(), keyword));
+            }
         }
         for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
             list.addAll(future.get());

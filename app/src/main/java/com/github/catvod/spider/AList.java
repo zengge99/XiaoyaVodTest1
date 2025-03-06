@@ -216,8 +216,10 @@ public class AList extends Spider {
             if (!item.isMedia(drive.isNew())) {
                 walkFolder(drive, item.getPath(), from, url);
             }
-        url.delete(0,3);
-        from.delete(0,3);
+        if (url.indexOf("$$$") == 0) {
+            url.delete(0,3);
+            from.delete(0,3);
+        }
     }
 
     private static Map<String, String> getPlayHeader(String url) {

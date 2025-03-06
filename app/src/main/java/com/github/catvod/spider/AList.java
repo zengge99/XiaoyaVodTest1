@@ -356,7 +356,7 @@ public class AList extends Spider {
                 boolean file = Util.isMedia(splits[0]);
                 if (splits[0].endsWith("/")) {
                     file = false;
-                    splits[0] = splits[0].substring(0, index - 1);
+                    splits[0] = splits[0].substring(0, index);
                     index = splits[0].lastIndexOf("/");
                 }
                 Item item = new Item();

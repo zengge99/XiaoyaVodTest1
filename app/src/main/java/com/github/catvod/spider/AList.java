@@ -119,7 +119,7 @@ public class AList extends Spider {
             playlistVod = new Vod(tid + "/~playlist", "播放列表", "", remark, false);
         }
         
-
+        list.add(playlistVod);
         for (Item item : folders) list.add(item.getVod(tid, vodPic));
         for (Item item : files) list.add(item.getVod(tid, vodPic));
         Logger.log(Result.get().vod(list).page().string());

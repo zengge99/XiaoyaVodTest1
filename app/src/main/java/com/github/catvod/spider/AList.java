@@ -196,7 +196,14 @@ public class AList extends Spider {
 
     private String xiaoyaCategoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)
             throws Exception {
-        return searchCurDriveContent("滤镜");
+        List<Vod> list = new ArrayList<>();
+        List<Job> jobs = new ArrayList<>();
+        ExecutorService executor = Executors.newCachedThreadPool();
+        jobs.add(new Job(curDrive.check(), "滤镜"));
+        for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
+            list.addAll(future.get());
+        Logger.log(Result.string(list));
+        return Result.get().vod(list).page().string();
     }
 
     private String alistCategoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)

@@ -180,7 +180,7 @@ public class AList extends Spider {
 
     private String xiaoyaCategoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)
             throws Exception {
-        return null;
+        return searchContent("每日更新", false);
     }
 
     private String alistCategoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)

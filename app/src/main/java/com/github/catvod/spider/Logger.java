@@ -14,13 +14,31 @@ public class Logger {
         }
         String callPrefix = "";
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        if (stackTrace.length >= 2) {
-            StackTraceElement caller = stackTrace[1];
+        for (int i = 0; i < stackTrace.length; i++) {
+            StackTraceElement caller = stackTrace[i];
             String className = caller.getClassName();
             String methodName = caller.getMethodName();
-            int lineNumber = caller.getLineNumber();
-            callPrefix = String.format("Log (called from %s.%s at line %d): ", className, methodName, lineNumber);
+            String fullName = String.format("%s.%s", className, methodName);
+            if (fullName.equals("com.github.catvod.spider.Logger.log") && i >= 1) {
+                caller = stackTrace[i - 1];
+                className = caller.getClassName();
+                methodName = caller.getMethodName();
+                String lineNumber = caller.getLineNumber();
+                callPrefix = String.format("Log (called from %s.%s at line %d): ", className, methodName, lineNumber);
+            }
         }
+
+        /*
+         * if (stackTrace.length >= 2) {
+         * StackTraceElement caller = stackTrace[1];
+         * String className = caller.getClassName();
+         * String methodName = caller.getMethodName();
+         * int lineNumber = caller.getLineNumber();
+         * callPrefix = String.format("Log (called from %s.%s at line %d): ", className,
+         * methodName, lineNumber);
+         * }
+         */
+
         String loggerMessage = "";
         if (String.class.isInstance(message)) {
             loggerMessage = callPrefix + message;

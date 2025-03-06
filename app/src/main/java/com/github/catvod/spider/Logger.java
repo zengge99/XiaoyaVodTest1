@@ -19,8 +19,8 @@ public class Logger {
             String className = caller.getClassName();
             String methodName = caller.getMethodName();
             String fullName = String.format("%s.%s", className, methodName);
-            if (fullName.equals("com.github.catvod.spider.Logger.log") && i >= 1) {
-                caller = stackTrace[i - 1];
+            if (fullName.equals("com.github.catvod.spider.Logger.log") && i <= stackTrace.length - 2) {
+                caller = stackTrace[i + 1];
                 className = caller.getClassName();
                 methodName = caller.getMethodName();
                 int lineNumber = caller.getLineNumber();

@@ -55,7 +55,8 @@ public class AList extends Spider {
         String ext1 = "{\"drives\":" + ext + "}";
         Drive drive = Drive.objectFrom(ext1);
         drives = drive.getDrives();
-        vodPic = drive.getVodPic();
+        //vodPic = drive.getVodPic();
+        vodPic = "";
     }
 
     private Drive getDrive(String name) {

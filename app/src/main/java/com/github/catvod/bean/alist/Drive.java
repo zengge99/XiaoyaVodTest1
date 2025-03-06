@@ -99,7 +99,7 @@ public class Drive {
     }
 
     public Boolean search() {
-        return search == null || search;
+        return search != null && search;
     }
 
     public Boolean hidden() {

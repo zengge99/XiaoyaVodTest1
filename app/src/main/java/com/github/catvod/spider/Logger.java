@@ -7,14 +7,15 @@ import com.google.gson.Gson;
 
 public class Logger {
     static boolean dbg = true;
+
     public static void log(Object message) {
-        if(!dbg){
+        if (!dbg) {
             return;
         }
         String callPrefix = "";
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        if (stackTrace.length >= 4) {
-            StackTraceElement caller = stackTrace[3];
+        if (stackTrace.length >= 2) {
+            StackTraceElement caller = stackTrace[stackTrace.length - 2];
             String className = caller.getClassName();
             String methodName = caller.getMethodName();
             int lineNumber = caller.getLineNumber();
@@ -35,4 +36,4 @@ public class Logger {
             System.err.println("Error writing to log file: " + e.getMessage());
         }
     }
-}  
+}

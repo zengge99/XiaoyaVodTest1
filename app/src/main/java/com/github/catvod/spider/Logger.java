@@ -11,9 +11,18 @@ public class Logger {
         if(!dbg && !force){
             return;
         }
+        String callPrefix = "";
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        if (stackTrace.length >= 3) {
+            StackTraceElement caller = stackTrace;
+            String className = caller.getClassName();
+            String methodName = caller.getMethodName();
+            int lineNumber = caller.getLineNumber();
+            callPrefix = String.format("Log (called from %s.%s at line %d): ", className, methodName, lineNumber);
+        }
         String filePath = "/storage/emulated/0/TV/log.txt";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
-            writer.write((new Gson()).toJson(message));
+            writer.write(callPrefix + (new Gson()).toJson(message));
             writer.newLine();
             writer.newLine();
         } catch (IOException e) {

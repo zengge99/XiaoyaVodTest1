@@ -118,27 +118,11 @@ public class AList extends Spider {
 
     @Override
     public String detailContent(List<String> ids) throws Exception {
-        Logger.log(ids);
-        fetchRule();
         String id = ids.get(0);
-        String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
-        String path = id.substring(0, id.lastIndexOf("/"));
-        String name = path.substring(path.lastIndexOf("/") + 1);
-        Drive drive = getDrive(key);
-        List<Item> parents = getList(path, false);
-        Sorter.sort("name", "asc", parents);
-        Vod vod = new Vod();
-        vod.setVodPlayFrom(key);
-        vod.setVodId(id);
-        vod.setVodName(name);
-        vod.setVodPic(vodPic);
-        List<String> playUrls = new ArrayList<>();
-        for (Item item : parents)
-            if (item.isMedia(drive.isNew()))
-                playUrls.add(item.getName() + "$" + item.getVodId(path) + findSubs(path, parents));
-        vod.setVodPlayUrl(TextUtils.join("#", playUrls));
-        Logger.log(Result.string(vod));
-        return Result.string(vod);
+        if(id.endWith("~soulist")) {
+            return souDetailContent(ids);
+        }
+        return defaultDetailContent(ids);
     }
 
     @Override
@@ -166,6 +150,54 @@ public class AList extends Spider {
         String url = getDetail(ids[0]).getUrl();
         Logger.log(Result.get().url(url).header(getPlayHeader(url)).subs(getSubs(ids)).string());
         return Result.get().url(url).header(getPlayHeader(url)).subs(getSubs(ids)).string();
+    }
+
+    private String defaultDetailContent(List<String> ids) throws Exception {
+        Logger.log(ids);
+        fetchRule();
+        String id = ids.get(0);
+        String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
+        String path = id.substring(0, id.lastIndexOf("/"));
+        String name = path.substring(path.lastIndexOf("/") + 1);
+        Drive drive = getDrive(key);
+        List<Item> parents = getList(path, false);
+        Sorter.sort("name", "asc", parents);
+        Vod vod = new Vod();
+        vod.setVodPlayFrom(key);
+        vod.setVodId(id);
+        vod.setVodName(name);
+        vod.setVodPic(vodPic);
+        List<String> playUrls = new ArrayList<>();
+        for (Item item : parents)
+            if (item.isMedia(drive.isNew()))
+                playUrls.add(item.getName() + "$" + item.getVodId(path) + findSubs(path, parents));
+        vod.setVodPlayUrl(TextUtils.join("#", playUrls));
+        Logger.log(Result.string(vod));
+        return Result.string(vod);
+    }
+
+    private String souDetailContent(List<String> ids) throws Exception {
+        Logger.log(ids);
+        fetchRule();
+        String id = ids.get(0);
+        String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
+        String path = id.substring(0, id.lastIndexOf("/"));
+        String name = path.substring(path.lastIndexOf("/") + 1);
+        Drive drive = getDrive(key);
+        List<Item> parents = getList(path, false);
+        Sorter.sort("name", "asc", parents);
+        Vod vod = new Vod();
+        vod.setVodPlayFrom(key);
+        vod.setVodId(id);
+        vod.setVodName(name);
+        vod.setVodPic(vodPic);
+        List<String> playUrls = new ArrayList<>();
+        for (Item item : parents)
+            if (item.isMedia(drive.isNew()))
+                playUrls.add(item.getName() + "$" + item.getVodId(path) + findSubs(path, parents));
+        vod.setVodPlayUrl(TextUtils.join("#", playUrls));
+        Logger.log(Result.string(vod));
+        return Result.string(vod);
     }
 
     private static Map<String, String> getPlayHeader(String url) {

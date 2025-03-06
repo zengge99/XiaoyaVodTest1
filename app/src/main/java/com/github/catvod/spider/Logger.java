@@ -23,8 +23,9 @@ public class Logger {
                 caller = stackTrace[i - 1];
                 className = caller.getClassName();
                 methodName = caller.getMethodName();
-                String lineNumber = caller.getLineNumber();
+                int lineNumber = caller.getLineNumber();
                 callPrefix = String.format("Log (called from %s.%s at line %d): ", className, methodName, lineNumber);
+                break;
             }
         }
 

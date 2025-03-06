@@ -20,9 +20,15 @@ public class Logger {
             int lineNumber = caller.getLineNumber();
             callPrefix = String.format("Log (called from %s.%s at line %d): ", className, methodName, lineNumber);
         }
+        String loggerMessage = "";
+        if (String.class.isInstance(message)) {
+            loggerMessage = callPrefix + message;
+        } else {
+            loggerMessage = callPrefix + (new Gson()).toJson(message);
+        }
         String filePath = "/storage/emulated/0/TV/log.txt";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
-            writer.write(callPrefix + (new Gson()).toJson(message));
+            writer.write(loggerMessage);
             writer.newLine();
             writer.newLine();
         } catch (IOException e) {

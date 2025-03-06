@@ -115,12 +115,11 @@ public class Drive {
     }
 
     public Class toType() {
-        if (this.noPoster) {
+        if (this.noPoster()) {
             return new Class(getName(), getName(), "1");
         } else {
             return new Class(getName(), getName(), "2");
         }
-
     }
 
     public String getHost() {

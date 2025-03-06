@@ -119,7 +119,7 @@ public class AList extends Spider {
     @Override
     public String detailContent(List<String> ids) throws Exception {
         String id = ids.get(0);
-        if(id.endWith("~soulist")) {
+        if(id.endsWith("~soulist")) {
             return souDetailContent(ids);
         }
         return defaultDetailContent(ids);

@@ -200,6 +200,18 @@ public class AList extends Spider {
         return Result.string(vod);
     }
 
+    private void walkFolder(Drive drive, String path, StringBuilder from, StringBuilder url) throws Exception {
+        List<Item> items = getList(path, false);
+        String name = path.substring(path.lastIndexOf("/") + 1);
+        Sorter.sort("name", "asc", items);
+        List<String> playUrls = new ArrayList<>();
+        for (Item item : items)
+            if (item.isMedia(drive.isNew()))
+                playUrls.add(item.getName() + "$" + item.getVodId(path) + findSubs(path, items));
+        url.append("$$$" + TextUtils.join("#", playUrls));
+        from.append("$$$" + name);
+    }
+
     private static Map<String, String> getPlayHeader(String url) {
         try {
             Uri uri = Uri.parse(url);

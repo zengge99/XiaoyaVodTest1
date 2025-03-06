@@ -141,15 +141,12 @@ public class AList extends Spider {
 
     @Override
     public String searchContent(String keyword, boolean quick) throws Exception {
-        Logger.log(keyword);
         fetchRule();
         List<Vod> list = new ArrayList<>();
         List<Job> jobs = new ArrayList<>();
         ExecutorService executor = Executors.newCachedThreadPool();
         for (Drive drive : drives) {
-            Logger.log(drive);
             if (drive.search()) {
-                Logger.log(drive);
                 jobs.add(new Job(drive.check(), keyword));
             }
         }
@@ -185,7 +182,7 @@ public class AList extends Spider {
 
     private String xiaoyaCategoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)
             throws Exception {
-        return searchContent("每日更新", false);
+        return searchContent("滤镜", false);
     }
 
     private String alistCategoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)

@@ -113,7 +113,7 @@ public class AList extends Spider {
             Sorter.sort(type, order, files);
         }
 
-        Vod playlistVod;
+        Vod playlistVod = null;
         if (files.size() > 0) {
             String remark = String.format("共%d集", files.size());
             playlistVod = new Vod(tid + "/~playlist", "播放列表", "", remark, false);

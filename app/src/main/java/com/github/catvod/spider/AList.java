@@ -141,7 +141,7 @@ public class AList extends Spider {
 
     @Override
     public String searchContent(String keyword, boolean quick) throws Exception {
-        Logger.log(Result.string(keyword));
+        Logger.log(keyword);
         fetchRule();
         List<Vod> list = new ArrayList<>();
         List<Job> jobs = new ArrayList<>();

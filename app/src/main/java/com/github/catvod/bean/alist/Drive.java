@@ -39,6 +39,8 @@ public class Drive {
     private Boolean search;
     @SerializedName("hidden")
     private Boolean hidden;
+    @SerializedName("noPoster")
+    private Boolean noPoster;
 
     public static Drive objectFrom(String str) {
         return new Gson().fromJson(str, Drive.class);
@@ -102,6 +104,10 @@ public class Drive {
 
     public Boolean hidden() {
         return hidden != null && hidden;
+    }
+
+    public Boolean noPoster() {
+        return noPoster != null && noPoster;
     }
 
     public boolean isNew() {

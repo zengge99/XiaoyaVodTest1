@@ -110,13 +110,11 @@ public class Result {
 
     public Result vod(List<Vod> list) {
         this.list = list;
-        this.total = list.size();
         return this;
     }
 
     public Result vod(Vod item) {
         this.list = Arrays.asList(item);
-        this.total = 1;
         return this;
     }
 

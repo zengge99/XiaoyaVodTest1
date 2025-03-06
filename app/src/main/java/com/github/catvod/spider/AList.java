@@ -84,7 +84,6 @@ public class AList extends Spider {
 
     @Override
     public String homeContent(boolean filter) throws Exception {
-        Logger.log(homeContent);
         fetchRule();
         List<Class> classes = new ArrayList<>();
         LinkedHashMap<String, List<Filter>> filters = new LinkedHashMap<>();

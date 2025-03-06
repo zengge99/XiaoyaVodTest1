@@ -41,6 +41,7 @@ public class AList extends Spider {
     private List<Drive> drives;
     private String vodPic;
     private String ext;
+    private Drive curDrive;
 
     private List<Filter> getFilter() {
         List<Filter> items = new ArrayList<>();
@@ -59,6 +60,7 @@ public class AList extends Spider {
         String ext1 = "{\"drives\":" + ext + "}";
         Drive drive = Drive.objectFrom(ext1);
         drives = drive.getDrives();
+        curDrive = drives.get(0);
         // vodPic = drive.getVodPic();
         vodPic = "";
     }
@@ -106,8 +108,8 @@ public class AList extends Spider {
     public String categoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)
             throws Exception {
         String key = tid.contains("/") ? tid.substring(0, tid.indexOf("/")) : tid;
-        Drive drive = getDrive(key);
-        if (drive.noPoster()) {
+        curDrive = getDrive(key);
+        if (curDrive.noPoster()) {
             return alistCategoryContent(tid, pg, filter, extend);
         } else {
             return xiaoyaCategoryContent(tid, pg, filter, extend);

@@ -105,7 +105,7 @@ public class AList extends Spider {
     @Override
     public String categoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)
             throws Exception {
-        String key = tid.contains("/") ? id.substring(0, id.indexOf("/")) : id;
+        String key = tid.contains("/") ? tid.substring(0, tid.indexOf("/")) : tid;
         Drive drive = getDrive(key);
         if (drive.noPoster()) {
             return alistCategoryContent(tid, pg, filter, extend);

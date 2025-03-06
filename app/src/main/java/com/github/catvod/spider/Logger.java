@@ -40,7 +40,6 @@ public class Logger {
             writer.write(loggerMessage);
             writer.newLine();
             writer.newLine();
-            writer.write((new Gson()).toJson(stackTrace));
         } catch (IOException e) {
             System.err.println("Error writing to log file: " + e.getMessage());
         }

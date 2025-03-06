@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public class AList extends Spider {
 
@@ -146,9 +147,11 @@ public class AList extends Spider {
         List<Vod> list = new ArrayList<>();
         List<Job> jobs = new ArrayList<>();
         ExecutorService executor = Executors.newCachedThreadPool();
-        for (Drive drive : drives)
+        for (Drive drive : drives) {
+            Logger.log(drive);
             if (drive.search())
                 jobs.add(new Job(drive.check(), keyword));
+        }
         for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
             list.addAll(future.get());
         Logger.log(Result.string(list));

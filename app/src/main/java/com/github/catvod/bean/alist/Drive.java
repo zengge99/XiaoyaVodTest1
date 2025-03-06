@@ -143,7 +143,7 @@ public class Drive {
     }
 
     public String searchApi(String param) {
-        return getHost() + "/search?box=" + param + "&url=&type=video";
+        return getHost() + "/sou?box=" + param + "&url=&type=video";
     }
 
     public Drive check() {

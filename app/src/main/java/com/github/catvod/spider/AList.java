@@ -354,6 +354,11 @@ public class AList extends Spider {
                     continue;
                 int index = splits[0].lastIndexOf("/");
                 boolean file = Util.isMedia(splits[0]);
+                if (splits[0].endsWith("/")) {
+                    file = false;
+                    splits[0] = splits[0].substring(0, index - 1);
+                    index = splits[0].lastIndexOf("/");
+                }
                 Item item = new Item();
                 // item.setType(file ? 0 : 1);
                 item.setType(0); // 海报模式总是认为是文件模式，直接点击播放
@@ -361,10 +366,11 @@ public class AList extends Spider {
                 item.setPath("/" + splits[0].substring(0, index));
                 item.setName(splits[0].substring(index + 1));
                 if (item.getPath().contains(drive.getPath())) {
+                    Vod vod = item.getVod(drive, vodPic);
                     if (!file) {
-                        item.setName((item.getName() + "/~soulist").replace("//", "/"));
+                        vod.setVodId((item.getPath() + "/" + item.getName() + "/~soulist").replace("//", "/"));
                     }
-                    list.add(item.getVod(drive, vodPic));
+                    list.add(vod);
                 }
             }
             return list;

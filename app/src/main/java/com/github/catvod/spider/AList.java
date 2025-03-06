@@ -200,7 +200,7 @@ public class AList extends Spider {
         return Result.string(vod);
     }
 
-    private void walkFolder(Drive drive, String path, StringBuilder from, StringBuilder url) throws Exception {
+    private void walkFolder(String path, StringBuilder from, StringBuilder url) throws Exception {
         List<Item> items = getList(path, false);
         String name = path.substring(path.lastIndexOf("/") + 1);
         Sorter.sort("name", "asc", items);
@@ -210,6 +210,13 @@ public class AList extends Spider {
                 playUrls.add(item.getName() + "$" + item.getVodId(path) + findSubs(path, items));
         url.append("$$$" + TextUtils.join("#", playUrls));
         from.append("$$$" + name);
+
+        for (Item item : items)
+            if (!item.isMedia(drive.isNew())) {
+                walkFolder(item.getPath(), from, url);
+            }
+        url.delete(0,3);
+        from.delete(0,3);
     }
 
     private static Map<String, String> getPlayHeader(String url) {

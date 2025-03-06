@@ -15,7 +15,7 @@ public class Logger {
         String callPrefix = "";
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         if (stackTrace.length >= 2) {
-            StackTraceElement caller = stackTrace[stackTrace.length - 2];
+            StackTraceElement caller = stackTrace[1];
             String className = caller.getClassName();
             String methodName = caller.getMethodName();
             int lineNumber = caller.getLineNumber();

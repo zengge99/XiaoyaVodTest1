@@ -368,7 +368,7 @@ public class AList extends Spider {
                 if (item.getPath().contains(drive.getPath())) {
                     Vod vod = item.getVod(drive, vodPic);
                     if (!file) {
-                        vod.setVodId(item.getPath() + "/" + item.getName() + "/~soulist");
+                        //vod.setVodId(item.getPath() + "/" + item.getName() + "/~soulist");
                     }
                     list.add(vod);
                 }

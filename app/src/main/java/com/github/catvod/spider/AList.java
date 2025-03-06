@@ -153,7 +153,7 @@ public class AList extends Spider {
         for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
             list.addAll(future.get());
         Logger.log(Result.string(list));
-        return Result.string(list);
+        return Result.get().vod(list).page().string();
     }
 
     @Override

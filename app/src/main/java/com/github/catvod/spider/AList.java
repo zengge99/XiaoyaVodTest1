@@ -217,7 +217,7 @@ public class AList extends Spider {
         }
         for (Item item : items)
             if (!item.isMedia(drive.isNew())) {
-                walkFolder(item.getPath(), from, url);
+                walkFolder(drive, item.getPath(), from, url);
             }
         url.delete(0,3);
         from.delete(0,3);

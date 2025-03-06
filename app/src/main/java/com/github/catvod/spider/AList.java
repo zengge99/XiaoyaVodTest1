@@ -115,7 +115,7 @@ public class AList extends Spider {
 
         Vod playlistVod;
         if (files.size() > 0) {
-            String remark = String.Format("共%d集", files.size());
+            String remark = String.format("共%d集", files.size());
             playlistVod = new Vod(tid + "/~playlist", "播放列表", "", remark, false);
         }
         

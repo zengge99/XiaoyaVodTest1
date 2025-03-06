@@ -115,7 +115,12 @@ public class Drive {
     }
 
     public Class toType() {
-        return new Class(getName(), getName(), "1");
+        if (this.noPoster) {
+            return new Class(getName(), getName(), "1");
+        } else {
+            return new Class(getName(), getName(), "2");
+        }
+
     }
 
     public String getHost() {
@@ -147,8 +152,10 @@ public class Drive {
     }
 
     public Drive check() {
-        if (path == null) setPath(Uri.parse(getServer()).getPath());
-        if (version == 0) setVersion(OkHttp.string(settingsApi()).contains("v2.") ? 2 : 3);
+        if (path == null)
+            setPath(Uri.parse(getServer()).getPath());
+        if (version == 0)
+            setVersion(OkHttp.string(settingsApi()).contains("v2.") ? 2 : 3);
         return this;
     }
 
@@ -171,19 +178,24 @@ public class Drive {
     public HashMap<String, String> getHeader() {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("User-Agent", Util.CHROME);
-        if (!getToken().isEmpty()) headers.put("Authorization", token);
+        if (!getToken().isEmpty())
+            headers.put("Authorization", token);
         return headers;
     }
 
     public String findPass(String path) {
-        for (Param param : getParams()) if (path.startsWith(param.getPath())) return param.getPass();
+        for (Param param : getParams())
+            if (path.startsWith(param.getPath()))
+                return param.getPass();
         return "";
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Drive)) return false;
+        if (this == obj)
+            return true;
+        if (!(obj instanceof Drive))
+            return false;
         Drive it = (Drive) obj;
         return getName().equals(it.getName());
     }

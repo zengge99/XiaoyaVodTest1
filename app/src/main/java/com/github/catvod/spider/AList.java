@@ -210,9 +210,9 @@ public class AList extends Spider {
         }
         if (recursive) {
             for (Item item : items)
-            if (!item.isMedia(drive.isNew())) {
-                walkFolder(drive, item.getPath(), from, url, recursive);
-            }
+                if (!item.isMedia(drive.isNew())) {
+                    walkFolder(drive, item.getPath(), from, url, recursive);
+                }
         }
         if (url.indexOf("$$$") == 0) {
             url.delete(0,3);

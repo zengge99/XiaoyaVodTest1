@@ -219,7 +219,7 @@ public class AList extends Spider {
         if (recursive) {
             for (Item item : items)
             if (!item.isMedia(drive.isNew())) {
-                walkFolder(drive, item.getPath(), from, url);
+                walkFolder(drive, item.getPath(), from, url, recursive);
             }
         }
         if (url.indexOf("$$$") == 0) {

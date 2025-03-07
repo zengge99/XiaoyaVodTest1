@@ -145,9 +145,13 @@ public class AList extends Spider {
         Logger.log(flag);
         Logger.log(id);
         String[] ids = id.split("~~~");
+        String key = ids[0].contains("/") ? ids[0].substring(0, ids[0].indexOf("/")) : ids[0];
+        Drive drive = getDrive(key);
         String url = getDetail(ids[0]).getUrl();
-        Logger.log(Result.get().url(url).header(getPlayHeader(url)).subs(getSubs(ids)).string());
-        return Result.get().url(url).header(getPlayHeader(url)).subs(getSubs(ids)).string();
+        String result = Result.get().url(url).header(drive.getHeader()).subs(getSubs(ids)).string();
+        //String result = Result.get().url(url).header(getPlayHeader(url)).subs(getSubs(ids)).string();
+        Logger.log(result);
+        return result;
     }
 
     private String defaultDetailContent(List<String> ids) throws Exception {

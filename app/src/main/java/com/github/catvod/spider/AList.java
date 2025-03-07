@@ -88,18 +88,18 @@ public class AList extends Spider {
     private String convertToUrlParams(JSONObject params) {
         StringBuilder urlParams = new StringBuilder();
         boolean isFirst = true;
-
-        for (String key : params.keySet()) {
+        Iterator<String> keys = params.keys();
+        while (keys.hasNext()) {
+            String key = keys.next();
             if (!isFirst) {
                 urlParams.append("&");
             } else {
                 isFirst = false;
             }
-            String encodedKey = URLEncoder.encode(key, StandardCharsets.UTF_8);
-            String encodedValue = URLEncoder.encode(params.get(key).toString(), StandardCharsets.UTF_8);
+            String encodedKey = URLEncoder.encode(key);
+            String encodedValue = URLEncoder.encode(params.get(key).toString());
             urlParams.append(encodedKey).append("=").append(encodedValue);
         }
-
         return urlParams.toString();
     }
 

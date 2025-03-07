@@ -119,8 +119,8 @@ public class AList extends Spider {
     @Override
     public String detailContent(List<String> ids) throws Exception {
         String id = ids.get(0);
-        if(id.endsWith("~soulist")) {
-            return souDetailContent(ids);
+        if(id.endsWith("~soulist") || id.endsWith("~playlist")) {
+            return listDetailContent(ids);
         }
         return defaultDetailContent(ids);
     }
@@ -176,7 +176,7 @@ public class AList extends Spider {
         return Result.string(vod);
     }
 
-    private String souDetailContent(List<String> ids) throws Exception {
+    private String listDetailContent(List<String> ids) throws Exception {
         Logger.log(ids);
         fetchRule();
         String id = ids.get(0);
@@ -186,7 +186,11 @@ public class AList extends Spider {
         Drive drive = getDrive(key);
         StringBuilder from = new StringBuilder();
         StringBuilder url = new StringBuilder();
-        walkFolder(drive, path, from, url, true);
+        if (id.endsWith("~soulist")) {
+            walkFolder(drive, path, from, url, true);
+        } else {
+            walkFolder(drive, path, from, url, false);
+        }
         Vod vod = new Vod();
         vod.setVodPlayFrom(from.toString());
         vod.setVodPlayUrl(url.toString());

@@ -417,7 +417,7 @@ public class AList extends Spider {
                 Item item = new Item();
                 // item.setType(file ? 0 : 1);
                 item.setType(0); // 海报模式总是认为是文件模式，直接点击播放
-                item.setThumb(splits.length > 3 ? splits[4] : "");
+                item.setThumb(splits.length > 5 ? splits[4] : "");
                 item.setPath("/" + splits[0].substring(0, index));
                 item.setName(splits[0].substring(index + 1));
                 if (item.getPath().contains(drive.getPath())) {

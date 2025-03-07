@@ -214,8 +214,7 @@ public class AList extends Spider {
         if (recursive) {
             for (Item item : items)
                 if (!item.isMedia(drive.isNew())) {
-                    Logger.log(item.getPath());
-                    walkFolder(drive, item.getPath(path), from, url, recursive);
+                    walkFolder(drive, item.getVodId(path), from, url, recursive);
                 }
         }
         if (url.indexOf("$$$") == 0) {

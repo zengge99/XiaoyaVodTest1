@@ -79,7 +79,7 @@ public class AList extends Spider {
             url = url + "?" + urlParams;
             url = "http://127.0.0.1:9988/proxy?" + "do=gen&thread=0&url=" + URLEncoder.encode(url);
             Logger.log(url);
-            String response = OkHttp.post("http://127.0.0.1:9988/proxy", drive.getHeader());
+            String response = OkHttp.post(url, drive.getHeader());
             Logger.log(response);
             SpiderDebug.log(response);
             if (retry && response.contains("Guest user is disabled") && login(drive))

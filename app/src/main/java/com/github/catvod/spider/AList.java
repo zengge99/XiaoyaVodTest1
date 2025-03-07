@@ -129,6 +129,7 @@ public class AList extends Spider {
         List<Vod> list = new ArrayList<>();
         List<Job> jobs = new ArrayList<>();
         ExecutorService executor = Executors.newCachedThreadPool();
+        Logger.log(drives);
         for (Drive drive : drives) {
             if (drive.search()) {
                 jobs.add(new Job(drive.check(), keyword));

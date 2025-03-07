@@ -75,26 +75,18 @@ public class AList extends Spider {
 
     private String post(Drive drive, String url, String param, boolean retry) {
         try {
-            Logger.log(url);
-            Logger.log(param);
             String urlParams = convertToUrlParams(new JSONObject(param));
             url = url + "?" + urlParams;
+            url = "http://127.0.0.1:9988/proxy?" + "do=gen&thread=0&url=" + URLEncoder.encode(url);
             Logger.log(url);
-            Logger.log(URLEncoder.encode(url));
-            //JSONObject params = convertFromUrlParams("do=gen&thread=0&url=" + URLEncoder.encode(url));
-            JSONObject params = new JSONObject();
-            params.put("do", "gen");
-            params.put("thread", "0");
-            params.put("url", url);
-            Logger.log(params.toString());
-            String response = OkHttp.post("http://127.0.0.1:9988/proxy", params.toString(), drive.getHeader()).getBody();
+            String response = OkHttp.post("http://127.0.0.1:9988/proxy", drive.getHeader());
             Logger.log(response);
             SpiderDebug.log(response);
             if (retry && response.contains("Guest user is disabled") && login(drive))
                 return post(drive, url, param, false);
             return response;
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.log(e);
             return "";
         }
     }

@@ -186,7 +186,7 @@ public class AList extends Spider {
         Drive drive = getDrive(key);
         StringBuilder from = new StringBuilder();
         StringBuilder url = new StringBuilder();
-        walkFolder(drive, path, from, url);
+        walkFolder(drive, path, from, url, true);
         Vod vod = new Vod();
         vod.setVodPlayFrom(from.toString());
         vod.setVodPlayUrl(url.toString());
@@ -197,7 +197,7 @@ public class AList extends Spider {
         return Result.string(vod);
     }
 
-    private void walkFolder(Drive drive, String path, StringBuilder from, StringBuilder url) throws Exception {
+    private void walkFolder(Drive drive, String path, StringBuilder from, StringBuilder url, Boolean recursive) throws Exception {
         List<Item> items = getList(path, false);
         String name = path.substring(path.lastIndexOf("/") + 1);
         Sorter.sort("name", "asc", items);
@@ -212,10 +212,12 @@ public class AList extends Spider {
             url.append("$$$" + TextUtils.join("#", playUrls));
             from.append("$$$" + name);
         }
-        for (Item item : items)
+        if (recursive) {
+            for (Item item : items)
             if (!item.isMedia(drive.isNew())) {
                 walkFolder(drive, item.getPath(), from, url);
             }
+        }
         if (url.indexOf("$$$") == 0) {
             url.delete(0,3);
             from.delete(0,3);

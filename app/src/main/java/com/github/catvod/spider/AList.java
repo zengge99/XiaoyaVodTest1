@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.net.URLEncoder;
 
 public class AList extends Spider {
 
@@ -72,6 +73,7 @@ public class AList extends Spider {
     }
 
     private String post(Drive drive, String url, String param, boolean retry) {
+        url = "http://127.0.0.1:9988/proxy?do=gen&thread=0&url=" + URLEncoder.encode(url);
         String response = OkHttp.post(url, param, drive.getHeader()).getBody();
         SpiderDebug.log(response);
         if (retry && response.contains("Guest user is disabled") && login(drive))

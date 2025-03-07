@@ -396,8 +396,10 @@ public class AList extends Spider {
 
         @Override
         public List<Vod> call() {
-            List<Vod> alist = alist();
-            return alist.size() > 0 ? alist : xiaoya();
+            // List<Vod> alist = alist();
+            // return alist.size() > 0 ? alist : xiaoya();
+            // 魔改：只有小雅才支持搜索
+            return xiaoya();
         }
 
         private List<Vod> xiaoya() {

@@ -420,6 +420,9 @@ public class AList extends Spider {
                 item.setThumb(splits.length >= 5 ? splits[4] : "");
                 item.setPath("/" + splits[0].substring(0, index));
                 item.setName(splits[0].substring(index + 1));
+                Logger.log(item);
+                Logger.log(item.getPath());
+                Logger.log(drive.getPath());
                 if (item.getPath().startsWith(drive.getPath())) {
                     Vod vod = item.getVod(drive, vodPic);
                     if (!file) {

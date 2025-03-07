@@ -239,7 +239,7 @@ public class AList extends Spider {
         ExecutorService executor = Executors.newCachedThreadPool();
         String key = tid.contains("/") ? tid.substring(0, tid.indexOf("/")) : tid;
         Drive drive = getDrive(key);
-        jobs.add(new Job(drive.check(), "滤镜"));
+        jobs.add(new Job(drive.check(), drive.getPath()));
         for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
             list.addAll(future.get());
         Logger.log(Result.string(list));

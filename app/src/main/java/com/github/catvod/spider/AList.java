@@ -108,20 +108,18 @@ public class AList extends Spider {
         return urlParams.toString();
     }
 
-    private JSONObject convertFromUrlParams(String urlParams) throws UnsupportedEncodingException {
+    private JSONObject convertFromUrlParams(String urlParams) throws Exception {
         JSONObject jsonObject = new JSONObject();
         if (urlParams == null || urlParams.isEmpty()) {
             return jsonObject;
         }
 
-        // 拆分键值对
         String[] pairs = urlParams.split("&");
         for (String pair : pairs) {
-            // 拆分键和值
             String[] keyValue = pair.split("=");
             if (keyValue.length == 2) {
-                String key = URLDecoder.decode(keyValue, "UTF-8");
-                String value = URLDecoder.decode(keyValue, "UTF-8");
+                String key = URLDecoder.decode(keyValue);
+                String value = URLDecoder.decode(keyValue);
                 jsonObject.put(key, value);
             }
         }

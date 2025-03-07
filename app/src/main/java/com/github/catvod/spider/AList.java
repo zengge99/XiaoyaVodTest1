@@ -423,22 +423,19 @@ public class AList extends Spider {
                 item.setThumb(splits.length >= 5 ? splits[4] : "");
                 item.setPath("/" + splits[0].substring(0, index));
                 item.setName(splits[0].substring(index + 1));
-                Logger.log(item);
                 if (item.getPath().startsWith(drive.getPath())) {
                     Vod vod = item.getVod(drive, vodPic);
                     if (!file) {
                         vod.setVodId(drive.getName() + item.getPath() + "/" + item.getName() + "/~soulist");
                     }
-                    Logger.log(item.getThumb());
                     if (TextUtils.isEmpty(item.getThumb())) {
                         noPicList.add(vod);
                     } else {
                         list.add(vod);
                     }
-                    list.addAll(noPicList);
                 }
-                Logger.log("end");
             }
+            list.addAll(noPicList);
             return list;
         }
 

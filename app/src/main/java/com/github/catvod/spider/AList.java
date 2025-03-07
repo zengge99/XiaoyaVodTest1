@@ -118,40 +118,17 @@ public class AList extends Spider {
             return jsonObject;
         }
 
-        // 将 Unicode 转义字符转换为实际字符
-        String decodedParams = unescapeUnicode(urlParams);
-
-        // 拆分键值对
-        String[] pairs = decodedParams.split("&");
+        String[] pairs = urlParams.split("&");
         for (String pair : pairs) {
-            // 拆分键和值
             String[] keyValue = pair.split("=");
             if (keyValue.length == 2) {
-                String key = URLDecoder.decode(keyValue[0]);
-                String value = URLDecoder.decode(keyValue[1]);
+                String key = keyValue[0];
+                String value = keyValue[1];
                 jsonObject.put(key, value);
             }
         }
 
         return jsonObject;
-    }
-
-    private String unescapeUnicode(String input) {
-        StringBuilder builder = new StringBuilder();
-        int i = 0;
-        while (i < input.length()) {
-            char c = input.charAt(i);
-            if (c == '\\' && i + 1 < input.length() && input.charAt(i + 1) == 'u') {
-                // 处理 Unicode 转义字符
-                String hex = input.substring(i + 2, i + 6);
-                builder.append((char) Integer.parseInt(hex, 16));
-                i += 6;
-            } else {
-                builder.append(c);
-                i++;
-            }
-        }
-        return builder.toString();
     }
 
     private String postBak(Drive drive, String url, String param, boolean retry) {

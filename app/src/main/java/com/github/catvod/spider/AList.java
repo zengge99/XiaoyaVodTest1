@@ -117,7 +117,7 @@ public class AList extends Spider {
     @Override
     public String detailContent(List<String> ids) throws Exception {
         String id = ids.get(0);
-        if(id.endsWith("~soulist") || id.endsWith("~playlist")) {
+        if (id.endsWith("~soulist") || id.endsWith("~playlist")) {
             return listDetailContent(ids);
         }
         return defaultDetailContent(ids);
@@ -186,23 +186,24 @@ public class AList extends Spider {
         vod.setVodPlayUrl(url.toString());
         vod.setVodId(id);
         vod.setVodName(name);
-        vod.setVodPic(vodPic); 
+        vod.setVodPic(vodPic);
         Logger.log(Result.string(vod));
         return Result.string(vod);
     }
 
-    private void walkFolder(Drive drive, String path, StringBuilder from, StringBuilder url, Boolean recursive) throws Exception {
+    private void walkFolder(Drive drive, String path, StringBuilder from, StringBuilder url, Boolean recursive)
+            throws Exception {
         List<Item> items = getList(path, false);
         String name = path.substring(path.lastIndexOf("/") + 1);
         Sorter.sort("name", "asc", items);
         List<String> playUrls = new ArrayList<>();
         Boolean haveFile = false;
-        for (Item item : items) 
+        for (Item item : items)
             if (item.isMedia(drive.isNew())) {
                 playUrls.add(item.getName() + "$" + item.getVodId(path) + findSubs(path, items));
                 haveFile = true;
             }
-        if(haveFile){
+        if (haveFile) {
             url.append("$$$" + TextUtils.join("#", playUrls));
             from.append("$$$" + name);
         }
@@ -213,8 +214,8 @@ public class AList extends Spider {
                 }
         }
         if (url.indexOf("$$$") == 0) {
-            url.delete(0,3);
-            from.delete(0,3);
+            url.delete(0, 3);
+            from.delete(0, 3);
         }
     }
 
@@ -401,6 +402,7 @@ public class AList extends Spider {
 
         private List<Vod> xiaoya() {
             List<Vod> list = new ArrayList<>();
+            List<Vod> noPicList = new ArrayList<>();
             Document doc = Jsoup.parse(OkHttp.string(drive.searchApi(keyword)));
             for (Element a : doc.select("ul > a")) {
                 String[] splits = a.text().split("#");
@@ -424,7 +426,12 @@ public class AList extends Spider {
                     if (!file) {
                         vod.setVodId(drive.getName() + item.getPath() + "/" + item.getName() + "/~soulist");
                     }
-                    list.add(vod);
+                    if (!item.getPic().isEmpty()) {
+                        list.add(vod);
+                    } else {
+                        noPicList.add(vod);
+                    }
+                    list.addAll(noPicList);
                 }
             }
             return list;

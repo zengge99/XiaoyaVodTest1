@@ -428,6 +428,7 @@ public class AList extends Spider {
                     list.add(vod);
                 }
             }
+            Logger.log(list);
             return list;
         }
 

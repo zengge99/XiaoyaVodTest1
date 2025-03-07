@@ -75,6 +75,7 @@ public class AList extends Spider {
 
     private String post(Drive drive, String url, String param, boolean retry) {
         try {
+            Logger.log(url);
             Logger.log(param);
             String urlParams = convertToUrlParams(new JSONObject(param));
             url = url + "?" + urlParams;

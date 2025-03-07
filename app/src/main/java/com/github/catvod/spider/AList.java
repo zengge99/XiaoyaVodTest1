@@ -73,12 +73,33 @@ public class AList extends Spider {
     }
 
     private String post(Drive drive, String url, String param, boolean retry) {
-        url = "http://127.0.0.1:9988/proxy?" + param + "&do=gen&thread=0&url=" + URLEncoder.encode(url);
+        JSONObject params = new JSONObject(param);
+        String urlParams = convertToUrlParams(new JSONObject(param));
+        url = url + "?" + urlParams;
+        url = "http://127.0.0.1:9988/proxy?&do=gen&thread=0&url=" + URLEncoder.encode(url);
         String response = OkHttp.post(url, drive.getHeader()).getBody();
         SpiderDebug.log(response);
         if (retry && response.contains("Guest user is disabled") && login(drive))
             return post(drive, url, param, false);
         return response;
+    }
+
+    private String convertToUrlParams(JSONObject params) {
+        StringBuilder urlParams = new StringBuilder();
+        boolean isFirst = true;
+
+        for (String key : params.keySet()) {
+            if (!isFirst) {
+                urlParams.append("&");
+            } else {
+                isFirst = false;
+            }
+            String encodedKey = URLEncoder.encode(key, StandardCharsets.UTF_8);
+            String encodedValue = URLEncoder.encode(params.get(key).toString(), StandardCharsets.UTF_8);
+            urlParams.append(encodedKey).append("=").append(encodedValue);
+        }
+
+        return urlParams.toString();
     }
 
     private String postBak(Drive drive, String url, String param, boolean retry) {

@@ -157,7 +157,7 @@ public class AList extends Spider {
         fetchRule();
         String id = ids.get(0);
         String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
-        String name = path.substring(path.lastIndexOf("/") + 1);
+        String name = id.substring(id.lastIndexOf("/") + 1);
         Vod vod = new Vod();
         vod.setVodPlayFrom(key);
         vod.setVodId(id);

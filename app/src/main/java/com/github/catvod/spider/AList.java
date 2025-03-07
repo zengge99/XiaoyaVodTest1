@@ -117,8 +117,13 @@ public class AList extends Spider {
             return jsonObject;
         }
 
-        String[] pairs = urlParams.split("&");
+        // 将 Unicode 转义字符转换为实际字符
+        String decodedParams = unescapeUnicode(urlParams);
+
+        // 拆分键值对
+        String[] pairs = decodedParams.split("&");
         for (String pair : pairs) {
+            // 拆分键和值
             String[] keyValue = pair.split("=");
             if (keyValue.length == 2) {
                 String key = URLDecoder.decode(keyValue[0]);

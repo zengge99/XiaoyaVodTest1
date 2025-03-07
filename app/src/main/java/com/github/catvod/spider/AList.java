@@ -403,7 +403,6 @@ public class AList extends Spider {
             List<Vod> list = new ArrayList<>();
             Document doc = Jsoup.parse(OkHttp.string(drive.searchApi(keyword)));
             for (Element a : doc.select("ul > a")) {
-                Logger.log("xiaoya:"+a.text());
                 String[] splits = a.text().split("#");
                 if (!splits[0].contains("/"))
                     continue;
@@ -428,7 +427,6 @@ public class AList extends Spider {
                     list.add(vod);
                 }
             }
-            Logger.log(list);
             return list;
         }
 

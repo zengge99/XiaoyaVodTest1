@@ -35,8 +35,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.net.URLEncoder;
-import java.net.URLDecoder;
 
 public class AList extends Spider {
 
@@ -72,63 +70,8 @@ public class AList extends Spider {
     private String post(Drive drive, String url, String param) {
         return post(drive, url, param, true);
     }
-
+    
     private String post(Drive drive, String url, String param, boolean retry) {
-        try {
-            String urlParams = convertToUrlParams(new JSONObject(param));
-            url = url + "?" + urlParams;
-            url = "http://127.0.0.1:9988/proxy?" + "do=gen&thread=0&url=" + URLEncoder.encode(url);
-            Logger.log(url);
-            String response = OkHttp.post(url, drive.getHeader());
-            Logger.log(response);
-            SpiderDebug.log(response);
-            if (retry && response.contains("Guest user is disabled") && login(drive))
-                return post(drive, url, param, false);
-            return response;
-        } catch (Exception e) {
-            Logger.log(e);
-            return "";
-        }
-    }
-
-    private String convertToUrlParams(JSONObject params) throws Exception {
-        StringBuilder urlParams = new StringBuilder();
-        boolean isFirst = true;
-        Iterator<String> keys = params.keys();
-        while (keys.hasNext()) {
-            String key = keys.next();
-            if (!isFirst) {
-                urlParams.append("&");
-            } else {
-                isFirst = false;
-            }
-            String encodedKey = URLEncoder.encode(key);
-            String encodedValue = URLEncoder.encode(params.get(key).toString());
-            urlParams.append(encodedKey).append("=").append(encodedValue);
-        }
-        return urlParams.toString();
-    }
-
-    private JSONObject convertFromUrlParams(String urlParams) throws Exception {
-        JSONObject jsonObject = new JSONObject();
-        if (urlParams == null || urlParams.isEmpty()) {
-            return jsonObject;
-        }
-
-        String[] pairs = urlParams.split("&");
-        for (String pair : pairs) {
-            String[] keyValue = pair.split("=");
-            if (keyValue.length == 2) {
-                String key = keyValue[0];
-                String value = keyValue[1];
-                jsonObject.put(key, value);
-            }
-        }
-
-        return jsonObject;
-    }
-
-    private String postBak(Drive drive, String url, String param, boolean retry) {
         String response = OkHttp.post(url, param, drive.getHeader()).getBody();
         SpiderDebug.log(response);
         if (retry && response.contains("Guest user is disabled") && login(drive))

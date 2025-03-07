@@ -428,6 +428,7 @@ public class AList extends Spider {
                     if (!file) {
                         vod.setVodId(drive.getName() + item.getPath() + "/" + item.getName() + "/~soulist");
                     }
+                    Logger.log(item.getThumb());
                     if (TextUtils.isEmpty(item.getThumb())) {
                         noPicList.add(vod);
                     } else {
@@ -435,6 +436,7 @@ public class AList extends Spider {
                     }
                     list.addAll(noPicList);
                 }
+                Logger.log("end");
             }
             return list;
         }

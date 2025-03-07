@@ -428,7 +428,7 @@ public class AList extends Spider {
                     if (!file) {
                         vod.setVodId(drive.getName() + item.getPath() + "/" + item.getName() + "/~soulist");
                     }
-                    if (!item.getThumb().isEmpty()) {
+                    if (splits.length >= 5) {
                         list.add(vod);
                     } else {
                         noPicList.add(vod);

@@ -108,6 +108,27 @@ public class AList extends Spider {
         return urlParams.toString();
     }
 
+    private JSONObject convertFromUrlParams(String urlParams) throws UnsupportedEncodingException {
+        JSONObject jsonObject = new JSONObject();
+        if (urlParams == null || urlParams.isEmpty()) {
+            return jsonObject;
+        }
+
+        // 拆分键值对
+        String[] pairs = urlParams.split("&");
+        for (String pair : pairs) {
+            // 拆分键和值
+            String[] keyValue = pair.split("=");
+            if (keyValue.length == 2) {
+                String key = URLDecoder.decode(keyValue, "UTF-8");
+                String value = URLDecoder.decode(keyValue, "UTF-8");
+                jsonObject.put(key, value);
+            }
+        }
+
+        return jsonObject;
+    }
+
     private String postBak(Drive drive, String url, String param, boolean retry) {
         String response = OkHttp.post(url, param, drive.getHeader()).getBody();
         SpiderDebug.log(response);

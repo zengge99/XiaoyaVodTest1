@@ -77,7 +77,7 @@ public class AList extends Spider {
         try {
             String urlParams = convertToUrlParams(new JSONObject(param));
             url = url + "?" + urlParams;
-            JSONObject params = convertFromUrlParams(do=gen&thread=0&url=" + URLEncoder.encode(url));
+            JSONObject params = convertFromUrlParams("do=gen&thread=0&url=" + URLEncoder.encode(url));
             Logger.log(params);
             String response = OkHttp.post("http://127.0.0.1:9988/proxy", params.toString(), drive.getHeader()).getBody();
             Logger.log(response);

@@ -74,7 +74,7 @@ public class AList extends Spider {
 
     private String post(Drive drive, String url, String param, boolean retry) {
         url = "http://127.0.0.1:9988/proxy?" + param + "&do=gen&thread=0&url=" + URLEncoder.encode(url);
-        String response = OkHttp.post(url, param, drive.getHeader()).getBody();
+        String response = OkHttp.post(url, drive.getHeader()).getBody();
         SpiderDebug.log(response);
         if (retry && response.contains("Guest user is disabled") && login(drive))
             return post(drive, url, param, false);

@@ -81,7 +81,7 @@ public class AList extends Spider {
             Logger.log(url);
             Logger.log(URLEncoder.encode(url));
             JSONObject params = convertFromUrlParams("do=gen&thread=0&url=" + URLEncoder.encode(url));
-            Logger.log(params);
+            Logger.log(params.toString());
             String response = OkHttp.post("http://127.0.0.1:9988/proxy", params.toString(), drive.getHeader()).getBody();
             Logger.log(response);
             SpiderDebug.log(response);

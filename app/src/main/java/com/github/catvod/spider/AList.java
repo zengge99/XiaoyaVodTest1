@@ -163,7 +163,7 @@ public class AList extends Spider {
         vod.setVodId(id);
         vod.setVodName(name);
         vod.setVodPic(vodPic);
-        vod.setVodPlayUrl(id);
+        vod.setVodPlayUrl(name + "$" + id);
         Logger.log(Result.string(vod));
         return Result.string(vod);
     }

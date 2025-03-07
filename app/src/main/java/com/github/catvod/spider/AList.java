@@ -428,13 +428,12 @@ public class AList extends Spider {
                     if (!file) {
                         vod.setVodId(drive.getName() + item.getPath() + "/" + item.getName() + "/~soulist");
                     }
-                    list.add(vod);
-                    // if (splits.length >= 5) {
-                    //     list.add(vod);
-                    // } else {
-                    //     noPicList.add(vod);
-                    // }
-                    // list.addAll(noPicList);
+                    if (TextUtils.isEmpty(item.getThumb())) {
+                        noPicList.add(vod);
+                    } else {
+                        list.add(vod);
+                    }
+                    list.addAll(noPicList);
                 }
             }
             return list;

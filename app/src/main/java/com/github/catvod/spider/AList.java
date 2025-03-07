@@ -89,7 +89,7 @@ public class AList extends Spider {
         }
     }
 
-    private String convertToUrlParams(JSONObject params) {
+    private String convertToUrlParams(JSONObject params) throws Exception {
         StringBuilder urlParams = new StringBuilder();
         boolean isFirst = true;
         Iterator<String> keys = params.keys();

@@ -135,6 +135,24 @@ public class AList extends Spider {
         return jsonObject;
     }
 
+    private String unescapeUnicode(String input) {
+        StringBuilder builder = new StringBuilder();
+        int i = 0;
+        while (i < input.length()) {
+            char c = input.charAt(i);
+            if (c == '\\' && i + 1 < input.length() && input.charAt(i + 1) == 'u') {
+                // 处理 Unicode 转义字符
+                String hex = input.substring(i + 2, i + 6);
+                builder.append((char) Integer.parseInt(hex, 16));
+                i += 6;
+            } else {
+                builder.append(c);
+                i++;
+            }
+        }
+        return builder.toString();
+    }
+
     private String postBak(Drive drive, String url, String param, boolean retry) {
         String response = OkHttp.post(url, param, drive.getHeader()).getBody();
         SpiderDebug.log(response);

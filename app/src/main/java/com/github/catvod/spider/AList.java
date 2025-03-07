@@ -119,8 +119,8 @@ public class AList extends Spider {
         for (String pair : pairs) {
             String[] keyValue = pair.split("=");
             if (keyValue.length == 2) {
-                String key = URLDecoder.decode(keyValue);
-                String value = URLDecoder.decode(keyValue);
+                String key = URLDecoder.decode(keyValue[0]);
+                String value = URLDecoder.decode(keyValue[1]);
                 jsonObject.put(key, value);
             }
         }

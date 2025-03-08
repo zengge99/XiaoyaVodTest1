@@ -70,8 +70,7 @@ public class DoubanParser {
             info.setDirector(director);
             info.setType(type);
             info.setRating(rating);
-
-            Logger.log(info);
+            
             return info;
         } catch (Exception e) {
             return new DoubanInfo();

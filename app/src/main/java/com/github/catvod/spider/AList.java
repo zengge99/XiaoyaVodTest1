@@ -309,7 +309,7 @@ public class AList extends Spider {
                 files.add(item);
         }
         if (!TextUtils.isEmpty(order)) {
-            String splits = order.split("_")
+            String splits = order.split("_");
             Sorter.sort(splits[0], splits[1], folders);
             Sorter.sort(splits[0], splits[1], files);
         }

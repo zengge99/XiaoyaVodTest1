@@ -76,20 +76,34 @@ public class VodSorter {
         }
     }
 
+     
     private static List<Vod> getRandomElements(List<Vod> source, int count, boolean keepOrder) {
         if (source.size() <= count) {
             List<Vod> result = new ArrayList<>(source);
             if (!keepOrder) Collections.shuffle(result);
             return result;
         }
-
-        List<Vod> shuffled = new ArrayList<>(source);
-        Collections.shuffle(shuffled);
-        List<Vod> randomSelection = shuffled.subList(0, count);
-        
+    
+        // 使用随机索引挑选元素
+        Random random = new Random();
+        Set<Integer> selectedIndexes = new HashSet<>();
+        while (selectedIndexes.size() < count) {
+            int index = random.nextInt(source.size());
+            selectedIndexes.add(index);
+        }
+    
+        // 根据索引挑选元素
+        List<Vod> randomSelection = new ArrayList<>();
+        for (int index : selectedIndexes) {
+            randomSelection.add(source.get(index));
+        }
+    
+        // 如果需要保持原始顺序，按索引排序
         if (keepOrder) {
             randomSelection.sort(Comparator.comparingInt(source::indexOf));
         }
+    
         return randomSelection;
     }
+ 
 }

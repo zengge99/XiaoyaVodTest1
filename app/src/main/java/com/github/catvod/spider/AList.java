@@ -42,20 +42,10 @@ public class AList extends Spider {
     private String vodPic;
     private String ext;
 
-    private List<Filter> getFilter() {
+    private List<Filter> getFilter(Drive drive) {
          List<Filter> items = new ArrayList<>();
-        
-        // 对应JS的get_drives_path调用
-        DrivesPathResult result = getDrivesPath(tid);
-        Drives drives = result.drives;
-        String path = result.path;
 
-        if (!__poster_mode) {
-            return Arrays.asList(); // 对应return []
-        }
-
-        // 处理noPoster逻辑
-        if (drives.noPoster) {
+        if (drive.noPoster()) {
             items.add(new Filter("order", "排序：", Arrays.asList(
                 new Filter.Value("默认排序", "name_asc"),
                 new Filter.Value("名字降序", "name_desc"),
@@ -65,10 +55,9 @@ public class AList extends Spider {
             return items;
         }
 
-        // 构建values的完整逻辑
         List<Filter.Value> values = new ArrayList<>();
         values.add(new Filter.Value("全部分类", "all"));
-
+/*
         try {
             // 对应JS的data.find(...)
             Optional<PageData> data = __filter_data.stream()
@@ -93,9 +82,8 @@ public class AList extends Spider {
                 // 保持JS的空catch块逻辑
             }
         }
-
-        // 构建完整过滤器列表
         items.add(new Filter("subpath", "分类：", values));
+    */
         
         items.add(new Filter("douban", "豆瓣评分：", Arrays.asList(
             new Filter.Value("全部评分", "0"),
@@ -168,7 +156,7 @@ public class AList extends Spider {
             if (!drive.hidden())
                 classes.add(drive.toType());
         for (Class item : classes)
-            filters.put(item.getTypeId(), getFilter());
+            filters.put(item.getTypeId(), getFilter(drive));
         Logger.log(Result.string(classes, filters));
         return Result.string(classes, filters);
     }

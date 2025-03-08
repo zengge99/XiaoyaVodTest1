@@ -63,13 +63,13 @@ public class DoubanParser {
 
             // 构建结果对象
             DoubanInfo info = new DoubanInfo();
-            info.plot = plot;
-            info.year = year;
-            info.region = region;
-            info.actors = actors;
-            info.director = director;
-            info.type = type;
-            info.rating = rating;
+            info.setPlot(plot);
+            info.setYear(year);
+            info.setRegion(region);
+            info.setActors(actors);
+            info.setDirector(director);
+            info.setType(type);
+            info.setRating(rating);
 
             Logger.log(info);
             return info;

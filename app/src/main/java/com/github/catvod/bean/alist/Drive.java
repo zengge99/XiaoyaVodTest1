@@ -41,6 +41,8 @@ public class Drive {
     private Boolean hidden;
     @SerializedName("noPoster")
     private Boolean noPoster;
+    @SerializedName("pathByApi")
+    private Boolean pathByApi;
 
     public static Drive objectFrom(String str) {
         return new Gson().fromJson(str, Drive.class);
@@ -108,6 +110,10 @@ public class Drive {
 
     public Boolean noPoster() {
         return noPoster != null && noPoster;
+    }
+
+    public Boolean pathByApi() {
+        return pathByApi != null && pathByApi;
     }
 
     public boolean isNew() {

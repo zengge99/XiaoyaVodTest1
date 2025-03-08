@@ -213,7 +213,7 @@ public class AList extends Spider {
     }
 
     private String listDetailContent(List<String> ids) throws Exception {
-        Logger.log(ids);
+        Logger.log("listDetailContent：" + ids);
         fetchRule();
         String id = ids.get(0);
         String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;

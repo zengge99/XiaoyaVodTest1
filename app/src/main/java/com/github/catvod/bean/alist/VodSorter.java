@@ -16,14 +16,6 @@ import java.util.Locale;
 
 
 public class VodSorter {
-    
-    public static class Vod {
-        private String vod_remarks;
-        // 其他字段...
-
-        public String getVodRemarks() { return vod_remarks; }
-        public void setVodRemarks(String r) { vod_remarks = r; }
-    }
 
     public static class FilterParams {
         public String douban;

@@ -138,7 +138,8 @@ public class DoubanParser {
             info.director = director;
             info.type = type;
             info.rating = rating;
-            
+
+            Logger.log(info);
             return info;
         } catch (Exception e) {
             return new DoubanInfo();

@@ -323,11 +323,11 @@ public class AList extends Spider {
             String path = id.contains("/") ? id.substring(id.indexOf("/")) : "";
             Drive drive = getDrive(key);
             path = path.startsWith(drive.getPath()) ? path : drive.getPath() + path;
-            JSONObject params = new JSONObject();
-            params.put("path", path);
-            params.put("password", drive.findPass(path));
-            String response = post(drive, drive.getApi(), params.toString());
-            return Item.objectFrom(getDetailJson(drive.isNew(), response));
+            Item item = new Item();
+            String url = drive.getHost() + "/d/" + path;
+            Logger.log(url);
+            Item.setUrl(url);
+            return Item;
         } catch (Exception e) {
             return new Item();
         }

@@ -21,7 +21,29 @@ public class DoubanParser {
         private String director;
         private String type;
 
-        // Getters 略...
+        public String getPlot() {
+            return plot != null ? plot : "";
+        }
+    
+        public String getYear() {
+            return year != null ? year : "";
+        }
+    
+        public String getRegion() {
+            return region != null ? region : "";
+        }
+    
+        public String getActors() {
+            return actors != null ? actors : "";
+        }
+    
+        public String getDirector() {
+            return director != null ? director : "";
+        }
+    
+        public String getType() {
+            return type != null ? type : "";
+        }
     }
 
     public static DoubanInfo getDoubanInfo(String id) {

@@ -31,7 +31,7 @@ public class DoubanParser {
 
         try {
             String url = "https://movie.douban.com/subject/" + id + "/";
-            Document doc = Jsoup.parse(OkHttp.string(url);
+            Document doc = Jsoup.parse(OkHttp.string(url));
 
             // 解析剧情简介
             String plot = doc.select("#link-report-intra span[property=v:summary]").text().trim();

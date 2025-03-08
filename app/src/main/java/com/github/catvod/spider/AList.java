@@ -304,6 +304,33 @@ public class AList extends Spider {
     }
 
     private Item getDetail(String id) {
+        String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
+        String path = id.contains("/") ? id.substring(id.indexOf("/")) : "";
+        Drive drive = getDrive(key);
+        if (drive.pathByApi()) {
+            return getDetailByApi(id);
+        } else {
+            return getDetailBy302(id);
+        }
+    }
+
+    private Item getDetailBy302(String id) {
+        try {
+            String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
+            String path = id.contains("/") ? id.substring(id.indexOf("/")) : "";
+            Drive drive = getDrive(key);
+            path = path.startsWith(drive.getPath()) ? path : drive.getPath() + path;
+            JSONObject params = new JSONObject();
+            params.put("path", path);
+            params.put("password", drive.findPass(path));
+            String response = post(drive, drive.getApi(), params.toString());
+            return Item.objectFrom(getDetailJson(drive.isNew(), response));
+        } catch (Exception e) {
+            return new Item();
+        }
+    }
+    
+    private Item getDetailByApi(String id) {
         try {
             String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
             String path = id.contains("/") ? id.substring(id.indexOf("/")) : "";

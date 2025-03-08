@@ -60,7 +60,7 @@ public class AList extends Spider {
         values.add(new Filter.Value("全部分类", "all"));
         for (Item item : getList(tid, true)) {
             if (item.isFolder())
-                values.add(new Filter.Value(item.getName(), (item.getName()));
+                values.add(new Filter.Value(item.getName(), item.getName()));
         }
         
         items.add(new Filter("douban", "豆瓣评分：", Arrays.asList(

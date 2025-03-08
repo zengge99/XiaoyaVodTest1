@@ -75,8 +75,7 @@ public class VodSorter {
             return 0;
         }
     }
-
-     
+    
     private static List<Vod> getRandomElements(List<Vod> source, int count, boolean keepOrder) {
         if (source.size() <= count) {
             List<Vod> result = new ArrayList<>(source);
@@ -91,19 +90,19 @@ public class VodSorter {
             int index = random.nextInt(source.size());
             selectedIndexes.add(index);
         }
-    
+        
         // 根据索引挑选元素
         List<Vod> randomSelection = new ArrayList<>();
         for (int index : selectedIndexes) {
             randomSelection.add(source.get(index));
         }
-    
+        
         // 如果需要保持原始顺序，按索引排序
         if (keepOrder) {
             randomSelection.sort(Comparator.comparingInt(source::indexOf));
         }
-    
+        
         return randomSelection;
     }
- 
+    
 }

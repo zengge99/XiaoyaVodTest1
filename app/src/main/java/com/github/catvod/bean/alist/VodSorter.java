@@ -24,7 +24,7 @@ public class VodSorter {
         public String random;
     }
 
-    public static String sortVods(List<Vod> vods, HashMap<String, String> fl) {
+    public static List<Vod> sortVods(List<Vod> vods, HashMap<String, String> fl) {
         // 解析豆瓣评分阈值（从 HashMap 获取）
         double doubanThreshold = parseDoubleSafe(fl.getOrDefault("douban", "0"));
 
@@ -56,15 +56,8 @@ public class VodSorter {
             boolean keepOrder = "1".equals(sortType) || "2".equals(sortType);
             filteredVods = getRandomElements(filteredVods, randomCount, keepOrder);
         }
-
-        // 构建结果集（固定 pagecount=1）
-        Map<String, Object> result = new LinkedHashMap<String, Object>() {{
-            put("page", 1);
-            put("pagecount", 1);
-            put("list", filteredVods);
-        }};
         
-        return new Gson().toJson(result);
+        return filteredVods;
     }
 
     // 辅助方法保持不变...

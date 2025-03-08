@@ -1,5 +1,6 @@
 package com.github.catvod.bean.alist;
 
+import java.util.*;
 import java.util.stream.Collectors;
 import android.text.TextUtils;
 import com.github.catvod.bean.Vod;

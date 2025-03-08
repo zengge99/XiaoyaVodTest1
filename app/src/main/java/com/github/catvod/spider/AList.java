@@ -46,7 +46,6 @@ public class AList extends Spider {
         List<Filter> items = new ArrayList<>();
         Drive drive = getDrive(tid);
 
-        DoubanParser.getDoubanInfo("26696879");
         if (drive.noPoster()) {
             items.add(new Filter("order", "排序：", Arrays.asList(
                 new Filter.Value("默认排序", "def_def"),
@@ -496,6 +495,7 @@ public class AList extends Spider {
                 Item item = new Item();
                 // item.setType(file ? 0 : 1);
                 item.setType(0); // 海报模式总是认为是文件模式，直接点击播放
+                item.doubanInfo.setId(splits.length >= 3 ? splits[2] : "");
                 item.setThumb(splits.length >= 5 ? splits[4] : "");
                 item.setPath("/" + splits[0].substring(0, index));
                 item.setName(splits[0].substring(index + 1));

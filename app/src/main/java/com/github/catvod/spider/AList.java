@@ -85,7 +85,7 @@ public class AList extends Spider {
 
         items.add(new Filter("random", "随机显示：", Arrays.asList(
             new Filter.Value("固定显示", "0"),
-            new Filter.Value("随机显示️", "9999999999"),
+            new Filter.Value("随机显示️", "9999999"),
             new Filter.Value("随机200个️", "200"),
             new Filter.Value("随机500个️", "500")
         )));

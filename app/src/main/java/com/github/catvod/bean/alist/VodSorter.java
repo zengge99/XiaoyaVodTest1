@@ -34,14 +34,14 @@ public class VodSorter {
 
         // 1. 过滤评分达标的视频
         List<Vod> filteredVods = vods.stream()
-            .filter(vod -> parseDoubanRating(vod.doubanInfo.getRating()) >= doubanThreshold)
+            .filter(vod -> parseDoubleSafe(vod.doubanInfo.getRating()) >= doubanThreshold)
             .collect(Collectors.toList());
 
         // 2. 排序处理（从 HashMap 获取排序类型）
         String sortType = fl.getOrDefault("doubansort", "0");
         if (!"0".equals(sortType)) {
             Comparator<Vod> comparator = Comparator.comparingDouble(
-                v -> parseDoubanRating(v.doubanInfo.getRating())
+                v -> parseDoubleSafe(v.doubanInfo.getRating())
             );
             
             switch (sortType) {
@@ -62,16 +62,6 @@ public class VodSorter {
         }
         
         return filteredVods;
-    }
-
-    // 辅助方法保持不变...
-    private static double parseDoubanRating(String remarks) {
-        if (remarks == null || !remarks.startsWith("豆瓣:")) return 0.0;
-        try {
-            return Double.parseDouble(remarks.substring(3).trim());
-        } catch (NumberFormatException e) {
-            return 0.0;
-        }
     }
 
     private static double parseDoubleSafe(String s) {

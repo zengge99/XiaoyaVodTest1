@@ -64,6 +64,10 @@ public class Item {
         this.type = type;
     }
 
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public long getSize() {
         return size;
     }

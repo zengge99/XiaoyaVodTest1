@@ -77,7 +77,7 @@ public class DoubanParser {
             info.type = type;
             
             return info;
-        } catch (IOException e) {
+        } catch (Exception e) {
             return new DoubanInfo();
         }
     }

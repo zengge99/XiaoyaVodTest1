@@ -307,11 +307,14 @@ public class AList extends Spider {
         String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
         String path = id.contains("/") ? id.substring(id.indexOf("/")) : "";
         Drive drive = getDrive(key);
+        Item item;
         if (drive.pathByApi()) {
-            return getDetailByApi(id);
+            item = getDetailByApi(id);
         } else {
-            return getDetailBy302(id);
+            item = getDetailBy302(id);
         }
+        Logger.log(item);
+        return item;
     }
 
     private Item getDetailBy302(String id) {

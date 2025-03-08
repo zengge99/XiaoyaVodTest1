@@ -58,33 +58,10 @@ public class AList extends Spider {
 
         List<Filter.Value> values = new ArrayList<>();
         values.add(new Filter.Value("全部分类", "all"));
-/*
-        try {
-            // 对应JS的data.find(...)
-            Optional<PageData> data = __filter_data.stream()
-                .filter(it -> it.startPage.equals(path))
-                .findFirst();
-
-            if (data.isPresent()) {
-                data.get().names.forEach(name -> 
-                    values.add(new Filter.Value(name, name))
-                );
-            }
-        } catch (Exception e) {
-            try {
-                // 对应drives.getPath(...)
-                List<PathItem> list = drives.getPath(path);
-                for (PathItem item : list) {
-                    if (drives.isFolder(item)) {
-                        values.add(new Filter.Value(item.name, item.name));
-                    }
-                }
-            } catch (Exception ex) {
-                // 保持JS的空catch块逻辑
-            }
+        for (Item item : getList(tid, true)) {
+            if (item.isFolder())
+                values.add(new Filter.Value(item.getName(), (item.getName()));
         }
-        items.add(new Filter("subpath", "分类：", values));
-    */
         
         items.add(new Filter("douban", "豆瓣评分：", Arrays.asList(
             new Filter.Value("全部评分", "0"),

@@ -290,6 +290,7 @@ public class AList extends Spider {
         jobs.add(new Job(drive.check(), drive.getPath()));
         for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
             list.addAll(future.get());
+        VodSorter.sortVods(list, extend);
         Logger.log(Result.string(list));
         return Result.get().vod(list).page().string();
     }

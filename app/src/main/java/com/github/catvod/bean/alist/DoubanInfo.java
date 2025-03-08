@@ -1,6 +1,6 @@
 package com.github.catvod.bean.alist;
 
-public static class DoubanInfo {
+public class DoubanInfo {
         private String id;
         private String plot;
         private String year;

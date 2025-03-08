@@ -23,50 +23,50 @@ public class VodSorter {
         public String random;
     }
 
-    // 移除了 isFullList 参数，其逻辑固定为 true
-    public static String sortVods(List<Vod> vods, FilterParams fl) {
-        // 解析豆瓣评分阈值
-        double doubanThreshold = parseDoubleSafe(fl.douban);
+    public static String sortVods(List<Vod> vods, HashMap<String, String> fl) {
+        // 解析豆瓣评分阈值（从 HashMap 获取）
+        double doubanThreshold = parseDoubleSafe(fl.getOrDefault("douban", "0"));
 
         // 1. 过滤评分达标的视频
         List<Vod> filteredVods = vods.stream()
             .filter(vod -> parseDoubanRating(vod.getVodRemarks()) >= doubanThreshold)
             .collect(Collectors.toList());
 
-        // 2. 排序处理
-        if (fl.doubansort != null) {
+        // 2. 排序处理（从 HashMap 获取排序类型）
+        String sortType = fl.getOrDefault("doubansort", "0");
+        if (!"0".equals(sortType)) {
             Comparator<Vod> comparator = Comparator.comparingDouble(
                 v -> parseDoubanRating(v.getVodRemarks())
             );
             
-            switch (fl.doubansort) {
+            switch (sortType) {
                 case "1":
-                    filteredVods.sort(comparator.reversed());
+                    filteredVods.sort(comparator.reversed()); // 降序
                     break;
                 case "2":
-                    filteredVods.sort(comparator);
+                    filteredVods.sort(comparator); // 升序
                     break;
             }
         }
 
-        // 3. 随机筛选
-        int randomCount = parseIntSafe(fl.random);
+        // 3. 随机筛选（从 HashMap 获取随机数量）
+        int randomCount = parseIntSafe(fl.getOrDefault("random", "0"));
         if (randomCount > 0) {
-            boolean keepOrder = "1".equals(fl.doubansort) || "2".equals(fl.doubansort);
+            boolean keepOrder = "1".equals(sortType) || "2".equals(sortType);
             filteredVods = getRandomElements(filteredVods, randomCount, keepOrder);
         }
 
-        // 构建结果集（pagecount 固定为 1）
+        // 构建结果集（固定 pagecount=1）
         Map<String, Object> result = new LinkedHashMap<String, Object>() {{
             put("page", 1);
-            put("pagecount", 1);  // 原 isFullList=true 的逻辑
+            put("pagecount", 1);
             put("list", filteredVods);
         }};
         
         return new Gson().toJson(result);
     }
 
-    // 以下辅助方法保持不变...
+    // 辅助方法保持不变...
     private static double parseDoubanRating(String remarks) {
         if (remarks == null || !remarks.startsWith("豆瓣:")) return 0.0;
         try {

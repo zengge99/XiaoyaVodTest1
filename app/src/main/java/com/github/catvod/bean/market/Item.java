@@ -17,8 +17,7 @@ public class Item {
     private String copy;
     @SerializedName("version")
     private String version;
-    private DoubanParser.DoubanInfo doubanInfo = new DoubanParser.DoubanInfo();
-
+    
     public Item(String url) {
         this.url = url;
     }

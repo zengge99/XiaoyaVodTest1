@@ -1,4 +1,4 @@
-package com.github.catvod.spider;
+package com.github.catvod.bean.alist;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

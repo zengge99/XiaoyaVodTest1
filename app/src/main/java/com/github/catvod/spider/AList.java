@@ -502,7 +502,7 @@ public class AList extends Spider {
                 item.setName(splits.length >= 2 ? splits[1] : splits[0].substring(index + 1));
                 if (item.getPath().startsWith(drive.getPath())) {
                     Vod vod = item.getVod(drive, vodPic);
-                    vod.setRemark(item.doubanInfo.getRating());
+                    vod.setVodRemarks(item.doubanInfo.getRating());
                     if (!file) {
                         vod.setVodId(drive.getName() + item.getPath() + "/" + item.getName() + "/~soulist");
                     }

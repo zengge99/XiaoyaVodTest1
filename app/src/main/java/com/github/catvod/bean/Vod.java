@@ -36,6 +36,8 @@ public class Vod {
     @SerializedName("style")
     private Style style;
 
+    public DoubanInfo doubanInfo = new DoubanInfo();
+
     public static Vod objectFrom(String str) {
         Vod item = new Gson().fromJson(str, Vod.class);
         return item == null ? new Vod() : item;

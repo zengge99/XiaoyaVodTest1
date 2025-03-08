@@ -50,8 +50,8 @@ public class AList extends Spider {
             items.add(new Filter("order", "排序：", Arrays.asList(
                 new Filter.Value("默认排序", "name_asc"),
                 new Filter.Value("名字降序", "name_desc"),
-                new Filter.Value("时间降序", "time_desc"),
-                new Filter.Value("时间升序", "time_asc")
+                new Filter.Value("时间降序", "date_desc"),
+                new Filter.Value("时间升序", "date_asc")
             )));
             return items;
         }
@@ -297,7 +297,6 @@ public class AList extends Spider {
             throws Exception {
         Logger.log(tid);
         fetchRule();
-        String type = extend.containsKey("type") ? extend.get("type") : "";
         String order = extend.containsKey("order") ? extend.get("order") : "";
         List<Item> folders = new ArrayList<>();
         List<Item> files = new ArrayList<>();
@@ -309,9 +308,10 @@ public class AList extends Spider {
             else
                 files.add(item);
         }
-        if (!TextUtils.isEmpty(type) && !TextUtils.isEmpty(order)) {
-            Sorter.sort(type, order, folders);
-            Sorter.sort(type, order, files);
+        if (!TextUtils.isEmpty(order)) {
+            String splits = order.split("_")
+            Sorter.sort(splits[0], splits[1], folders);
+            Sorter.sort(splits[0], splits[1], files);
         }
 
         Vod playlistVod = null;

@@ -30,7 +30,7 @@ public class Item {
     private String url;
     @SerializedName(value = "modified", alternate = "updated_at")
     private String modified;
-    private DoubanInfo doubanInfo = new DoubanInfo();
+    public DoubanInfo doubanInfo = new DoubanInfo();
 
     public static Item objectFrom(String str) {
         return new Gson().fromJson(str, Item.class);

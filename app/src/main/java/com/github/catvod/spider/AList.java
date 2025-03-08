@@ -496,11 +496,13 @@ public class AList extends Spider {
                 // item.setType(file ? 0 : 1);
                 item.setType(0); // 海报模式总是认为是文件模式，直接点击播放
                 item.doubanInfo.setId(splits.length >= 3 ? splits[2] : "");
+                item.doubanInfo.setRating(splits.length >= 4 ? splits[3] : "");
                 item.setThumb(splits.length >= 5 ? splits[4] : "");
                 item.setPath("/" + splits[0].substring(0, index));
                 item.setName(splits.length >= 2 ? splits[1] : splits[0].substring(index + 1));
                 if (item.getPath().startsWith(drive.getPath())) {
                     Vod vod = item.getVod(drive, vodPic);
+                    vod.setRemark(item.doubanInfo.getRating());
                     if (!file) {
                         vod.setVodId(drive.getName() + item.getPath() + "/" + item.getName() + "/~soulist");
                     }

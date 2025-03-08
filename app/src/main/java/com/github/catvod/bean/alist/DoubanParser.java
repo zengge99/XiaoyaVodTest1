@@ -20,6 +20,7 @@ public class DoubanParser {
         private String actors;
         private String director;
         private String type;
+        private String rating; 
 
         public String getPlot() {
             return plot != null ? plot : "";
@@ -44,6 +45,11 @@ public class DoubanParser {
         public String getType() {
             return type != null ? type : "";
         }
+
+        public String getRating() {
+            return rating != null ? rating : "";
+        }
+
     }
 
     public static DoubanInfo getDoubanInfo(String id) {
@@ -88,6 +94,11 @@ public class DoubanParser {
                 typeList.add(el.text());
             }
             String type = String.join("/", typeList);
+            
+            // 解析评分
+            Element ratingElement = doc.selectFirst("strong.ll.rating_num[property=v:average]");
+            String rating = ratingElement != null ? ratingElement.text().trim() : "";
+
 
             // 构建结果对象
             DoubanInfo info = new DoubanInfo();
@@ -97,6 +108,7 @@ public class DoubanParser {
             info.actors = actors;
             info.director = director;
             info.type = type;
+            info.rating = rating;
             
             return info;
         } catch (Exception e) {

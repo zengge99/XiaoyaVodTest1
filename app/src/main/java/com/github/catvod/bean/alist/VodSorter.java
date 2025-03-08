@@ -27,11 +27,9 @@ public class VodSorter {
 
     public static List<Vod> sortVods(List<Vod> vods, HashMap<String, String> fl) {
         Logger.log(fl);
-        for (Vod vod : vods)
-            Logger.log(vod.doubanInfo);
         // 解析豆瓣评分阈值（从 HashMap 获取）
         double doubanThreshold = parseDoubleSafe(fl.getOrDefault("douban", "0"));
-
+Logger.log(doubanThreshold);
         // 1. 过滤评分达标的视频
         List<Vod> filteredVods = vods.stream()
             .filter(vod -> parseDoubleSafe(vod.doubanInfo.getRating()) >= doubanThreshold)

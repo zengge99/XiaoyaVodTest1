@@ -30,14 +30,14 @@ public class VodSorter {
 
         // 1. 过滤评分达标的视频
         List<Vod> filteredVods = vods.stream()
-            .filter(vod -> parseDoubanRating(vod.getVodPlayUrl()) >= doubanThreshold)
+            .filter(vod -> parseDoubanRating(vod.doubanInfo.getRating()) >= doubanThreshold)
             .collect(Collectors.toList());
 
         // 2. 排序处理（从 HashMap 获取排序类型）
         String sortType = fl.getOrDefault("doubansort", "0");
         if (!"0".equals(sortType)) {
             Comparator<Vod> comparator = Comparator.comparingDouble(
-                v -> parseDoubanRating(v.getVodPlayUrl())
+                v -> parseDoubanRating(v.doubanInfo.getRating())
             );
             
             switch (sortType) {

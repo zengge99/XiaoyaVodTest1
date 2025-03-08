@@ -42,8 +42,9 @@ public class AList extends Spider {
     private String vodPic;
     private String ext;
 
-    private List<Filter> getFilter(Drive drive) {
-         List<Filter> items = new ArrayList<>();
+    private List<Filter> getFilter(String tid) {
+        List<Filter> items = new ArrayList<>();
+        Drive drive = getDrive(tid);
 
         if (drive.noPoster()) {
             items.add(new Filter("order", "排序：", Arrays.asList(
@@ -156,7 +157,7 @@ public class AList extends Spider {
             if (!drive.hidden())
                 classes.add(drive.toType());
         for (Class item : classes)
-            filters.put(item.getTypeId(), getFilter(drive));
+            filters.put(item.getTypeId(), getFilter(item.getTypeId()));
         Logger.log(Result.string(classes, filters));
         return Result.string(classes, filters);
     }

@@ -324,7 +324,7 @@ public class AList extends Spider {
             Drive drive = getDrive(key);
             path = path.startsWith(drive.getPath()) ? path : drive.getPath() + path;
             Item item = new Item();
-            String url = drive.getHost() + "/d/" + path;
+            String url = drive.getHost() + "/d" + path;
             Logger.log(url);
             item.setUrl(url);
             return item;

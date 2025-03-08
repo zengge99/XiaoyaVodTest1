@@ -43,11 +43,82 @@ public class AList extends Spider {
     private String ext;
 
     private List<Filter> getFilter() {
-        List<Filter> items = new ArrayList<>();
-        items.add(new Filter("type", "排序类型", Arrays.asList(new Filter.Value("默认", ""), new Filter.Value("名称", "name"),
-                new Filter.Value("大小", "size"), new Filter.Value("修改时间", "date"))));
-        items.add(new Filter("order", "排序方式", Arrays.asList(new Filter.Value("默认", ""), new Filter.Value("⬆", "asc"),
-                new Filter.Value("⬇", "desc"))));
+         List<Filter> items = new ArrayList<>();
+        
+        // 对应JS的get_drives_path调用
+        DrivesPathResult result = getDrivesPath(tid);
+        Drives drives = result.drives;
+        String path = result.path;
+
+        if (!__poster_mode) {
+            return Arrays.asList(); // 对应return []
+        }
+
+        // 处理noPoster逻辑
+        if (drives.noPoster) {
+            items.add(new Filter("order", "排序：", Arrays.asList(
+                new Filter.Value("默认排序", "name_asc"),
+                new Filter.Value("名字降序", "name_desc"),
+                new Filter.Value("时间降序", "time_desc"),
+                new Filter.Value("时间升序", "time_asc")
+            )));
+            return items;
+        }
+
+        // 构建values的完整逻辑
+        List<Filter.Value> values = new ArrayList<>();
+        values.add(new Filter.Value("全部分类", "all"));
+
+        try {
+            // 对应JS的data.find(...)
+            Optional<PageData> data = __filter_data.stream()
+                .filter(it -> it.startPage.equals(path))
+                .findFirst();
+
+            if (data.isPresent()) {
+                data.get().names.forEach(name -> 
+                    values.add(new Filter.Value(name, name))
+                );
+            }
+        } catch (Exception e) {
+            try {
+                // 对应drives.getPath(...)
+                List<PathItem> list = drives.getPath(path);
+                for (PathItem item : list) {
+                    if (drives.isFolder(item)) {
+                        values.add(new Filter.Value(item.name, item.name));
+                    }
+                }
+            } catch (Exception ex) {
+                // 保持JS的空catch块逻辑
+            }
+        }
+
+        // 构建完整过滤器列表
+        items.add(new Filter("subpath", "分类：", values));
+        
+        items.add(new Filter("douban", "豆瓣评分：", Arrays.asList(
+            new Filter.Value("全部评分", "0"),
+            new Filter.Value("9分以上", "9"),
+            new Filter.Value("8分以上", "8"),
+            new Filter.Value("7分以上", "7"),
+            new Filter.Value("6分以上", "6"),
+            new Filter.Value("5分以上", "5")
+        )));
+
+        items.add(new Filter("doubansort", "豆瓣排序：", Arrays.asList(
+            new Filter.Value("原始顺序", "0"),
+            new Filter.Value("豆瓣评分\u2B07\uFE0F", "1"),
+            new Filter.Value("豆瓣评分\u2B06\uFE0F", "2")
+        )));
+
+        items.add(new Filter("random", "随机显示：", Arrays.asList(
+            new Filter.Value("固定显示", "0"),
+            new Filter.Value("随机显示️", "9999999999"),
+            new Filter.Value("随机200个️", "200"),
+            new Filter.Value("随机500个️", "500")
+        )));
+
         return items;
     }
 

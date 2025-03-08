@@ -77,10 +77,7 @@ public class VodSorter {
     }
     
     private static List<Vod> getRandomElements(List<Vod> source, int count, boolean keepOrder) {
-        Logger.log(count);
         if (source.size() <= count) {
-            Logger.log("随机化");
-            Logger.log(keepOrder);
             List<Vod> result = new ArrayList<>(source);
             if (!keepOrder) Collections.shuffle(result);
             return result;

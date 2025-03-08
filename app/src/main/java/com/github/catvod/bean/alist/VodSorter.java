@@ -1,7 +1,19 @@
 package com.github.catvod.bean.alist;
 
-import java.util.*;
 import java.util.stream.Collectors;
+import android.text.TextUtils;
+import com.github.catvod.bean.Vod;
+import com.github.catvod.utils.Util;
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 
 public class VodSorter {
     

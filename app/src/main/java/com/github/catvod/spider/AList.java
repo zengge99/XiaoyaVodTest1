@@ -326,8 +326,8 @@ public class AList extends Spider {
             Item item = new Item();
             String url = drive.getHost() + "/d/" + path;
             Logger.log(url);
-            Item.setUrl(url);
-            return Item;
+            item.setUrl(url);
+            return item;
         } catch (Exception e) {
             return new Item();
         }

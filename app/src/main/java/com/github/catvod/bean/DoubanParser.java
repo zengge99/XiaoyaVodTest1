@@ -13,9 +13,9 @@ import com.github.catvod.net.OkHttp;
 
 public class DoubanParser {
 
-    public static DoubanInfo getDoubanInfo(String id) {
+    public static DoubanInfo getDoubanInfo(String id, DoubanInfo info) {
         if (id == null || id.isEmpty()) {
-            return new DoubanInfo();
+            return info;
         }
 
         try {
@@ -62,7 +62,6 @@ public class DoubanParser {
 
 
             // 构建结果对象
-            DoubanInfo info = new DoubanInfo();
             info.setPlot(plot);
             info.setYear(year);
             info.setRegion(region);

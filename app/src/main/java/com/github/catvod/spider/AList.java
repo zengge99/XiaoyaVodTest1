@@ -63,7 +63,7 @@ public class AList extends Spider {
                 values.add(new Filter.Value(item.getName(), item.getName()));
         }
         if (values.size() > 0) {
-            items.add("subpath", "分类", values);
+            items.add(new Filter("subpath", "分类", values));
         }
         
         items.add(new Filter("douban", "豆瓣评分：", Arrays.asList(

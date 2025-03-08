@@ -46,6 +46,7 @@ public class AList extends Spider {
         List<Filter> items = new ArrayList<>();
         Drive drive = getDrive(tid);
 
+        DoubanParser.getDoubanInfo("26696879");
         if (drive.noPoster()) {
             items.add(new Filter("order", "排序：", Arrays.asList(
                 new Filter.Value("默认排序", "def_def"),

@@ -30,6 +30,7 @@ public class Item {
     private String url;
     @SerializedName(value = "modified", alternate = "updated_at")
     private String modified;
+    private DoubanParser.DoubanInfo doubanInfo = new DoubanParser.DoubanInfo();
 
     public static Item objectFrom(String str) {
         return new Gson().fromJson(str, Item.class);

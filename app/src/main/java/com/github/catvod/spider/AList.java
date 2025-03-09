@@ -507,7 +507,7 @@ public class AList extends Spider {
                     vod.setVodRemarks(item.doubanInfo.getRating());
                     vod.doubanInfo = item.doubanInfo;
                     if (!file) {
-                        vod.setVodId(drive.getName() + item.getPath() + "/" + item.getName() + "/~soulist");
+                        vod.setVodId(vod.getVodId() + "/~soulist");
                     }
                     if (TextUtils.isEmpty(item.getThumb())) {
                         noPicList.add(vod);

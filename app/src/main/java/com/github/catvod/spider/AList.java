@@ -256,6 +256,7 @@ public class AList extends Spider {
             vod.setVodDirector(vod.doubanInfo.getDirector());
             vod.setVodArea(vod.doubanInfo.getRegion());
             vod.setVodYear(vod.doubanInfo.getYear());
+            vod.setVodRemarks(item.doubanInfo.getRating());
         }
         Logger.log(Result.string(vod));
         return Result.string(vod);
@@ -286,6 +287,15 @@ public class AList extends Spider {
         }
         vod.setVodPlayFrom(drive.getName());
         vod.setVodPlayUrl(name + "$" + path);
+        if (id.endsWith("~soufile") && vod.doubanInfo.getYear().isEmpty() && !vod.doubanInfo.getId().isEmpty()) {
+            DoubanParser.getDoubanInfo(vod.doubanInfo.getId(), vod.doubanInfo);
+            vod.setVodContent(vod.doubanInfo.getPlot());
+            vod.setVodActor(vod.doubanInfo.getActors());
+            vod.setVodDirector(vod.doubanInfo.getDirector());
+            vod.setVodArea(vod.doubanInfo.getRegion());
+            vod.setVodYear(vod.doubanInfo.getYear());
+            vod.setVodRemarks(item.doubanInfo.getRating());
+        }
         Logger.log(Result.string(vod));
         return Result.string(vod);
     }

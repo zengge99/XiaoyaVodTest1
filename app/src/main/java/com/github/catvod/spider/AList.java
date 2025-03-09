@@ -42,6 +42,7 @@ public class AList extends Spider {
     private List<Drive> drives;
     private String vodPic;
     private String ext;
+    private Map<String, Vod> vodMap = new HashMap<>();
 
     private List<Filter> getFilter(String tid) {
         List<Filter> items = new ArrayList<>();
@@ -518,6 +519,7 @@ public class AList extends Spider {
                     } else {
                         list.add(vod);
                     }
+                    vodMap.put(vod.getVodId(), vod);
                 }
             }
             list.addAll(noPicList);

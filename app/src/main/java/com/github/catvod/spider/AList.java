@@ -251,6 +251,7 @@ public class AList extends Spider {
         vod.setVodPlayUrl(url.toString());
         if (id.endsWith("~soulist") && vod.doubanInfo.getYear().isEmpty() && !vod.doubanInfo.getId().isEmpty()) {
             DoubanParser.getDoubanInfo(vod.doubanInfo.getId(), vod.doubanInfo);
+            vod.setVodContent(vod.doubanInfo.getPlot());
         }
         Logger.log(Result.string(vod));
         return Result.string(vod);

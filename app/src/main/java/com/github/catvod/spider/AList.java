@@ -224,8 +224,10 @@ public class AList extends Spider {
         StringBuilder from = new StringBuilder();
         StringBuilder url = new StringBuilder();
         if (id.endsWith("~soulist")) {
+            Logger.log("listDetailContent6：" + ids);
             walkFolder(drive, path, from, url, true);
         } else {
+            Logger.log("listDetailContent7：" + ids);
             walkFolder(drive, path, from, url, false);
         }
         Logger.log("listDetailContent2：" + ids);

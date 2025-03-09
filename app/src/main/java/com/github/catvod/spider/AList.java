@@ -233,6 +233,7 @@ public class AList extends Spider {
         Logger.log("listDetailContent2：" + ids);
         Vod vod = vodMap.get(id);
         Logger.log("listDetailContent3：" + ids);
+        Logger.log(vod);
         if (vod == null && id.endsWith("~soulist")) {
             Logger.log("keyword:" + path.substring(0, 30));
             List<Job> jobs = new ArrayList<>();

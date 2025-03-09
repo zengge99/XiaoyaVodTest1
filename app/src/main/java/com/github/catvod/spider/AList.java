@@ -214,7 +214,6 @@ public class AList extends Spider {
     }
 
     private String listDetailContent(List<String> ids) throws Exception {
-        Logger.log("listDetailContent1：" + ids);
         fetchRule();
         String id = ids.get(0);
         String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
@@ -224,21 +223,13 @@ public class AList extends Spider {
         StringBuilder from = new StringBuilder();
         StringBuilder url = new StringBuilder();
         if (id.endsWith("~soulist")) {
-            Logger.log("listDetailContent6：" + ids);
             walkFolder(drive, path, from, url, true);
         } else {
-            Logger.log("listDetailContent7：" + ids);
             walkFolder(drive, path, from, url, false);
         }
-        Logger.log("listDetailContent2：" + ids);
         Vod vod = vodMap.get(id);
-        Logger.log("listDetailContent3：" + ids);
-        Logger.log(vod);
-        Logger.log(id);
         if (vod == null && id.endsWith("~soulist")) {
             String keyword = path.substring(path.indexOf("/") + 1);
-            keyword = keyword.length() < 30 ? keyword : keyword.substring(0, 30);
-            Logger.log(keyword);
             List<Job> jobs = new ArrayList<>();
             ExecutorService executor = Executors.newCachedThreadPool();
             jobs.add(new Job(drive.check(), keyword));

@@ -230,6 +230,7 @@ public class AList extends Spider {
         }
         Vod vod = vodMap.get(id);
         if (vod == null && id.endsWith("~soulist")) {
+            Logger.log("keyword:" + path.substring(0, 30));
             List<Job> jobs = new ArrayList<>();
             ExecutorService executor = Executors.newCachedThreadPool();
             jobs.add(new Job(drive.check(), path.substring(0, 30)));

@@ -256,7 +256,7 @@ public class AList extends Spider {
             vod.setVodDirector(vod.doubanInfo.getDirector());
             vod.setVodArea(vod.doubanInfo.getRegion());
             vod.setVodYear(vod.doubanInfo.getYear());
-            vod.setVodRemarks(item.doubanInfo.getRating());
+            vod.setVodRemarks(vod.doubanInfo.getRating());
         }
         Logger.log(Result.string(vod));
         return Result.string(vod);
@@ -294,7 +294,7 @@ public class AList extends Spider {
             vod.setVodDirector(vod.doubanInfo.getDirector());
             vod.setVodArea(vod.doubanInfo.getRegion());
             vod.setVodYear(vod.doubanInfo.getYear());
-            vod.setVodRemarks(item.doubanInfo.getRating());
+            vod.setVodRemarks(vod.doubanInfo.getRating());
         }
         Logger.log(Result.string(vod));
         return Result.string(vod);

@@ -236,7 +236,7 @@ public class AList extends Spider {
         Logger.log(vod);
         Logger.log(id);
         if (vod == null && id.endsWith("~soulist")) {
-            String keyword = path.substring(path.indexof("/") + 1);
+            String keyword = path.substring(path.indexOf("/") + 1);
             keyword = keyword.length() < 30 ? keyword : keyword.substring(0, 30);
             Logger.log(keyword);
             List<Job> jobs = new ArrayList<>();

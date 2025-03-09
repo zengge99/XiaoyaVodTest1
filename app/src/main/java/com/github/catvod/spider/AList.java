@@ -228,12 +228,15 @@ public class AList extends Spider {
         } else {
             walkFolder(drive, path, from, url, false);
         }
-        Vod vod = new Vod();
+        Vod vod = vodMap.get(id);
+        if (vod == null) {
+            vod = new Vod();
+            vod.setVodId(id);
+            vod.setVodName(name);
+            vod.setVodPic(vodPic);
+        }
         vod.setVodPlayFrom(from.toString());
         vod.setVodPlayUrl(url.toString());
-        vod.setVodId(id);
-        vod.setVodName(name);
-        vod.setVodPic(vodPic);
         Logger.log(Result.string(vod));
         return Result.string(vod);
     }

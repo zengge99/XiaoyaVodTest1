@@ -550,7 +550,7 @@ public class AList extends Spider {
                 if (item.getPath().startsWith(drive.getPath())) {
                     Vod vod = item.getVod(drive, vodPic);
                     vod.setVodRemarks(item.doubanInfo.getRating());
-                    vod.setVodName(item.getName());
+                    vod.setVodName(item.doubanInfo.getName());
                     vod.doubanInfo = item.doubanInfo;
                     if (!file) {
                         vod.setVodId(vod.getVodId() + "/~soulist");

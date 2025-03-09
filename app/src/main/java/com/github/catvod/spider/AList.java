@@ -276,7 +276,7 @@ public class AList extends Spider {
             vod.setVodPic(vodPic);
         }
         vod.setVodPlayFrom(drive.getName());
-        vod.setVodPlayUrl(path);
+        vod.setVodPlayUrl(name + "$" + path);
         Logger.log(Result.string(vod));
         return Result.string(vod);
     }

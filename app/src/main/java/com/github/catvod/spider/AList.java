@@ -229,7 +229,7 @@ public class AList extends Spider {
             walkFolder(drive, path, from, url, false);
         }
         Vod vod = vodMap.get(id);
-        if (vod == null) {
+        if (vod == null && id.endsWith("~soulist")) {
             List<Job> jobs = new ArrayList<>();
             ExecutorService executor = Executors.newCachedThreadPool();
             jobs.add(new Job(drive.check(), path.substring(0, 30)));

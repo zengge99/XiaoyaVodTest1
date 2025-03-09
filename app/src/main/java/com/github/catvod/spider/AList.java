@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import com.github.catvod.bean.Class;
 import com.github.catvod.bean.Filter;
 import com.github.catvod.bean.Result;
+import com.github.catvod.bean.DoubanParser;
 import com.github.catvod.bean.Sub;
 import com.github.catvod.bean.Vod;
 import com.github.catvod.bean.alist.Drive;
@@ -248,6 +249,9 @@ public class AList extends Spider {
         }
         vod.setVodPlayFrom(from.toString());
         vod.setVodPlayUrl(url.toString());
+        if (id.endsWith("~soulist") && vod.doubanInfo.getYear().isEmpty() && !vod.doubanInfo.getId().isEmpty()) {
+            DoubanParser.getDoubanInfo(vod.doubanInfo.getId(), vod.doubanInfo);
+        }
         Logger.log(Result.string(vod));
         return Result.string(vod);
     }

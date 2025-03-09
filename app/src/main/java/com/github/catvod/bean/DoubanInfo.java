@@ -8,7 +8,8 @@ public class DoubanInfo {
         private String actors;
         private String director;
         private String type;
-        private String rating; 
+        private String rating;
+        private String name;
 
         // Getter 方法
         public String getId() {
@@ -42,6 +43,10 @@ public class DoubanInfo {
         public String getRating() {
             return rating != null ? rating : "";
         }
+
+        public String getName() {
+            return name != null ? name : "";
+        }
     
         // Setter 方法
         public void setId(String id) {
@@ -74,5 +79,9 @@ public class DoubanInfo {
     
         public void setRating(String rating) {
             this.rating = rating;
+        }
+        
+        public void setName(String name) {
+            this.name = name;
         }
     }

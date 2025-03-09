@@ -106,6 +106,10 @@ public class Vod {
         this.vodId = vodId;
     }
 
+    public String getVodId() {
+        return this.vodId;
+    }
+
     public void setVodName(String vodName) {
         this.vodName = vodName;
     }

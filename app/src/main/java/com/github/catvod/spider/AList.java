@@ -230,6 +230,12 @@ public class AList extends Spider {
         }
         Vod vod = vodMap.get(id);
         if (vod == null) {
+            ExecutorService executor = Executors.newCachedThreadPool();
+            jobs.add(new Job(drive.check(), path));
+            for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
+                future.get();
+            }
+        if (vod == null) {
             vod = new Vod();
             vod.setVodId(id);
             vod.setVodName(name);

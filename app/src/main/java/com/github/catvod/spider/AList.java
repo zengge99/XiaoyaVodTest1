@@ -501,11 +501,12 @@ public class AList extends Spider {
                 item.doubanInfo.setRating(splits.length >= 4 ? splits[3] : "");
                 item.setThumb(splits.length >= 5 ? splits[4] : "");
                 item.setPath("/" + splits[0].substring(0, index));
-                //item.setName(splits.length >= 2 ? splits[1] : splits[0].substring(index + 1));
+                item.doubanInfo(splits.length >= 2 ? splits[1] : splits[0].substring(index + 1));
                 item.setName(splits[0].substring(index + 1));
                 if (item.getPath().startsWith(drive.getPath())) {
                     Vod vod = item.getVod(drive, vodPic);
                     vod.setVodRemarks(item.doubanInfo.getRating());
+                    vod.setName(item.getName());
                     vod.doubanInfo = item.doubanInfo;
                     if (!file) {
                         vod.setVodId(vod.getVodId() + "/~soulist");

@@ -526,6 +526,7 @@ public class AList extends Spider {
         private List<Vod> xiaoya() {
             List<Vod> list = new ArrayList<>();
             List<Vod> noPicList = new ArrayList<>();
+            keyword = keyword.length() < 30 ? keyword : keyword.substring(0, 30);
             Document doc = Jsoup.parse(OkHttp.string(drive.searchApi(keyword)));
             for (Element a : doc.select("ul > a")) {
                 String[] splits = a.text().split("#");

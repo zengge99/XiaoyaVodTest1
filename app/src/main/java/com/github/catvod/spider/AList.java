@@ -163,6 +163,9 @@ public class AList extends Spider {
         if (id.endsWith("~soulist") || id.endsWith("~playlist")) {
             return listDetailContent(ids);
         }
+        if (id.endsWith("~soufile") || id.endsWith("~playlist")) {
+            return fileDetailContent(ids);
+        }
         return defaultDetailContent(ids);
     }
 
@@ -245,6 +248,35 @@ public class AList extends Spider {
         }
         vod.setVodPlayFrom(from.toString());
         vod.setVodPlayUrl(url.toString());
+        Logger.log(Result.string(vod));
+        return Result.string(vod);
+    }
+
+    private String fileDetailContent(List<String> ids) throws Exception {
+        fetchRule();
+        String id = ids.get(0);
+        String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
+        String path = id.substring(0, id.lastIndexOf("/"));
+        String name = path.substring(path.lastIndexOf("/") + 1);
+        Drive drive = getDrive(key);
+        Vod vod = vodMap.get(id);
+        if (vod == null && id.endsWith("~soufile")) {
+            String keyword = path.substring(path.indexOf("/") + 1);
+            List<Job> jobs = new ArrayList<>();
+            ExecutorService executor = Executors.newCachedThreadPool();
+            jobs.add(new Job(drive.check(), keyword));
+            for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
+                future.get();
+            vod = vodMap.get(id);
+        }
+        if (vod == null) {
+            vod = new Vod();
+            vod.setVodId(id);
+            vod.setVodName(name);
+            vod.setVodPic(vodPic);
+        }
+        vod.setVodPlayFrom(drive.getName());
+        vod.setVodPlayUrl(path);
         Logger.log(Result.string(vod));
         return Result.string(vod);
     }

@@ -581,7 +581,7 @@ public class AList extends Spider {
             List<Vod> noPicList = new ArrayList<>();
             String shortKeyword = keyword.length() < 30 ? keyword : keyword.substring(0, 30);
             Document doc;
-            List<String> lines = new List<String>();
+            List<String> lines = new ArrayList();
             if (shortKeyword.startsWith("~daily:")) {
                 doc = Jsoup.parse(OkHttp.string(drive.dailySearchApi(shortKeyword.split(":")[1])));
                 for (Element a : doc.select("ul > a")) {

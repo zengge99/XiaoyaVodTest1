@@ -31,7 +31,7 @@ public class Drive {
     private String server;
     @SerializedName("version")
     private int version;
-    @SerializedName("path")
+    @SerializedName("startPage")
     private String path;
     @SerializedName("token")
     private String token;

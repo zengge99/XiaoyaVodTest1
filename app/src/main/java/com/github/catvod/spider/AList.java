@@ -193,7 +193,7 @@ public class AList extends Spider {
         ExecutorService executor = Executors.newCachedThreadPool();
         for (Drive drive : drives) {
             if (drive.search()) {
-                jobs.add(new Job(drive.check(), keyword));
+                jobs.add(new Job(drive.check(), "~search:" + keyword));
             }
         }
         for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
@@ -586,7 +586,12 @@ public class AList extends Spider {
                 for (Element a : doc.select("ul > a")) {
                     lines.add(a.text());
                 }
-            } else {
+            } else if (shortKeyword.startsWith("~search:")) {
+                doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword.split(":")[1])));
+                for (Element a : doc.select("ul > a")) {
+                    lines.add(a.text());
+            }
+            else {
                 lines = XiaoyaLocalIndex.downlodadAndUnzip(drive.getServer());
                 if (lines.size() == 0) {
                     doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword)));

@@ -108,6 +108,7 @@ public class AList extends Spider {
         List<Drive> searcherDrivers = drives.stream().filter(d -> d.search()).collect(Collectors.toList());
         if (searcherDrivers.size() > 0) {
             defaultDrive = searcherDrivers.get(0);
+            XiaoyaLocalIndex.downlodadAndUnzip(defaultDrive.getServer());
         }
     }
 

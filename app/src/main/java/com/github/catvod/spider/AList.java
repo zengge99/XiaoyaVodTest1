@@ -132,7 +132,7 @@ public class AList extends Spider {
         try {
             ext = extend;
             fetchRule();
-            XiaoyaLocalIndex.downlodadAndUnzip();
+            XiaoyaLocalIndex.downlodadAndUnzip(drives.get(0).getServer());
         } catch (Exception ignored) {
         }
     }

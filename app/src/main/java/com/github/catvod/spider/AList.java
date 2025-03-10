@@ -369,10 +369,18 @@ public class AList extends Spider {
         ExecutorService executor = Executors.newCachedThreadPool();
         String key = tid.contains("/") ? tid.substring(0, tid.indexOf("/")) : tid;
         Drive drive = getDrive(key);
-        jobs.add(new Job(drive.check(), drive.getPath()));
-        for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
-            list.addAll(future.get());
-        list = VodSorter.sortVods(list, extend);
+        
+        if (!drive.getName().equals("每日更新")) {
+            jobs.add(new Job(drive.check(), drive.getPath()));
+            for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
+                list.addAll(future.get());
+            list = VodSorter.sortVods(list, extend);
+        } else {
+            jobs.add(new Job(drive.check(), "~daily:100000"));
+            for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
+                list.addAll(future.get());
+        }
+
         Logger.log(Result.string(list));
         return Result.get().vod(list).page().string();
     }

@@ -21,7 +21,6 @@ public class XiaoyaLocalIndex {
 
             // 1. 确保目录存在
             createDirectoryIfNotExists(saveDir);
-            createDirectoryIfNotExists(saveDir);
 
             // 2. 下载文件
             downloadFile(fileUrl + "/index.video.tgz", saveDir + "/index.video.tgz");

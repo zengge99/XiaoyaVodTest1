@@ -37,10 +37,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class AList extends Spider {
 
     private List<Drive> drives;
+    private Drive defaultDrive;
     private String vodPic;
     private String ext;
     private Map<String, Vod> vodMap = new HashMap<>();
@@ -51,12 +54,11 @@ public class AList extends Spider {
 
         if (drive.noPoster()) {
             items.add(new Filter("order", "排序：", Arrays.asList(
-                new Filter.Value("默认排序", "def_def"),
-                new Filter.Value("名字降序", "name_desc"),
-                new Filter.Value("名字升序", "name_asc"),
-                new Filter.Value("时间降序", "date_desc"),
-                new Filter.Value("时间升序", "date_asc")
-            )));
+                    new Filter.Value("默认排序", "def_def"),
+                    new Filter.Value("名字降序", "name_desc"),
+                    new Filter.Value("名字升序", "name_asc"),
+                    new Filter.Value("时间降序", "date_desc"),
+                    new Filter.Value("时间升序", "date_asc"))));
             return items;
         }
 
@@ -69,28 +71,25 @@ public class AList extends Spider {
         if (values.size() > 0) {
             items.add(new Filter("subpath", "分类", values));
         }
-        
+
         items.add(new Filter("douban", "豆瓣评分：", Arrays.asList(
-            new Filter.Value("全部评分", "0"),
-            new Filter.Value("9分以上", "9"),
-            new Filter.Value("8分以上", "8"),
-            new Filter.Value("7分以上", "7"),
-            new Filter.Value("6分以上", "6"),
-            new Filter.Value("5分以上", "5")
-        )));
+                new Filter.Value("全部评分", "0"),
+                new Filter.Value("9分以上", "9"),
+                new Filter.Value("8分以上", "8"),
+                new Filter.Value("7分以上", "7"),
+                new Filter.Value("6分以上", "6"),
+                new Filter.Value("5分以上", "5"))));
 
         items.add(new Filter("doubansort", "豆瓣排序：", Arrays.asList(
-            new Filter.Value("原始顺序", "0"),
-            new Filter.Value("豆瓣评分\u2B07\uFE0F", "1"),
-            new Filter.Value("豆瓣评分\u2B06\uFE0F", "2")
-        )));
+                new Filter.Value("原始顺序", "0"),
+                new Filter.Value("豆瓣评分\u2B07\uFE0F", "1"),
+                new Filter.Value("豆瓣评分\u2B06\uFE0F", "2"))));
 
         items.add(new Filter("random", "随机显示：", Arrays.asList(
-            new Filter.Value("固定显示", "0"),
-            new Filter.Value("随机显示️", "9999999"),
-            new Filter.Value("随机200个️", "200"),
-            new Filter.Value("随机500个️", "500")
-        )));
+                new Filter.Value("固定显示", "0"),
+                new Filter.Value("随机显示️", "9999999"),
+                new Filter.Value("随机200个️", "200"),
+                new Filter.Value("随机500个️", "500"))));
 
         return items;
     }
@@ -105,6 +104,11 @@ public class AList extends Spider {
         drives = drive.getDrives();
         // vodPic = drive.getVodPic();
         vodPic = "";
+
+        List<Drive> searcherDrivers = drives.stream().filter(d -> d.search()).collect(Collectors.toList());
+        if (searcherDrivers.size() > 0 ) {
+            defaultDrive = searcherDrivers.get(0);
+        }
     }
 
     private Drive getDrive(String name) {
@@ -114,7 +118,7 @@ public class AList extends Spider {
     private String post(Drive drive, String url, String param) {
         return post(drive, url, param, true);
     }
-    
+
     private String post(Drive drive, String url, String param, boolean retry) {
         String response = OkHttp.post(url, param, drive.getHeader()).getBody();
         SpiderDebug.log(response);
@@ -142,8 +146,20 @@ public class AList extends Spider {
                 classes.add(drive.toType());
         for (Class item : classes)
             filters.put(item.getTypeId(), getFilter(item.getTypeId()));
-        Logger.log(Result.string(classes, filters));
-        return Result.string(classes, filters);
+
+        List<Vod> list = new ArrayList<>();
+        List<Job> jobs = new ArrayList<>();
+
+        if (defaultDrive != null) {
+            ExecutorService executor = Executors.newCachedThreadPool();
+            jobs.add(new Job(defaultDrive.check(), "~daily:1000"));
+            for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
+                list.addAll(future.get());
+        }
+        
+        String result = Result.string(classes, list, filters);
+        Logger.log(result);
+        return result;
     }
 
     @Override
@@ -196,7 +212,8 @@ public class AList extends Spider {
         Drive drive = getDrive(key);
         String url = getDetail(ids[0]).getUrl();
         String result = Result.get().url(url).header(drive.getHeader()).subs(getSubs(ids)).string();
-        //String result = Result.get().url(url).header(getPlayHeader(url)).subs(getSubs(ids)).string();
+        // String result =
+        // Result.get().url(url).header(getPlayHeader(url)).subs(getSubs(ids)).string();
         Logger.log(result);
         return result;
     }
@@ -440,7 +457,7 @@ public class AList extends Spider {
             return new Item();
         }
     }
-    
+
     private Item getDetailByApi(String id) {
         try {
             String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
@@ -548,7 +565,12 @@ public class AList extends Spider {
             List<Vod> list = new ArrayList<>();
             List<Vod> noPicList = new ArrayList<>();
             String shortKeyword = keyword.length() < 30 ? keyword : keyword.substring(0, 30);
-            Document doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword)));
+            Document doc;
+            if (shortKeyword.startsWith("~daily:")) {
+                doc = Jsoup.parse(OkHttp.string(drive.dailySearchApi(shortKeyword.split(":")[1])));
+            } else {
+                doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword)));
+            }
             for (Element a : doc.select("ul > a")) {
                 String[] splits = a.text().split("#");
                 if (!splits[0].contains("/"))

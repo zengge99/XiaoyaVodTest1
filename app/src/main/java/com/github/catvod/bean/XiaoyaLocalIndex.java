@@ -1,15 +1,8 @@
 package com.github.catvod.bean.alist;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -23,36 +16,38 @@ public class XiaoyaLocalIndex {
         String outputFile = saveDir + "/index.video.txt"; // 合并后的文件路径
 
         try {
-            deleteAllFiles(saveDir);
+            // 0. 清空目录
+            deleteFiles(saveDir, null); // 删除 saveDir 中的所有文件
+            log("目录已清空: " + saveDir);
 
-            // 0. 确保目录存在
+            // 1. 确保目录存在
             createDirectoryIfNotExists(saveDir);
             createDirectoryIfNotExists(extractDir);
 
-            // 1. 下载文件
+            // 2. 下载文件
             downloadFile(fileUrl, savePath);
-            System.out.println("文件下载完成: " + savePath);
+            log("文件下载完成: " + savePath);
 
-            // 2. 解压文件
+            // 3. 解压文件
             unzipFile(savePath, extractDir);
-            System.out.println("文件解压完成，解压到: " + extractDir);
+            log("文件解压完成，解压到: " + extractDir);
 
-            // 3. 删除指定文件
+            // 4. 删除指定文件
             deleteFiles(extractDir, "index.docu.*.txt");
             deleteFiles(extractDir, "index.music.txt");
             deleteFiles(extractDir, "index.non.video.txt");
-            System.out.println("指定文件已删除");
+            log("指定文件已删除");
 
-            // 4. 合并剩余文件
+            // 5. 合并剩余文件
             mergeFiles(extractDir, outputFile);
-            System.out.println("文件合并完成，保存为: " + outputFile);
+            log("文件合并完成，保存为: " + outputFile);
 
-            // 5. 删除解压目录中的所有文件
-            deleteAllFiles(extractDir);
-            System.out.println("解压目录中的其他文件已删除");
+            // 6. 删除解压目录中的所有文件
+            deleteFiles(extractDir, null); // 删除 extractDir 中的所有文件
+            log("解压目录中的其他文件已删除");
 
         } catch (IOException e) {
-            System.err.println("操作失败: " + e.getMessage());
+            log("操作失败: " + e.getMessage());
         }
     }
 
@@ -65,7 +60,7 @@ public class XiaoyaLocalIndex {
         Path path = Paths.get(dirPath);
         if (!Files.exists(path)) {
             Files.createDirectories(path);
-            System.out.println("目录已创建: " + dirPath);
+            log("目录已创建: " + dirPath);
         }
     }
 
@@ -78,12 +73,14 @@ public class XiaoyaLocalIndex {
     private static void downloadFile(String fileUrl, String savePath) throws IOException {
         URL url = new URL(fileUrl);
         try (InputStream in = new BufferedInputStream(url.openStream());
-                FileOutputStream out = new FileOutputStream(savePath)) {
+             FileOutputStream out = new FileOutputStream(savePath)) {
             byte[] buffer = new byte[8 * 1024]; // 分块读取，每次读取 8KB
             int bytesRead;
             while ((bytesRead = in.read(buffer)) != -1) {
                 out.write(buffer, 0, bytesRead);
             }
+        } catch (IOException e) {
+            throw new IOException("下载文件失败: " + fileUrl, e);
         }
     }
 
@@ -94,40 +91,41 @@ public class XiaoyaLocalIndex {
      * @param extractDir 解压目录
      */
     private static void unzipFile(String zipPath, String extractDir) throws IOException {
-        Path extractPath = Paths.get(extractDir);
-        if (!Files.exists(extractPath)) {
-            Files.createDirectories(extractPath);
-        }
+        createDirectoryIfNotExists(extractDir); // 确保解压目录存在
 
         try (ZipFile zipFile = new ZipFile(zipPath)) {
             var entries = zipFile.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
-                Path entryPath = extractPath.resolve(entry.getName());
+                Path entryPath = Paths.get(extractDir, entry.getName());
                 if (entry.isDirectory()) {
-                    Files.createDirectories(entryPath);
+                    createDirectoryIfNotExists(entryPath.toString());
                 } else {
                     try (InputStream is = zipFile.getInputStream(entry)) {
                         Files.copy(is, entryPath);
                     }
                 }
             }
+        } catch (IOException e) {
+            throw new IOException("解压文件失败: " + zipPath, e);
         }
     }
 
     /**
      * 删除指定文件
      *
-     * @param extractDir 解压目录
-     * @param pattern    文件名模式（支持通配符 *）
+     * @param dirPath 目录路径
+     * @param pattern 文件名模式（支持通配符 *，如果为 null 则删除所有文件）
      */
-    private static void deleteFiles(String extractDir, String pattern) throws IOException {
-        Path dirPath = Paths.get(extractDir);
-        try (var stream = Files.newDirectoryStream(dirPath, pattern)) {
+    private static void deleteFiles(String dirPath, String pattern) throws IOException {
+        Path path = Paths.get(dirPath);
+        try (var stream = pattern == null ? Files.newDirectoryStream(path) : Files.newDirectoryStream(path, pattern)) {
             for (Path file : stream) {
                 Files.delete(file);
-                System.out.println("已删除文件: " + file);
+                log("已删除文件: " + file);
             }
+        } catch (IOException e) {
+            throw new IOException("删除文件失败: " + dirPath, e);
         }
     }
 
@@ -149,25 +147,20 @@ public class XiaoyaLocalIndex {
                             writer.newLine();
                         }
                     }
-                    System.out.println("已合并文件: " + file);
+                    log("已合并文件: " + file);
                 }
             }
+        } catch (IOException e) {
+            throw new IOException("合并文件失败: " + extractDir, e);
         }
     }
 
     /**
-     * 删除解压目录中的所有文件（排除指定文件）
+     * 日志输出
      *
-     * @param extractDir  解压目录
-     * @param excludeFile 需要排除的文件名
+     * @param message 日志信息
      */
-    private static void deleteAllFiles(String extractDir) throws IOException {
-        Path dirPath = Paths.get(extractDir);
-        try (var stream = Files.newDirectoryStream(dirPath)) {
-            for (Path file : stream) {
-                Files.delete(file);
-                System.out.println("已删除文件: " + file);
-            }
-        }
+    private static void log(String message) {
+        System.out.println(message);
     }
 }

@@ -46,7 +46,8 @@ public class XiaoyaLocalIndex {
             deleteFilesExclude(saveDir, "index.video.txt", "index.115.txt");
             deleteFiles(saveDir, "*.tgz");
 
-            lines = Files.readAllLines(Paths.get(filePath));
+            lines = Files.readAllLines(Paths.get(saveDir + "/index.video.txt"));
+            lines.addAll(Files.readAllLines(Paths.get(saveDir + "/index.115.txt")));
 
             cacheMap.put(server, lines);
 
@@ -54,7 +55,7 @@ public class XiaoyaLocalIndex {
             log("操作失败: " + e.getMessage());
         }
 
-        return saveDir;
+        return lines;
     }
 
     /**

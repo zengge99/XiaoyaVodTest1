@@ -597,6 +597,9 @@ public class AList extends Spider {
             }
 
             for (String line : lines) {
+                if (line.startsWith("./")) {
+                    line = line.substring(2);
+                }
                 String[] splits = line.split("#");
                 if (!splits[0].contains("/"))
                     continue;

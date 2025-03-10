@@ -11,6 +11,7 @@ import com.github.catvod.bean.DoubanParser;
 import com.github.catvod.bean.Sub;
 import com.github.catvod.bean.Vod;
 import com.github.catvod.bean.alist.Drive;
+import com.github.catvod.bean.alist.XiaoyaLocalIndex;
 import com.github.catvod.bean.alist.Item;
 import com.github.catvod.bean.alist.Sorter;
 import com.github.catvod.bean.alist.VodSorter;
@@ -131,6 +132,7 @@ public class AList extends Spider {
         try {
             ext = extend;
             fetchRule();
+            XiaoyaLocalIndex.downlodadAndUnzip();
         } catch (Exception ignored) {
         }
     }

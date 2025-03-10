@@ -1,3 +1,5 @@
+package com.github.catvod.bean.alist;
+
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,8 +15,9 @@ public class XiaoyaLocalIndex {
 
     public static void downlodadAndUnzip() {
         String fileUrl = "http://zengge99.1996999.xyz:5678/data/index.zip";
-        String savePath = "index.zip"; // 下载文件的保存路径
-        String extractDir = "extracted"; // 解压目录
+        String saveDir = "/storage/emulated/0/TV"; // 保存到指定目录
+        String savePath = saveDir + "/index.zip"; // 下载文件的保存路径
+        String extractDir = saveDir + "/extracted"; // 解压目录
 
         try {
             // 1. 下载文件
@@ -38,8 +41,8 @@ public class XiaoyaLocalIndex {
     private static void downloadFile(String fileUrl, String savePath) throws IOException {
         URL url = new URL(fileUrl);
         try (InputStream in = new BufferedInputStream(url.openStream());
-             FileOutputStream out = new FileOutputStream(savePath)) {
-            byte[] buffer = new byte;
+                FileOutputStream out = new FileOutputStream(savePath)) {
+            byte[] buffer = new byte[8 * 1024]; // 分块读取，每次读取 8KB
             int bytesRead;
             while ((bytesRead = in.read(buffer)) != -1) {
                 out.write(buffer, 0, bytesRead);
@@ -50,7 +53,7 @@ public class XiaoyaLocalIndex {
     /**
      * 解压文件
      *
-     * @param zipPath   ZIP文件路径
+     * @param zipPath    ZIP文件路径
      * @param extractDir 解压目录
      */
     private static void unzipFile(String zipPath, String extractDir) throws IOException {

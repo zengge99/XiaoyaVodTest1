@@ -26,7 +26,7 @@ public class XiaoyaLocalIndex {
         }
 
         try {
-            saveDir = "/storage/emulated/0/TV/index/" + server.split("//")[1];
+            saveDir = "/storage/emulated/0/TV/index/" + server.split("//")[1].replace(":", "_port");
 
             // 0. 清空目录
             deleteFiles(saveDir, null); // 删除 saveDir 中的所有文件

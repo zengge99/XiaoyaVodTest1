@@ -23,6 +23,8 @@ public class XiaoyaLocalIndex {
         String outputFile = saveDir + "/index.video.txt"; // 合并后的文件路径
 
         try {
+            deleteAllFiles(saveDir);
+
             // 0. 确保目录存在
             createDirectoryIfNotExists(saveDir);
             createDirectoryIfNotExists(extractDir);
@@ -45,8 +47,8 @@ public class XiaoyaLocalIndex {
             mergeFiles(extractDir, outputFile);
             System.out.println("文件合并完成，保存为: " + outputFile);
 
-            // 5. 删除解压目录中的所有文件（排除 index.video.txt）
-            deleteAllFilesExcept(extractDir, "index.video.txt");
+            // 5. 删除解压目录中的所有文件
+            deleteAllFiles(extractDir);
             System.out.println("解压目录中的其他文件已删除");
 
         } catch (IOException e) {
@@ -159,14 +161,12 @@ public class XiaoyaLocalIndex {
      * @param extractDir  解压目录
      * @param excludeFile 需要排除的文件名
      */
-    private static void deleteAllFilesExcept(String extractDir, String excludeFile) throws IOException {
+    private static void deleteAllFiles(String extractDir) throws IOException {
         Path dirPath = Paths.get(extractDir);
         try (var stream = Files.newDirectoryStream(dirPath)) {
             for (Path file : stream) {
-                if (Files.isRegularFile(file) && !file.getFileName().toString().equals(excludeFile)) {
-                    Files.delete(file);
-                    System.out.println("已删除文件: " + file);
-                }
+                Files.delete(file);
+                System.out.println("已删除文件: " + file);
             }
         }
     }

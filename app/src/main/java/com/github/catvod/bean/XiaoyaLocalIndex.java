@@ -12,7 +12,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 public class XiaoyaLocalIndex {
 
     public static void downlodadAndUnzip() {
-        String fileUrl = "http://zengge99.1996999.xyz:5678/data";
+        String fileUrl = "http://zengge99.1996999.xyz:5678/tvbox/data";
         String saveDir = "/storage/emulated/0/TV/index"; // 保存到指定目录
 
         try {
@@ -33,7 +33,7 @@ public class XiaoyaLocalIndex {
 
             // 4. 删除指定文件
             deleteFilesExclude(saveDir, "index.video.txt", "index.115.txt");
-            deleteFiles(saveDir, "*.zip");
+            deleteFiles(saveDir, "*.tgz");
 
         } catch (IOException e) {
             log("操作失败: " + e.getMessage());

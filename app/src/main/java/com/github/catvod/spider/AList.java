@@ -132,7 +132,6 @@ public class AList extends Spider {
         try {
             ext = extend;
             fetchRule();
-            XiaoyaLocalIndex.downlodadAndUnzip(drives.get(0).getServer());
         } catch (Exception ignored) {
         }
     }
@@ -588,9 +587,12 @@ public class AList extends Spider {
                     lines.add(a.text());
                 }
             } else {
-                doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword)));
-                for (Element a : doc.select("ul > a")) {
-                    lines.add(a.text());
+                lines = XiaoyaLocalIndex.downlodadAndUnzip(drive.getServer());
+                if (lines.size() == 0) {
+                    doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword)));
+                    for (Element a : doc.select("ul > a")) {
+                        lines.add(a.text());
+                    }
                 }
             }
 

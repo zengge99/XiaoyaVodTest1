@@ -12,7 +12,6 @@ public class XiaoyaLocalIndex {
         String fileUrl = "http://zengge99.1996999.xyz:5678/data/index.zip";
         String saveDir = "/storage/emulated/0/TV/index"; // 保存到指定目录
         String savePath = saveDir + "/index.zip"; // 下载文件的保存路径
-        String extractDir = saveDir + "/extracted"; // 解压目录
         String outputFile = saveDir + "/index.video.txt"; // 合并后的文件路径
 
         try {
@@ -22,30 +21,19 @@ public class XiaoyaLocalIndex {
 
             // 1. 确保目录存在
             createDirectoryIfNotExists(saveDir);
-            createDirectoryIfNotExists(extractDir);
+            createDirectoryIfNotExists(saveDir);
 
             // 2. 下载文件
             downloadFile(fileUrl, savePath);
             log("文件下载完成: " + savePath);
 
             // 3. 解压文件
-            unzipFile(savePath, extractDir);
-            log("文件解压完成，解压到: " + extractDir);
+            unzipFile(savePath, saveDir);
 
             // 4. 删除指定文件
-            deleteFiles(extractDir, "index.docu.*.txt");
-            deleteFiles(extractDir, "index.music.txt");
-            deleteFiles(extractDir, "index.non.video.txt");
+            deleteFilesExclude(saveDir, "index.video.txt", "index.115.txt");
             deleteFiles(saveDir, "index.zip");
             log("指定文件已删除");
-
-            // 5. 合并剩余文件
-            mergeFiles(extractDir, outputFile);
-            log("文件合并完成，保存为: " + outputFile);
-
-            // 6. 删除解压目录中的所有文件
-            deleteFiles(extractDir, null); // 删除 extractDir 中的所有文件
-            log("解压目录中的其他文件已删除");
 
         } catch (IOException e) {
             log("操作失败: " + e.getMessage());
@@ -109,6 +97,54 @@ public class XiaoyaLocalIndex {
             }
         } catch (IOException e) {
             throw new IOException("解压文件失败: " + zipPath, e);
+        }
+    }
+
+    /**
+     * 删除目录中除了指定文件以外的所有文件
+     *
+     * @param dirPath      目录路径
+     * @param excludeFiles 需要排除的文件名（不删除这些文件）
+     */
+    private static void deleteFilesExclude(String dirPath, String... excludeFiles) throws IOException {
+        Path path = Paths.get(dirPath);
+
+        // 如果目录不存在，直接返回
+        if (!Files.exists(path)) {
+            log("目录不存在，无需删除: " + dirPath);
+            return;
+        }
+
+        // 如果路径不是目录，抛出异常
+        if (!Files.isDirectory(path)) {
+            throw new IOException("路径不是目录: " + dirPath);
+        }
+
+        try (var stream = Files.newDirectoryStream(path)) {
+            for (Path file : stream) {
+                // 检查是否需要排除该文件
+                boolean shouldExclude = false;
+                for (String excludeFile : excludeFiles) {
+                    if (file.getFileName().toString().equals(excludeFile)) {
+                        shouldExclude = true;
+                        break;
+                    }
+                }
+
+                if (!shouldExclude) {
+                    if (Files.isDirectory(file)) {
+                        // 如果是目录，递归删除
+                        deleteFilesExclude(file.toString(), excludeFiles);
+                        Files.delete(file); // 删除空目录
+                        log("已删除目录: " + file);
+                    } else {
+                        Files.delete(file);
+                        log("已删除文件: " + file);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new IOException("删除文件失败: " + dirPath, e);
         }
     }
 

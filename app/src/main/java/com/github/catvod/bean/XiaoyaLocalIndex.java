@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.URL;
 import java.nio.file.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -13,14 +14,16 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import com.github.catvod.bean.Vod;
 
 public class XiaoyaLocalIndex {
-    private static Map<String, String> cacheMap = new HashMap<>();
+    private static Map<String, List<String>> cacheMap = new HashMap<>();
 
-    public static String downlodadAndUnzip(String server) {
+    public static List<String> downlodadAndUnzip(String server) {
         String fileUrl = server + "/tvbox/data";
-        String saveDir = cacheMap.get(server);
+        String saveDir = "/storage/emulated/0/TV/index/" + server.split("//")[1];
 
-        if (saveDir != null)
-            return saveDir;
+        List<String> lines = cacheMap.get(server);
+        if (lines != null) {
+            return lines;
+        }
 
         try {
             saveDir = "/storage/emulated/0/TV/index/" + server.split("//")[1];
@@ -43,7 +46,9 @@ public class XiaoyaLocalIndex {
             deleteFilesExclude(saveDir, "index.video.txt", "index.115.txt");
             deleteFiles(saveDir, "*.tgz");
 
-            cacheMap.put(server, saveDir);
+            lines = Files.readAllLines(Paths.get(filePath));
+
+            cacheMap.put(server, lines);
 
         } catch (IOException e) {
             log("操作失败: " + e.getMessage());

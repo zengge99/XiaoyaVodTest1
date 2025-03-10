@@ -13,13 +13,18 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import com.github.catvod.bean.Vod;
 
 public class XiaoyaLocalIndex {
-    private static Map<String, String> vodMap = new HashMap<>();
+    private static Map<String, String> cacheMap = new HashMap<>();
 
-    public static void downlodadAndUnzip(String server) {
+    public static String downlodadAndUnzip(String server) {
         String fileUrl = server + "/tvbox/data";
-        String saveDir = "/storage/emulated/0/TV/index/" + server.split("//")[1]; 
+        String saveDir = cacheMap.get(server);
+
+        if (saveDir != null)
+            return saveDir;
 
         try {
+            saveDir = "/storage/emulated/0/TV/index/" + server.split("//")[1];
+
             // 0. 清空目录
             deleteFiles(saveDir, null); // 删除 saveDir 中的所有文件
 
@@ -38,9 +43,13 @@ public class XiaoyaLocalIndex {
             deleteFilesExclude(saveDir, "index.video.txt", "index.115.txt");
             deleteFiles(saveDir, "*.tgz");
 
+            cacheMap.put(server, saveDir);
+
         } catch (IOException e) {
             log("操作失败: " + e.getMessage());
         }
+
+        return saveDir;
     }
 
     /**

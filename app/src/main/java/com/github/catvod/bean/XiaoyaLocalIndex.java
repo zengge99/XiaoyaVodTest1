@@ -20,9 +20,13 @@ public class XiaoyaLocalIndex {
         String saveDir = "/storage/emulated/0/TV/index"; // 保存到指定目录
         String savePath = saveDir + "/index.zip"; // 下载文件的保存路径
         String extractDir = saveDir + "/extracted"; // 解压目录
-        String outputFile = "/storage/emulated/0/TV/index.video.txt"; // 合并后的文件路径
+        String outputFile = saveDir + "/index.video.txt"; // 合并后的文件路径
 
         try {
+            // 0. 确保目录存在
+            createDirectoryIfNotExists(saveDir);
+            createDirectoryIfNotExists(extractDir);
+
             // 1. 下载文件
             downloadFile(fileUrl, savePath);
             System.out.println("文件下载完成: " + savePath);
@@ -47,6 +51,19 @@ public class XiaoyaLocalIndex {
 
         } catch (IOException e) {
             System.err.println("操作失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 确保目录存在，如果不存在则创建
+     *
+     * @param dirPath 目录路径
+     */
+    private static void createDirectoryIfNotExists(String dirPath) throws IOException {
+        Path path = Paths.get(dirPath);
+        if (!Files.exists(path)) {
+            Files.createDirectories(path);
+            System.out.println("目录已创建: " + dirPath);
         }
     }
 

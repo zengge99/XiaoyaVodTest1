@@ -3,17 +3,21 @@ package com.github.catvod.bean.alist;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import com.github.catvod.bean.Vod;
 
 public class XiaoyaLocalIndex {
+    private static Map<String, String> vodMap = new HashMap<>();
 
-    public static void downlodadAndUnzip() {
-        String fileUrl = "http://zengge99.1996999.xyz:5678/tvbox/data";
-        String saveDir = "/storage/emulated/0/TV/index"; // 保存到指定目录
+    public static void downlodadAndUnzip(String server) {
+        String fileUrl = server + "/tvbox/data";
+        String saveDir = "/storage/emulated/0/TV/index/" + server.split("//")[1]; 
 
         try {
             // 0. 清空目录

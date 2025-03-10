@@ -26,10 +26,20 @@ public class VodSorter {
     }
 
     public static List<Vod> sortVods(List<Vod> vods, HashMap<String, String> fl) {
+        List<Vod> filteredVods = vods;
+            
+        String subpath = fl.get("subpath");
+        if (subpath != null) {
+            Logger.log("subpath:" + subpath);
+            filteredVods = filteredVods.stream()
+                .filter(vod -> vod.getVodId().startsWith(subpath));
+                .collect(Collectors.toList());
+        }
+        
         // 解析豆瓣评分阈值（从 HashMap 获取）
         double doubanThreshold = parseDoubleSafe(fl.getOrDefault("douban", "0"));
         // 1. 过滤评分达标的视频
-        List<Vod> filteredVods = vods.stream()
+        filteredVods = filteredVods.stream()
             .filter(vod -> parseDoubleSafe(vod.doubanInfo.getRating()) >= doubanThreshold)
             .collect(Collectors.toList());
 

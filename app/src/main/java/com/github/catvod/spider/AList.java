@@ -581,13 +581,21 @@ public class AList extends Spider {
             List<Vod> noPicList = new ArrayList<>();
             String shortKeyword = keyword.length() < 30 ? keyword : keyword.substring(0, 30);
             Document doc;
+            List<String> lines = new List<String>();
             if (shortKeyword.startsWith("~daily:")) {
                 doc = Jsoup.parse(OkHttp.string(drive.dailySearchApi(shortKeyword.split(":")[1])));
+                for (Element a : doc.select("ul > a")) {
+                    lines.add(a.text());
+                }
             } else {
                 doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword)));
+                for (Element a : doc.select("ul > a")) {
+                    lines.add(a.text());
+                }
             }
-            for (Element a : doc.select("ul > a")) {
-                String[] splits = a.text().split("#");
+
+            for (String line : lines) {
+                String[] splits = line.split("#");
                 if (!splits[0].contains("/"))
                     continue;
                 int index = splits[0].lastIndexOf("/");

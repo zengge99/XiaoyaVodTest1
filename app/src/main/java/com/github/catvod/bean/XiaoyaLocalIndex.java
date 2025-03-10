@@ -5,6 +5,9 @@ import java.net.URL;
 import java.nio.file.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 
 public class XiaoyaLocalIndex {
 
@@ -74,29 +77,53 @@ public class XiaoyaLocalIndex {
     }
 
     /**
-     * 解压文件
+     * 解压文件（支持 ZIP 和 TGZ 格式）
      *
-     * @param zipPath    ZIP文件路径
+     * @param filePath   压缩文件路径
      * @param extractDir 解压目录
      */
-    private static void unzipFile(String zipPath, String extractDir) throws IOException {
+    private static void unzipFile(String filePath, String extractDir) throws IOException {
         createDirectoryIfNotExists(extractDir); // 确保解压目录存在
 
-        try (ZipFile zipFile = new ZipFile(zipPath)) {
-            var entries = zipFile.entries();
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                Path entryPath = Paths.get(extractDir, entry.getName());
-                if (entry.isDirectory()) {
-                    createDirectoryIfNotExists(entryPath.toString());
-                } else {
-                    try (InputStream is = zipFile.getInputStream(entry)) {
-                        Files.copy(is, entryPath);
+        if (filePath.toLowerCase().endsWith(".zip")) {
+            // 处理 ZIP 文件
+            try (ZipFile zipFile = new ZipFile(filePath)) {
+                var entries = zipFile.entries();
+                while (entries.hasMoreElements()) {
+                    ZipEntry entry = entries.nextElement();
+                    Path entryPath = Paths.get(extractDir, entry.getName());
+                    if (entry.isDirectory()) {
+                        createDirectoryIfNotExists(entryPath.toString());
+                    } else {
+                        try (InputStream is = zipFile.getInputStream(entry)) {
+                            Files.copy(is, entryPath);
+                        }
                     }
                 }
             }
-        } catch (IOException e) {
-            throw new IOException("解压文件失败: " + zipPath, e);
+        } else if (filePath.toLowerCase().endsWith(".tgz") || filePath.toLowerCase().endsWith(".tar.gz")) {
+            // 处理 TGZ 文件
+            try (InputStream fi = new FileInputStream(filePath);
+                    InputStream gi = new GzipCompressorInputStream(fi);
+                    TarArchiveInputStream ti = new TarArchiveInputStream(gi)) {
+                TarArchiveEntry entry;
+                while ((entry = ti.getNextTarEntry()) != null) {
+                    Path entryPath = Paths.get(extractDir, entry.getName());
+                    if (entry.isDirectory()) {
+                        createDirectoryIfNotExists(entryPath.toString());
+                    } else {
+                        try (OutputStream os = Files.newOutputStream(entryPath)) {
+                            byte[] buffer = new byte[8 * 1024]; // 分块读取，每次读取 8KB
+                            int bytesRead;
+                            while ((bytesRead = ti.read(buffer)) != -1) {
+                                os.write(buffer, 0, bytesRead);
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            throw new IOException("不支持的文件格式: " + filePath);
         }
     }
 

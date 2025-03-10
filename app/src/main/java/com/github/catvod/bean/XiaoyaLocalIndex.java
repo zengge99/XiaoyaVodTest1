@@ -17,7 +17,7 @@ public class XiaoyaLocalIndex {
 
         try {
             // 0. 清空目录
-            //deleteFiles(saveDir, null); // 删除 saveDir 中的所有文件
+            deleteFiles(saveDir, null); // 删除 saveDir 中的所有文件
             log("目录已清空: " + saveDir);
 
             // 1. 确保目录存在
@@ -36,6 +36,7 @@ public class XiaoyaLocalIndex {
             deleteFiles(extractDir, "index.docu.*.txt");
             deleteFiles(extractDir, "index.music.txt");
             deleteFiles(extractDir, "index.non.video.txt");
+            deleteFiles(saveDir, "index.zip");
             log("指定文件已删除");
 
             // 5. 合并剩余文件
@@ -73,7 +74,7 @@ public class XiaoyaLocalIndex {
     private static void downloadFile(String fileUrl, String savePath) throws IOException {
         URL url = new URL(fileUrl);
         try (InputStream in = new BufferedInputStream(url.openStream());
-             FileOutputStream out = new FileOutputStream(savePath)) {
+                FileOutputStream out = new FileOutputStream(savePath)) {
             byte[] buffer = new byte[8 * 1024]; // 分块读取，每次读取 8KB
             int bytesRead;
             while ((bytesRead = in.read(buffer)) != -1) {
@@ -119,10 +120,29 @@ public class XiaoyaLocalIndex {
      */
     private static void deleteFiles(String dirPath, String pattern) throws IOException {
         Path path = Paths.get(dirPath);
+
+        // 如果目录不存在，直接返回
+        if (!Files.exists(path)) {
+            log("目录不存在，无需删除: " + dirPath);
+            return;
+        }
+
+        // 如果路径不是目录，抛出异常
+        if (!Files.isDirectory(path)) {
+            throw new IOException("路径不是目录: " + dirPath);
+        }
+
         try (var stream = pattern == null ? Files.newDirectoryStream(path) : Files.newDirectoryStream(path, pattern)) {
             for (Path file : stream) {
-                Files.delete(file);
-                log("已删除文件: " + file);
+                if (Files.isDirectory(file)) {
+                    // 如果是目录，递归删除
+                    deleteFiles(file.toString(), null);
+                    Files.delete(file); // 删除空目录
+                    log("已删除目录: " + file);
+                } else {
+                    Files.delete(file);
+                    log("已删除文件: " + file);
+                }
             }
         } catch (IOException e) {
             throw new IOException("删除文件失败: " + dirPath, e);

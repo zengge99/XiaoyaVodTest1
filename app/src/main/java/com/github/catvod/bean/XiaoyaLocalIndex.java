@@ -17,8 +17,6 @@ public class XiaoyaLocalIndex {
     private static Map<String, List<String>> cacheMap = new HashMap<>();
 
     public static List<String> downlodadAndUnzip(String server) {
-        String fileUrl = server + "/tvbox/data";
-        String saveDir = "/storage/emulated/0/TV/index/" + server.split("//")[1];
 
         List<String> lines = cacheMap.get(server);
         if (lines != null) {
@@ -26,7 +24,8 @@ public class XiaoyaLocalIndex {
         }
 
         try {
-            saveDir = "/storage/emulated/0/TV/index/" + server.split("//")[1].replace(":", "_port");
+            String fileUrl = server + "/tvbox/data";
+            String saveDir = "/storage/emulated/0/TV/index/" + server.split("//")[1].replace(":", "_port");
 
             // 0. 清空目录
             deleteFiles(saveDir, null); // 删除 saveDir 中的所有文件

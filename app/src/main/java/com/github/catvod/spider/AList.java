@@ -102,11 +102,10 @@ public class AList extends Spider {
         String ext1 = "{\"drives\":" + ext + "}";
         Drive drive = Drive.objectFrom(ext1);
         drives = drive.getDrives();
-        // vodPic = drive.getVodPic();
-        vodPic = "";
+        vodPic = drive.getVodPic();
 
         List<Drive> searcherDrivers = drives.stream().filter(d -> d.search()).collect(Collectors.toList());
-        if (searcherDrivers.size() > 0 ) {
+        if (searcherDrivers.size() > 0) {
             defaultDrive = searcherDrivers.get(0);
         }
     }
@@ -267,7 +266,7 @@ public class AList extends Spider {
         vod.setVodPlayUrl(url.toString());
         if (id.endsWith("~soulist") && vod.doubanInfo.getYear().isEmpty() && !vod.doubanInfo.getId().isEmpty()) {
             DoubanParser.getDoubanInfo(vod.doubanInfo.getId(), vod.doubanInfo);
-            vod.setVodContent(vod.doubanInfo.getPlot() + "\r\n\r\n文件路径: " + path);
+            vod.setVodContent(vod.doubanInfo.getPlot() + "\r\n\r\n文件路径: " + path.substring(path.indexOf("/") + 1));
             vod.setVodActor(vod.doubanInfo.getActors());
             vod.setVodDirector(vod.doubanInfo.getDirector());
             vod.setVodArea(vod.doubanInfo.getRegion());
@@ -306,7 +305,7 @@ public class AList extends Spider {
         vod.setVodPlayUrl(name + "$" + path);
         if (id.endsWith("~soufile") && vod.doubanInfo.getYear().isEmpty() && !vod.doubanInfo.getId().isEmpty()) {
             DoubanParser.getDoubanInfo(vod.doubanInfo.getId(), vod.doubanInfo);
-            vod.setVodContent(vod.doubanInfo.getPlot() + "\r\n\r\n文件路径: " + path);
+            vod.setVodContent(vod.doubanInfo.getPlot() + "\r\n\r\n文件路径: " + path.substring(path.indexOf("/") + 1));
             vod.setVodActor(vod.doubanInfo.getActors());
             vod.setVodDirector(vod.doubanInfo.getDirector());
             vod.setVodArea(vod.doubanInfo.getRegion());
@@ -379,7 +378,7 @@ public class AList extends Spider {
             for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
                 list.addAll(future.get());
         }
-        
+
         if (filter) {
             list = VodSorter.sortVods(list, extend);
         }

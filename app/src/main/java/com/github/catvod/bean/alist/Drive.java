@@ -68,6 +68,10 @@ public class Drive {
         return TextUtils.isEmpty(vodPic) ? Image.FOLDER : vodPic;
     }
 
+    public String getPlaylistPic() {
+        return Image.PLAYLIST;
+    }
+
     public String getName() {
         return TextUtils.isEmpty(name) ? "" : name;
     }

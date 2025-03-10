@@ -395,6 +395,8 @@ public class AList extends Spider {
         List<Item> folders = new ArrayList<>();
         List<Item> files = new ArrayList<>();
         List<Vod> list = new ArrayList<>();
+        String key = tid.contains("/") ? tid.substring(0, tid.indexOf("/")) : tid;
+        Drive drive = getDrive(key);
 
         for (Item item : getList(tid, true)) {
             if (item.isFolder())
@@ -412,6 +414,8 @@ public class AList extends Spider {
         if (files.size() > 0) {
             String remark = String.format("共 %d 集", files.size());
             playlistVod = new Vod(tid + "/~playlist", "播放列表", "", remark, false);
+            playlistVod.setVodPic(drive.getPlaylistPic());
+
             list.add(playlistVod);
         }
 

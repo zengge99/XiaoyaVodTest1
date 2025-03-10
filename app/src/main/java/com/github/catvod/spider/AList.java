@@ -608,9 +608,12 @@ public class AList extends Spider {
                 if (line.startsWith("./")) {
                     line = line.substring(2);
                 }
-                String[] splits = line.split("#");
-                if (!splits[0].contains("/"))
+                if (!line.startsWith(drive.getPath())) {
                     continue;
+                }
+                String[] splits = line.split("#");
+                //if (!splits[0].contains("/"))
+                    //continue;
                 int index = splits[0].lastIndexOf("/");
                 boolean file = Util.isMedia(splits[0]);
                 if (splits[0].endsWith("/")) {

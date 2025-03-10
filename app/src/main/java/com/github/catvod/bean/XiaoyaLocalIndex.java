@@ -20,6 +20,7 @@ public class XiaoyaLocalIndex {
         String saveDir = "/storage/emulated/0/TV/index"; // 保存到指定目录
         String savePath = saveDir + "/index.zip"; // 下载文件的保存路径
         String extractDir = saveDir + "/extracted"; // 解压目录
+        String outputFile = "/storage/emulated/0/TV/index.video.txt"; // 合并后的文件路径
 
         try {
             // 1. 下载文件

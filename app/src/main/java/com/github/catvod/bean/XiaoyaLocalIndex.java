@@ -33,7 +33,7 @@ public class XiaoyaLocalIndex {
 
             // 4. 删除指定文件
             deleteFilesExclude(saveDir, "index.video.txt", "index.115.txt");
-            deleteFiles(saveDir, "index.zip");
+            deleteFiles(saveDir, "*.zip");
 
         } catch (IOException e) {
             log("操作失败: " + e.getMessage());

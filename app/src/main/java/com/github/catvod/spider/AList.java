@@ -630,7 +630,7 @@ public class AList extends Spider {
                 item.setPath("/" + splits[0].substring(0, index));
                 item.doubanInfo.setName(splits.length >= 2 ? splits[1] : splits[0].substring(index + 1));
                 item.setName(splits[0].substring(index + 1));
-                if (item.getPath().startsWith(drive.getPath())) {
+                //if (item.getPath().startsWith(drive.getPath())) {
                     Vod vod = item.getVod(drive, vodPic);
                     vod.setVodRemarks(item.doubanInfo.getRating());
                     vod.setVodName(item.doubanInfo.getName());
@@ -646,7 +646,7 @@ public class AList extends Spider {
                         list.add(vod);
                     }
                     vodMap.put(vod.getVodId(), vod);
-                }
+                //}
             }
             list.addAll(noPicList);
             return list;

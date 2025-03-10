@@ -148,15 +148,14 @@ public class AList extends Spider {
             filters.put(item.getTypeId(), getFilter(item.getTypeId()));
 
         List<Vod> list = new ArrayList<>();
-        List<Job> jobs = new ArrayList<>();
-
         if (defaultDrive != null) {
+            List<Job> jobs = new ArrayList<>();
             ExecutorService executor = Executors.newCachedThreadPool();
             jobs.add(new Job(defaultDrive.check(), "~daily:1000"));
             for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
                 list.addAll(future.get());
         }
-        
+
         String result = Result.string(classes, list, filters);
         Logger.log(result);
         return result;

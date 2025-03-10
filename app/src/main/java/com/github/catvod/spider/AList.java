@@ -381,6 +381,11 @@ public class AList extends Spider {
         }
 
         if (filter) {
+            String subpath = extend.get("subpath");
+            if (subpath != null) {
+                subpath = drive.getName() + driver.getPath() + "/" + subpath;
+                extend.put("subpath", subpath);
+            }
             list = VodSorter.sortVods(list, extend);
         }
 

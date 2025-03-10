@@ -32,7 +32,7 @@ public class VodSorter {
         if (subpath != null) {
             Logger.log("subpath:" + subpath);
             filteredVods = filteredVods.stream()
-                .filter(vod -> vod.getVodId().startsWith(subpath));
+                .filter(vod -> vod.getVodId().startsWith(subpath))
                 .collect(Collectors.toList());
         }
         

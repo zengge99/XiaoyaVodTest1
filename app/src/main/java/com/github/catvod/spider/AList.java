@@ -608,7 +608,7 @@ public class AList extends Spider {
                 if (line.startsWith("./")) {
                     line = line.substring(2);
                 }
-                if (!line.startsWith(drive.getPath())) {
+                if (!("/" + line).startsWith(drive.getPath())) {
                     continue;
                 }
                 String[] splits = line.split("#");

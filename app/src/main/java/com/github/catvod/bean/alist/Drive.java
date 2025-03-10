@@ -156,9 +156,8 @@ public class Drive {
         return getHost() + "/sou?box=" + param + "&url=&type=video";
     }
 
-    public String dailySearchApi(int num) {
-        String param = String.format("%d", num);
-        return getHost() + "/sou?type=daily&filter=last&num=" + param;
+    public String dailySearchApi(String num) {
+        return getHost() + "/sou?type=daily&filter=last&num=" + num;
     }
 
     public Drive check() {

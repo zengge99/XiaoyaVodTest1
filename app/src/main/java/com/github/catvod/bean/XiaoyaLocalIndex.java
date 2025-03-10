@@ -12,31 +12,28 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 public class XiaoyaLocalIndex {
 
     public static void downlodadAndUnzip() {
-        String fileUrl = "http://zengge99.1996999.xyz:5678/data/index.zip";
+        String fileUrl = "http://zengge99.1996999.xyz:5678/data";
         String saveDir = "/storage/emulated/0/TV/index"; // 保存到指定目录
-        String savePath = saveDir + "/index.zip"; // 下载文件的保存路径
-        String outputFile = saveDir + "/index.video.txt"; // 合并后的文件路径
 
         try {
             // 0. 清空目录
             deleteFiles(saveDir, null); // 删除 saveDir 中的所有文件
-            log("目录已清空: " + saveDir);
 
             // 1. 确保目录存在
             createDirectoryIfNotExists(saveDir);
             createDirectoryIfNotExists(saveDir);
 
             // 2. 下载文件
-            downloadFile(fileUrl, savePath);
-            log("文件下载完成: " + savePath);
+            downloadFile(fileUrl + "/index.video.tgz", saveDir + "/index.video.tgz");
+            downloadFile(fileUrl + "/index.115.tgz", saveDir + "/index.115.tgz");
 
             // 3. 解压文件
-            unzipFile(savePath, saveDir);
+            unzipFile(saveDir + "/index.video.tgz", saveDir);
+            unzipFile(saveDir + "/index.115.tgz", saveDir);
 
             // 4. 删除指定文件
             deleteFilesExclude(saveDir, "index.video.txt", "index.115.txt");
             deleteFiles(saveDir, "index.zip");
-            log("指定文件已删除");
 
         } catch (IOException e) {
             log("操作失败: " + e.getMessage());

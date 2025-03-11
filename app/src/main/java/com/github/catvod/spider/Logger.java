@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import com.google.gson.Gson;
+import com.github.catvod.utils.Path;
 
 public class Logger {
     static boolean dbg = true;
@@ -35,7 +36,12 @@ public class Logger {
         } else {
             loggerMessage = callPrefix + (new Gson()).toJson(message);
         }
-        String filePath = "/storage/emulated/0/TV/log.txt";
+        //String filePath = "/storage/emulated/0/TV/log.txt";
+        String filePath = Path.root().getPath();
+        if (filePath == null) {
+            return;
+        }
+        filePath = filePath + "/TV/log.txt";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
             writer.write(loggerMessage);
             writer.newLine();

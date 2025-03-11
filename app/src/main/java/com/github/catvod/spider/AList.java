@@ -108,7 +108,7 @@ public class AList extends Spider {
         List<Drive> searcherDrivers = drives.stream().filter(d -> d.search()).collect(Collectors.toList());
         if (searcherDrivers.size() > 0) {
             defaultDrive = searcherDrivers.get(0);
-            //XiaoyaLocalIndex.downlodadAndUnzip(defaultDrive.getServer());
+            // XiaoyaLocalIndex.downlodadAndUnzip(defaultDrive.getServer());
         }
     }
 
@@ -159,10 +159,10 @@ public class AList extends Spider {
 
         Drive tmpDrive = defaultDrive;
         String result = Result.string(classes, list, filters);
-                Thread thread = new Thread(() -> {
+        Thread thread = new Thread(() -> {
             XiaoyaLocalIndex.downlodadAndUnzip(tmpDrive.getServer());
         });
-        thread.start(); 
+        thread.start();
 
         Logger.log(result);
         return result;
@@ -607,8 +607,10 @@ public class AList extends Spider {
                     lines.add(a.text());
             } else if (keyword.startsWith("~quick:")) {
                 lines = XiaoyaLocalIndex.downlodadAndUnzip(drive.getServer());
-                String tmpKeyword = shortKeyword;
-                lines = lines.stream().filter(i -> i.contains(tmpKeyword)).collect(Collectors.toList());
+                lines = XiaoyaLocalIndex.quickSearch(drive.getServer(), shortKeyword);
+                // String tmpKeyword = shortKeyword;
+                // lines = lines.stream().filter(i ->
+                // i.contains(tmpKeyword)).collect(Collectors.toList());
             } else {
                 lines = XiaoyaLocalIndex.downlodadAndUnzip(drive.getServer());
                 if (lines.size() == 0) {

@@ -75,7 +75,8 @@ public class XiaoyaLocalIndex {
 
     public static List<String> quickSearch(String server, String keyword) {
 
-        List<Integer> lineNumbers = invertedIndexMap.get(keyword);
+        downlodadAndUnzip(server);
+        List<Integer> lineNumbers = invertedIndexMap.get(server).get(keyword);
         List<String> lines = new ArrayList();
         for (Integer i : lineNumbers) {
             lines.add(cacheMap.get(server).get(i));

@@ -6,16 +6,25 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.github.catvod.net.OkHttp;
 
 public class DoubanParser {
 
+    public static Map<String, DoubanInfo> infoMap = new HashMap<>();
+
     public static DoubanInfo getDoubanInfo(String id, DoubanInfo info) {
         if (id == null || id.isEmpty()) {
             return info;
+        }
+
+        DoubanInfo storedInfo = infoMap.get(id);
+        if (storedInfo != null) {
+            return storedInfo;
         }
 
         try {
@@ -27,8 +36,7 @@ public class DoubanParser {
 
             // 解析年份
             Element yearElement = doc.selectFirst(".year");
-            String year = yearElement != null ? 
-                yearElement.text().replaceAll("[()]", "") : "";
+            String year = yearElement != null ? yearElement.text().replaceAll("[()]", "") : "";
 
             // 解析国家地区
             String region = parseRegion(doc.html());
@@ -43,23 +51,21 @@ public class DoubanParser {
 
             // 解析导演
             Element directorElement = doc.selectFirst("meta[property=video:director]");
-            String director = directorElement != null ? 
-                directorElement.attr("content") : "";
+            String director = directorElement != null ? directorElement.attr("content") : "";
 
             // 解析类型
             Element genreElement = doc.selectFirst("span.pl:containsOwn(类型:)");
-            Elements typeElements = genreElement != null ?
-                genreElement.parent().select("span[property=v:genre]") : new Elements();
+            Elements typeElements = genreElement != null ? genreElement.parent().select("span[property=v:genre]")
+                    : new Elements();
             List<String> typeList = new ArrayList<>();
             for (Element el : typeElements) {
                 typeList.add(el.text());
             }
             String type = String.join("/", typeList);
-            
+
             // 解析评分
             Element ratingElement = doc.selectFirst("strong.ll.rating_num[property=v:average]");
             String rating = ratingElement != null ? ratingElement.text().trim() : "";
-
 
             // 构建结果对象
             info.setPlot(plot);
@@ -69,7 +75,9 @@ public class DoubanParser {
             info.setDirector(director);
             info.setType(type);
             info.setRating(rating);
-            
+
+            infoMap.put(id, info);
+
             return info;
         } catch (Exception e) {
             return new DoubanInfo();

@@ -64,7 +64,7 @@ public class AList extends Spider {
         }
 
         List<Filter.Value> values = new ArrayList<>();
-        values.add(new Filter.Value("全部分类", "all"));
+        values.add(new Filter.Value("全部分类", "~all"));
         for (Item item : getList(tid, true)) {
             if (item.isFolder())
                 values.add(new Filter.Value(item.getName(), drive.getName() + drive.getPath() + "/" + item.getName()));
@@ -80,52 +80,6 @@ public class AList extends Spider {
                 new Filter.Value("7分以上", "7"),
                 new Filter.Value("6分以上", "6"),
                 new Filter.Value("5分以上", "5"))));
-
-        items.add(new Filter("doubansort", "豆瓣排序：", Arrays.asList(
-                new Filter.Value("原始顺序", "0"),
-                new Filter.Value("豆瓣评分\u2B07\uFE0F", "1"),
-                new Filter.Value("豆瓣评分\u2B06\uFE0F", "2"))));
-
-        items.add(new Filter("random", "随机显示：", Arrays.asList(
-                new Filter.Value("固定显示", "0"),
-                new Filter.Value("随机显示️", "9999999"),
-                new Filter.Value("随机200个️", "200"),
-                new Filter.Value("随机500个️", "500"))));
-
-        return items;
-    }
-
-    private List<Filter> getFilter1(String tid) {
-        List<Filter> items = new ArrayList<>();
-        Drive drive = getDrive(tid);
-
-        if (drive.noPoster()) {
-            items.add(new Filter("order", "排序：", Arrays.asList(
-                    new Filter.Value("默排序", "def_def"),
-                    new Filter.Value("名降序", "name_desc"),
-                    new Filter.Value("名升序", "name_asc"),
-                    new Filter.Value("时间降序", "date_desc"),
-                    new Filter.Value("时间升序", "date_asc"))));
-            return items;
-        }
-
-        List<Filter.Value> values = new ArrayList<>();
-        values.add(new Filter.Value("全部分类", "all"));
-        for (Item item : getList(tid, true)) {
-            if (item.isFolder())
-                values.add(new Filter.Value(item.getName(), drive.getName() + drive.getPath() + "/" + item.getName()));
-        }
-        if (values.size() > 0) {
-            items.add(new Filter("subpath", "分类", values));
-        }
-
-        items.add(new Filter("douban", "豆瓣评分：", Arrays.asList(
-                new Filter.Value("全部评分", "0"),
-                new Filter.Value("9分上", "9"),
-                new Filter.Value("8分上", "8"),
-                new Filter.Value("7分上", "7"),
-                new Filter.Value("6分上", "6"),
-                new Filter.Value("5分上", "5"))));
 
         items.add(new Filter("doubansort", "豆瓣排序：", Arrays.asList(
                 new Filter.Value("原始顺序", "0"),
@@ -441,15 +395,8 @@ public class AList extends Spider {
             list = VodSorter.sortVods(list, extend);
         }
 
-                List<Class> classes = new ArrayList<>();
-                LinkedHashMap<String, List<Filter>> filters = new LinkedHashMap<>();
-        for (Drive drive1 : drives)
-            if (!drive1.hidden())
-                classes.add(drive1.toType());
-        for (Class item : classes)
-            filters.put(item.getTypeId(), getFilter1(item.getTypeId()));
-
-        return Result.string(classes, list, filters);
+        Logger.log(Result.string(list));
+        return Result.get().vod(list).page().string();
     }
 
     private String alistCategoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)

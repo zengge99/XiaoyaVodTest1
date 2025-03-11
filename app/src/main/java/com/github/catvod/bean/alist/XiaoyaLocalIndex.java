@@ -1,6 +1,6 @@
 package com.github.catvod.bean.alist;
 
-import java.io.*;
+import java.io.*; 
 import java.net.URL;
 import java.nio.file.*;
 import java.util.ArrayList;

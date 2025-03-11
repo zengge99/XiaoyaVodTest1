@@ -41,7 +41,7 @@ public class Logger {
         if (filePath == null) {
             return;
         }
-        filePath = filePath + "/TV/log.txt";
+        filePath = filePath + "TV/log.txt";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
             writer.write(loggerMessage);
             writer.newLine();

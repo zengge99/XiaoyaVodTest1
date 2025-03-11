@@ -235,9 +235,17 @@ public class XiaoyaLocalIndex {
      */
     private static void mergeFiles(String extractDir, String outputFile) throws IOException {
         Path dirPath = Paths.get(extractDir);
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFile))) {
+        Path outputFilePath = Paths.get(outputFile);
+
+        try (BufferedWriter writer = Files.newBufferedWriter(outputFilePath)) {
             try (var stream = Files.newDirectoryStream(dirPath, "*.txt")) {
                 for (Path file : stream) {
+                    // 跳过 outputFile
+                    if (file.equals(outputFilePath)) {
+                        log("跳过文件: " + file);
+                        continue;
+                    }
+
                     try (BufferedReader reader = Files.newBufferedReader(file)) {
                         String line;
                         while ((line = reader.readLine()) != null) {

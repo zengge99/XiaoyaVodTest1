@@ -69,17 +69,40 @@ public class Init {
         get().handler.postDelayed(runnable, delay);
     }
 
-    public static void checkPermission() {
+     
+public static void checkPermission() {
         try {
             Activity activity = Init.getActivity();
-            if (activity == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
-            if (activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) return;
-            activity.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 9999);
+            if (activity == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                return;
+            }
+    
+            // 检查是否已经授予了读权限和写权限
+            boolean hasReadPermission = activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+            boolean hasWritePermission = activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    
+            // 如果已经授予了读权限和写权限，直接返回
+            if (hasReadPermission && hasWritePermission) {
+                return;
+            }
+    
+            // 申请读权限和写权限
+            List<String> permissionsToRequest = new ArrayList<>();
+            if (!hasReadPermission) {
+                permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+            }
+            if (!hasWritePermission) {
+                permissionsToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+    
+            if (!permissionsToRequest.isEmpty()) {
+                activity.requestPermissions(permissionsToRequest.toArray(new String), 9999);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
+ 
     public static Activity getActivity() throws Exception {
         Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
         Object activityThread = activityThreadClass.getMethod("currentActivityThread").invoke(null);

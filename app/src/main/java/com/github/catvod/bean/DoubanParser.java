@@ -6,7 +6,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -15,16 +14,9 @@ import com.github.catvod.net.OkHttp;
 
 public class DoubanParser {
 
-    public static Map<String, DoubanInfo> infoMap = new HashMap<>();
-
     public static DoubanInfo getDoubanInfo(String id, DoubanInfo info) {
         if (id == null || id.isEmpty()) {
             return info;
-        }
-
-        DoubanInfo storedInfo = infoMap.get(id);
-        if (storedInfo != null) {
-            //return storedInfo;
         }
 
         try {
@@ -75,8 +67,6 @@ public class DoubanParser {
             info.setDirector(director);
             info.setType(type);
             info.setRating(rating);
-
-            infoMap.put(id, info);
 
             return info;
         } catch (Exception e) {

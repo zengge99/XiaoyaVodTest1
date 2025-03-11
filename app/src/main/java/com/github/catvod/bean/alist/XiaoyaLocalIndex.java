@@ -47,8 +47,8 @@ public class XiaoyaLocalIndex {
             deleteFilesExclude(saveDir, "index.all.txt");
             deleteFiles(saveDir, "*.tgz");
 
-            // lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
-            lines = new LazyFileList(saveDir + "/index.all.txt");
+            lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
+            //lines = new LazyFileList(saveDir + "/index.all.txt");
 
             cacheMap.put(server, lines);
 

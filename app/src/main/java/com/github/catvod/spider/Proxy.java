@@ -16,11 +16,11 @@ public class Proxy extends Spider {
             case "ck":
                 return new Object[]{200, "text/plain; charset=utf-8", new ByteArrayInputStream("xiaoya_proxy_ok".getBytes("UTF-8"))};
             case "bili":
-                return Bili.proxy(params);
+                //return Bili.proxy(params);
             case "webdav":
-                return WebDAV.vod(params);
+                //return WebDAV.vod(params);
             case "local":
-                return Local.proxy(params);
+                //return Local.proxy(params);
             default:
                 return null;
         }

@@ -194,7 +194,11 @@ public class AList extends Spider {
         ExecutorService executor = Executors.newCachedThreadPool();
         for (Drive drive : drives) {
             if (drive.search()) {
-                jobs.add(new Job(drive.check(), "~search:" + keyword));
+                if (quick) {
+                    jobs.add(new Job(drive.check(), "~quick:" + keyword));
+                } else {
+                    jobs.add(new Job(drive.check(), "~search:" + keyword));
+                }
             }
         }
         for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
@@ -581,7 +585,7 @@ public class AList extends Spider {
             List<Vod> noPicList = new ArrayList<>();
             String shortKeyword = keyword;
             if (keyword.contains(":")) {
-                shortKeyword  = keyword.split(":")[1];
+                shortKeyword = keyword.split(":")[1];
             }
             shortKeyword = shortKeyword.length() < 30 ? shortKeyword : shortKeyword.substring(0, 30);
             Document doc;
@@ -595,6 +599,9 @@ public class AList extends Spider {
                 doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword)));
                 for (Element a : doc.select("ul > a"))
                     lines.add(a.text());
+            } else if (keyword.startsWith("~quick:")) {
+                lines = XiaoyaLocalIndex.downlodadAndUnzip(drive.getServer());
+                lines = lines.stream().filter(i -> i.contains(shortKeyword)).collect(Collectors.toList());
             } else {
                 lines = XiaoyaLocalIndex.downlodadAndUnzip(drive.getServer());
                 if (lines.size() == 0) {

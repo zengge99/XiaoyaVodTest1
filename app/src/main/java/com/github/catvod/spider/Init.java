@@ -69,7 +69,6 @@ public class Init {
         get().handler.postDelayed(runnable, delay);
     }
 
-     
     public static void checkPermission() {
         try {
             Activity activity = Init.getActivity();
@@ -96,7 +95,7 @@ public class Init {
             }
     
             if (!permissionsToRequest.isEmpty()) {
-                activity.requestPermissions(permissionsToRequest.toArray(new String), 9999);
+                activity.requestPermissions(permissionsToRequest.toArray(), 9999);
             }
         } catch (Exception e) {
             e.printStackTrace();

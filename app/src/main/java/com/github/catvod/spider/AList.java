@@ -106,8 +106,6 @@ public class AList extends Spider {
         }
 
         String url = defaultDrive.getServer() + "/tvbox/libs/alist.min.js";
-
-         
         String regex = "'Authorization': '([^']*)'";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(OkHttp.string(url));

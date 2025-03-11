@@ -448,7 +448,7 @@ public class AList extends Spider {
         for (Class item : classes)
             filters.put(item.getTypeId(), getFilter1(item.getTypeId()));
 
-        return Result.string(classes, list, filters)
+        return Result.string(classes, list, filters);
 
         Logger.log(Result.string(list));
         return Result.get().vod(list).page().string();

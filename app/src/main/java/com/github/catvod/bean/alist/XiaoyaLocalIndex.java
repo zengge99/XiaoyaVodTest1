@@ -13,7 +13,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import com.github.catvod.bean.Vod;
-import com.github.catvod.utils.Path;
 
 public class XiaoyaLocalIndex {
     private static Map<String, List<String>> cacheMap = new HashMap<>();
@@ -28,7 +27,7 @@ public class XiaoyaLocalIndex {
 
         try {
             String fileUrl = server + "/tvbox/data";
-            String saveDir = Path.root().getPath() + "TV/index/" + server.split("//")[1].replace(":", "_port");
+            String saveDir = com.github.catvod.utils.Path.root().getPath() + "TV/index/" + server.split("//")[1].replace(":", "_port");
 
             // 0. 清空目录
             deleteFiles(saveDir, null); // 删除 saveDir 中的所有文件

@@ -77,7 +77,11 @@ public class Drive {
     }
 
     public String getServer() {
-        return TextUtils.isEmpty(server) ? "" : server;
+        String server = TextUtils.isEmpty(server) ? "" : server;
+        if (server.endsWith("/")) {
+            server = server.substring(0, server.lastIndexOf("/"));
+        }
+        return server;
     }
 
     public int getVersion() {

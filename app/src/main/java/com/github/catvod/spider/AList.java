@@ -106,7 +106,8 @@ public class AList extends Spider {
         }
 
         String url = defaultDrive.getServer() + "/tvbox/libs/alist.min.js";
-        String regex = "'Authorization': '([^']*)'";
+
+        String regex = "'Authorization': '([A-Za-z0-9]+)'";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(OkHttp.string(url));
 
@@ -625,7 +626,7 @@ public class AList extends Spider {
             }
             shortKeyword = shortKeyword.length() < 30 ? shortKeyword : shortKeyword.substring(0, 30);
             Document doc;
-            List<String> lines = new ArrayList();
+            List<String> lines = new ArrayList<>();
             if (keyword.startsWith("~daily:")) {
                 doc = Jsoup.parse(OkHttp.string(drive.dailySearchApi(shortKeyword)));
                 for (Element a : doc.select("ul > a")) {

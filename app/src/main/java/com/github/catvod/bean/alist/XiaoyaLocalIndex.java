@@ -41,12 +41,13 @@ public class XiaoyaLocalIndex {
             unzipFile(saveDir + "/index.video.tgz", saveDir);
             unzipFile(saveDir + "/index.115.tgz", saveDir);
 
+            mergeFiles(saveDir, saveDir + "/index.all.txt");
+
             // 4. 删除指定文件
-            deleteFilesExclude(saveDir, "index.video.txt", "index.115.txt");
+            deleteFilesExclude(saveDir, "index.all.txt");
             deleteFiles(saveDir, "*.tgz");
 
-            lines = Files.readAllLines(Paths.get(saveDir + "/index.video.txt"));
-            lines.addAll(Files.readAllLines(Paths.get(saveDir + "/index.115.txt")));
+            lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
 
             cacheMap.put(server, lines);
 

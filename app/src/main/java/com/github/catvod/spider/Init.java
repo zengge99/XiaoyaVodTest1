@@ -12,6 +12,7 @@ import android.os.Looper;
 import com.github.catvod.crawler.SpiderDebug;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -95,7 +96,7 @@ public class Init {
             }
     
             if (!permissionsToRequest.isEmpty()) {
-                activity.requestPermissions(permissionsToRequest.toArray(), 9999);
+                activity.requestPermissions(permissionsToRequest.toArray(new String [permissionsToRequest.size()]), 9999);
             }
         } catch (Exception e) {
             e.printStackTrace();

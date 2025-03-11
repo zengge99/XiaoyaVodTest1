@@ -29,7 +29,7 @@ public class VodSorter {
         List<Vod> filteredVods = vods;
             
         String subpath = fl.get("subpath");
-        if (subpath != null && !subpath.endsWiths("~all")) {
+        if (subpath != null && !subpath.endsWith("~all")) {
             Logger.log("subpath:" + subpath);
             filteredVods = filteredVods.stream()
                 .filter(vod -> vod.getVodId().startsWith(subpath))

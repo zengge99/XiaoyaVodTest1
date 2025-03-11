@@ -24,7 +24,7 @@ public class DoubanParser {
 
         DoubanInfo storedInfo = infoMap.get(id);
         if (storedInfo != null) {
-            return storedInfo;
+            //return storedInfo;
         }
 
         try {

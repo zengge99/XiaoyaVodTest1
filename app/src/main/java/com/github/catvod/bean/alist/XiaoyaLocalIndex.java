@@ -16,7 +16,7 @@ import com.github.catvod.bean.Vod;
 public class XiaoyaLocalIndex {
     private static Map<String, List<String>> cacheMap = new HashMap<>();
 
-    public static List<String> downlodadAndUnzip(String server) {
+    public static synchronized List<String> downlodadAndUnzip(String server) {
 
         List<String> lines = cacheMap.get(server);
         if (lines != null) {

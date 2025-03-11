@@ -157,7 +157,13 @@ public class AList extends Spider {
                 list.addAll(future.get());
         }
 
+        Drive tmpDrive = defaultDrive;
         String result = Result.string(classes, list, filters);
+                Thread thread = new Thread(() -> {
+            XiaoyaLocalIndex.downlodadAndUnzip(tmpDrive.getServer());
+        });
+        thread.start(); 
+
         Logger.log(result);
         return result;
     }

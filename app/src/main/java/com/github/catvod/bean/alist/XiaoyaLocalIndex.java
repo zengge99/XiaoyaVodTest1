@@ -78,9 +78,9 @@ public class XiaoyaLocalIndex {
         downlodadAndUnzip(server);
         List<Integer> lineNumbers = invertedIndexMap.get(server).get(keyword);
         if (lineNumbers == null) {
-            return new ArrayList();
+            return new ArrayList<>();
         }
-        List<String> lines = new ArrayList();
+        List<String> lines = new ArrayList<>();
         for (Integer i : lineNumbers) {
             lines.add(cacheMap.get(server).get(i));
         }

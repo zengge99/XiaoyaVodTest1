@@ -441,10 +441,11 @@ public class AList extends Spider {
             list = VodSorter.sortVods(list, extend);
         }
 
+                List<Class> classes = new ArrayList<>();
                 LinkedHashMap<String, List<Filter>> filters = new LinkedHashMap<>();
-        for (Drive drive : drives)
-            if (!drive.hidden())
-                classes.add(drive.toType());
+        for (Drive drive1 : drives)
+            if (!drive1.hidden())
+                classes.add(drive1.toType());
         for (Class item : classes)
             filters.put(item.getTypeId(), getFilter1(item.getTypeId()));
 

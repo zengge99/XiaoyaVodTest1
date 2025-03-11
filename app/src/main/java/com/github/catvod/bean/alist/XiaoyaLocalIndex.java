@@ -3,6 +3,7 @@ package com.github.catvod.bean.alist;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import com.github.catvod.bean.Vod;
 
 public class XiaoyaLocalIndex {
     private static Map<String, List<String>> cacheMap = new HashMap<>();
+    private static Map<String, Map<String, List<Integer>>> invertedIndexMap = new HashMap<>();
 
     public static synchronized List<String> downlodadAndUnzip(String server) {
 
@@ -48,14 +50,36 @@ public class XiaoyaLocalIndex {
             deleteFiles(saveDir, "*.tgz");
 
             lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
-            //lines = new LazyFileList(saveDir + "/index.all.txt");
+            // lines = new LazyFileList(saveDir + "/index.all.txt");
 
+            // 构建倒排索引，用于快速查找
+            Map<String, List<Integer>> invertedIndex = new HashMap<>();
+            for (int i = 0; i < lines.size(); i++) {
+                String[] words = lines.get(i).split("#");
+                if (words.length < 2) {
+                    continue;
+                }
+                String word = words[1];
+                invertedIndex.computeIfAbsent(word.toLowerCase(), k -> new ArrayList<>()).add(i);
+            }
+
+            invertedIndexMap.put(server, invertedIndex);
             cacheMap.put(server, lines);
 
         } catch (IOException e) {
             log("操作失败: " + e.getMessage());
         }
 
+        return lines;
+    }
+
+    public static List<String> quickSearch(String server, String keyword) {
+
+        List<Integer> lineNumbers = invertedIndexMap.get(keyword);
+        List<String> lines = new ArrayList();
+        for (Integer i : lineNumbers) {
+            lines.add(cacheMap.get(server).get(i));
+        }
         return lines;
     }
 

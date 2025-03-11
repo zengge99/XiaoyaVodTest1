@@ -70,7 +70,7 @@ public class Init {
     }
 
      
-public static void checkPermission() {
+    public static void checkPermission() {
         try {
             Activity activity = Init.getActivity();
             if (activity == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {

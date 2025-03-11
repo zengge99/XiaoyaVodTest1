@@ -38,6 +38,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -47,6 +49,7 @@ public class AList extends Spider {
     private Drive defaultDrive;
     private String vodPic;
     private String ext;
+    private String xiaoyaAlistToken;
     private Map<String, Vod> vodMap = new HashMap<>();
 
     private List<Filter> getFilter(String tid) {
@@ -95,6 +98,30 @@ public class AList extends Spider {
         return items;
     }
 
+    // 临时方案
+    private String getXiaoyaAlistToken() {
+
+        if (xiaoyaAlistToken != null) {
+            return xiaoyaAlistToken;
+        }
+
+        String url = defaultDrive.getServer() + "/tvbox/libs/alist.min.js";
+
+        String regex = "'Authorization': '([A-Za-z0-9]+)'";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(OkHttp.string(url));
+
+        // 查找并提取目标部分
+        if (matcher.find()) {
+            String token = matcher.group(1); // 获取捕获组的内容
+            xiaoyaAlistToken = token;
+        } else {
+            xiaoyaAlistToken = "";
+        }
+        Logger.log("token:" + xiaoyaAlistToken);
+        return xiaoyaAlistToken;
+    }
+
     private void fetchRule() {
         if (drives != null && !drives.isEmpty())
             return;
@@ -109,6 +136,10 @@ public class AList extends Spider {
         if (searcherDrivers.size() > 0) {
             defaultDrive = searcherDrivers.get(0);
             // XiaoyaLocalIndex.downlodadAndUnzip(defaultDrive.getServer());
+        }
+
+        for (Drive drive2 : searcherDrivers) {
+            drive2.setToken(getXiaoyaAlistToken());
         }
     }
 

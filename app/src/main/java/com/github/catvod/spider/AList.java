@@ -67,7 +67,7 @@ public class AList extends Spider {
         values.add(new Filter.Value("全部分类", "all"));
         for (Item item : getList(tid, true)) {
             if (item.isFolder())
-                values.add(new Filter.Value(item.getName(), item.getName()));
+                values.add(new Filter.Value(item.getName(), drive.getName() + drive.getPath() + "/" + item.getName()));
         }
         if (values.size() > 0) {
             items.add(new Filter("subpath", "分类", values));
@@ -382,11 +382,6 @@ public class AList extends Spider {
         }
 
         if (filter) {
-            String subpath = extend.get("subpath");
-            if (subpath != null) {
-                subpath = drive.getName() + drive.getPath() + "/" + subpath;
-                extend.put("subpath", subpath);
-            }
             list = VodSorter.sortVods(list, extend);
         }
 
@@ -594,13 +589,13 @@ public class AList extends Spider {
                 }
             } else if (shortKeyword.startsWith("~search:")) {
                 doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword.split(":")[1])));
-                for (Element a : doc.select("ul > a")) 
+                for (Element a : doc.select("ul > a"))
                     lines.add(a.text());
             } else {
                 lines = XiaoyaLocalIndex.downlodadAndUnzip(drive.getServer());
                 if (lines.size() == 0) {
                     doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword)));
-                    for (Element a : doc.select("ul > a")) 
+                    for (Element a : doc.select("ul > a"))
                         lines.add(a.text());
                 }
             }
@@ -631,23 +626,23 @@ public class AList extends Spider {
                 item.setPath("/" + splits[0].substring(0, index));
                 item.doubanInfo.setName(splits.length >= 2 ? splits[1] : splits[0].substring(index + 1));
                 item.setName(splits[0].substring(index + 1));
-                //if (item.getPath().startsWith(drive.getPath())) {
-                    Vod vod = item.getVod(drive, vodPic);
-                    vod.setVodRemarks(item.doubanInfo.getRating());
-                    vod.setVodName(item.doubanInfo.getName());
-                    vod.doubanInfo = item.doubanInfo;
-                    if (!file) {
-                        vod.setVodId(vod.getVodId() + "/~soulist");
-                    } else {
-                        vod.setVodId(vod.getVodId() + "/~soufile");
-                    }
-                    if (TextUtils.isEmpty(item.getThumb())) {
-                        noPicList.add(vod);
-                    } else {
-                        list.add(vod);
-                    }
-                    vodMap.put(vod.getVodId(), vod);
-                //}
+                // if (item.getPath().startsWith(drive.getPath())) {
+                Vod vod = item.getVod(drive, vodPic);
+                vod.setVodRemarks(item.doubanInfo.getRating());
+                vod.setVodName(item.doubanInfo.getName());
+                vod.doubanInfo = item.doubanInfo;
+                if (!file) {
+                    vod.setVodId(vod.getVodId() + "/~soulist");
+                } else {
+                    vod.setVodId(vod.getVodId() + "/~soufile");
+                }
+                if (TextUtils.isEmpty(item.getThumb())) {
+                    noPicList.add(vod);
+                } else {
+                    list.add(vod);
+                }
+                vodMap.put(vod.getVodId(), vod);
+                // }
             }
             list.addAll(noPicList);
             return list;

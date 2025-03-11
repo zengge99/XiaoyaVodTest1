@@ -601,7 +601,8 @@ public class AList extends Spider {
                     lines.add(a.text());
             } else if (keyword.startsWith("~quick:")) {
                 lines = XiaoyaLocalIndex.downlodadAndUnzip(drive.getServer());
-                lines = lines.stream().filter(i -> i.contains(shortKeyword)).collect(Collectors.toList());
+                String tmpKeyword = shortKeyword;
+                lines = lines.stream().filter(i -> i.contains(tmpKeyword)).collect(Collectors.toList());
             } else {
                 lines = XiaoyaLocalIndex.downlodadAndUnzip(drive.getServer());
                 if (lines.size() == 0) {

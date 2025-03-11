@@ -450,9 +450,6 @@ public class AList extends Spider {
             filters.put(item.getTypeId(), getFilter1(item.getTypeId()));
 
         return Result.string(classes, list, filters);
-
-        Logger.log(Result.string(list));
-        return Result.get().vod(list).page().string();
     }
 
     private String alistCategoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)

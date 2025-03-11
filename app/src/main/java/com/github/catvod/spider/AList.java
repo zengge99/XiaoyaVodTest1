@@ -253,7 +253,7 @@ public class AList extends Spider {
             String keyword = path.substring(path.indexOf("/") + 1);
             List<Job> jobs = new ArrayList<>();
             ExecutorService executor = Executors.newCachedThreadPool();
-            jobs.add(new Job(drive.check(), keyword));
+            jobs.add(new Job(drive.check(), "~search:" + keyword));
             for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
                 future.get();
             vod = vodMap.get(id);
@@ -579,16 +579,20 @@ public class AList extends Spider {
         private List<Vod> xiaoya() {
             List<Vod> list = new ArrayList<>();
             List<Vod> noPicList = new ArrayList<>();
-            String shortKeyword = keyword.length() < 30 ? keyword : keyword.substring(0, 30);
+            String shortKeyword = keyword;
+            if (keyword.contains(":")) {
+                shortKeyword  = keyword.split(":")[1];
+            }
+            shortKeyword = shortKeyword.length() < 30 ? shortKeyword : shortKeyword.substring(0, 30);
             Document doc;
             List<String> lines = new ArrayList();
-            if (shortKeyword.startsWith("~daily:")) {
-                doc = Jsoup.parse(OkHttp.string(drive.dailySearchApi(shortKeyword.split(":")[1])));
+            if (keyword.startsWith("~daily:")) {
+                doc = Jsoup.parse(OkHttp.string(drive.dailySearchApi(shortKeyword)));
                 for (Element a : doc.select("ul > a")) {
                     lines.add(a.text());
                 }
-            } else if (shortKeyword.startsWith("~search:")) {
-                doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword.split(":")[1])));
+            } else if (keyword.startsWith("~search:")) {
+                doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword)));
                 for (Element a : doc.select("ul > a"))
                     lines.add(a.text());
             } else {

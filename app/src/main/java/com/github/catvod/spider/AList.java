@@ -121,11 +121,11 @@ public class AList extends Spider {
 
         items.add(new Filter("douban", "豆瓣评分：", Arrays.asList(
                 new Filter.Value("全部评分", "0"),
-                new Filter.Value("9分以上", "9"),
-                new Filter.Value("8分以上", "8"),
-                new Filter.Value("7分以上", "7"),
-                new Filter.Value("6分以上", "6"),
-                new Filter.Value("5分以上", "5"))));
+                new Filter.Value("9分上", "9"),
+                new Filter.Value("8分上", "8"),
+                new Filter.Value("7分上", "7"),
+                new Filter.Value("6分上", "6"),
+                new Filter.Value("5分上", "5"))));
 
         items.add(new Filter("doubansort", "豆瓣排序：", Arrays.asList(
                 new Filter.Value("原始顺序", "0"),

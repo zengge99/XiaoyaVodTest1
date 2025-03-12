@@ -28,7 +28,7 @@ public class LazyFileList extends AbstractList<String> {
             }
             // 如果请求的行号小于当前行号，需要重置读取器
             if (index < currentIndex) {
-                reader.close();
+                //reader.close();
                 reader = new BufferedReader(new FileReader(filePath));
                 currentIndex = -1;
             }
@@ -93,6 +93,7 @@ public class LazyFileList extends AbstractList<String> {
         }
     }
 
+    /*
     @Override
     protected void finalize() throws Throwable {
         if (reader != null) {
@@ -100,4 +101,5 @@ public class LazyFileList extends AbstractList<String> {
         }
         super.finalize();
     }
+    */
 }

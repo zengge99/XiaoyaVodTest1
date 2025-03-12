@@ -501,7 +501,7 @@ public class XiaoyaProxyHandler {
             case "gen":
                 return genProxy(params);
             case "login":
-                LoginDlg.showLoginDlg(AList.appContext);
+                LoginDlg.showLoginDlg();
                 return new Object[]{200, "text/plain; charset=utf-8", new ByteArrayInputStream("ok".getBytes("UTF-8"))};
             default:
                 return Proxy.proxy(params);

@@ -520,9 +520,7 @@ public class AList extends Spider {
             String path = id.contains("/") ? id.substring(id.indexOf("/")) : "";
             Drive drive = getDrive(key);
             path = path.startsWith(drive.getPath()) ? path : drive.getPath() + path;
-            JSONObject params = new JSONObject();
-            params.put("path", path);
-            params.put("password", drive.findPass(path));
+            JSONObject params = drive.getParamByPath(path);
             String response = post(drive, drive.getApi(), params.toString());
             return Item.objectFrom(getDetailJson(drive.isNew(), response));
         } catch (Exception e) {
@@ -536,9 +534,7 @@ public class AList extends Spider {
             String path = id.contains("/") ? id.substring(id.indexOf("/")) : "";
             Drive drive = getDrive(key);
             path = path.startsWith(drive.getPath()) ? path : drive.getPath() + path;
-            JSONObject params = new JSONObject();
-            params.put("path", path);
-            params.put("password", drive.findPass(path));
+            JSONObject params = drive.getParamByPath(path);
             String response = post(drive, drive.listApi(), params.toString());
             List<Item> items = Item.arrayFrom(getListJson(drive.isNew(), response));
             Iterator<Item> iterator = items.iterator();
@@ -611,9 +607,6 @@ public class AList extends Spider {
 
         @Override
         public List<Vod> call() {
-            // List<Vod> alist = alist();
-            // return alist.size() > 0 ? alist : xiaoya();
-            // 魔改：只有小雅才支持搜索
             return xiaoya();
         }
 
@@ -697,20 +690,6 @@ public class AList extends Spider {
             }
             list.addAll(noPicList);
             return list;
-        }
-
-        private List<Vod> alist() {
-            try {
-                List<Vod> list = new ArrayList<>();
-                String response = post(drive, drive.searchApi(), drive.params(keyword));
-                List<Item> items = Item.arrayFrom(getSearchJson(drive.isNew(), response));
-                for (Item item : items)
-                    if (!item.ignore(drive.isNew()))
-                        list.add(item.getVod(drive, vodPic));
-                return list;
-            } catch (Exception e) {
-                return Collections.emptyList();
-            }
         }
     }
 }

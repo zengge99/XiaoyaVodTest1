@@ -43,11 +43,13 @@ public class LoginDlg {
                             .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
+                                    Logger.log("onClick1:" + userInput);
                                     synchronized (lock) {
                                         userInput = input.getText().toString();
                                         Logger.log("userInput:" + userInput);
                                         lock.notifyAll(); // 唤醒阻塞的线程
                                     }
+                                    Logger.log("onClick2:" + userInput);
                                 }
                             })
                             .setNegativeButton("取消", new DialogInterface.OnClickListener() {

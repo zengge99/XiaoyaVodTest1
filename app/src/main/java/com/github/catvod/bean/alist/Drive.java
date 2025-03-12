@@ -64,8 +64,12 @@ public class Drive {
             List<String> keys = new ArrayList<>(params.keySet());
             keys.sort(Comparator.comparingInt(String::length).reversed());
             for (String key : keys) {
-                if (path.startsWith(key) && (params.get(key) instanceof JSONObject)) {
-                    return params.get(key);
+                if (!path.startsWith(key)) {
+                    continue;
+                }
+                Object param = params.get(key);
+                if (param instanceof JSONObject) {
+                    return (JSONObject) param;
                 }
             }
         }

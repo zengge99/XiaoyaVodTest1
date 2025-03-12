@@ -21,6 +21,7 @@ public class LoginDlg {
      * @return 用户输入的内容（如果用户取消输入，返回空字符串）
      */
     public static String showLoginDlg(String hint) {
+        userInput = "";
         synchronized (lock) {
             try {
                 Activity activity = Init.getActivity();

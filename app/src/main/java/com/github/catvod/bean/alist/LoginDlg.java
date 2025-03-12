@@ -23,6 +23,10 @@ public class LoginDlg {
         LoginDlg.isBusy = isBusy;
     }
 
+    public static getUserInput() {
+        return LoginDlg.userInput;
+    }
+
     public static String showLoginDlg(String hint) {
         try {
             Activity activity = Init.getActivity();

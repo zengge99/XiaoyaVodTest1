@@ -28,22 +28,21 @@ public class LazyFileList extends AbstractList<String> {
             }
             // 如果请求的行号小于当前行号，需要重置读取器
             if (index < currentIndex) {
-                //reader.close();
+                reader.close();
                 reader = new BufferedReader(new FileReader(filePath));
                 currentIndex = -1;
             }
             // 从当前行号继续读取，直到目标行
+            String line;
             while (currentIndex < index) {
-                String line = reader.readLine();
+                line = reader.readLine();
                 if (line == null) {
                     throw new IndexOutOfBoundsException("文件行数不足: " + index);
                 }
                 currentIndex++;
             }
-            return reader.readLine(); // 返回目标行的内容
+            return line; // 返回目标行的内容
         } catch (IOException e) {
-            Logger.log("get发生错误");
-            Logger.log(e);
             throw new RuntimeException("读取文件失败: " + filePath, e);
         }
     }
@@ -93,7 +92,6 @@ public class LazyFileList extends AbstractList<String> {
         }
     }
 
-    /*
     @Override
     protected void finalize() throws Throwable {
         if (reader != null) {
@@ -101,5 +99,4 @@ public class LazyFileList extends AbstractList<String> {
         }
         super.finalize();
     }
-    */
 }

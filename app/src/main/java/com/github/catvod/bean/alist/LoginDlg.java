@@ -1,21 +1,21 @@
 package com.github.catvod.bean.alist;
 
-import android.app.Activity;
+import com.github.catvod.debug.MainActivity;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.lang.ref.WeakReference;
-
 public class LoginDlg {
 
     public static void showLoginDlg(Context context) {
-        if (context instanceof Activity) {
-            WeakReference<Activity> activityRef = new WeakReference<>((Activity) context);
-            Activity activity = activityRef.get();
-            if (activity != null && !activity.isFinishing() && !activity.isDestroyed()) {
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        // 使用 Handler 切换到主线程
+        handler.post(() -> {
+            if (!isFinishing() && !isDestroyed()) {
                 // 创建一个 EditText 用于用户输入
                 final EditText input = new EditText(context);
                 input.setHint("请输入内容");
@@ -50,8 +50,7 @@ public class LoginDlg {
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }
-        } else {
-            throw new IllegalArgumentException("Context must be an Activity");
-        }
+        });
+
     }
 }

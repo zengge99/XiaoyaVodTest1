@@ -23,7 +23,7 @@ public class Drive {
     @SerializedName("drives")
     private List<Drive> drives;
     @SerializedName("params")
-    private List<JSONObject> params;
+    private JSONObject params;
     @SerializedName("login")
     private Login login;
     @SerializedName("vodPic")
@@ -64,8 +64,8 @@ public class Drive {
             List<String> keys = new ArrayList<>(params.keySet());
             keys.sort(Comparator.comparingInt(String::length).reversed());
             for (String key : keys) {
-                if (path.startsWith(key) && (json.get(key) instanceof JSONObject)) {
-                    return json.get(key);
+                if (path.startsWith(key) && (params.get(key) instanceof JSONObject)) {
+                    return params.get(key);
                 }
             }
         }

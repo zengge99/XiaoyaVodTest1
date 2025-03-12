@@ -164,7 +164,9 @@ public class Drive {
         if (token.isEmpty())
             return;
         
-        String tokenPath = Path.cache() + "/" + getServer().replace(":", "_") + ".token";
+        String tokenPath = Path.root() + "/TV/" + getServer().replace(":", "_") + ".token";
+        File tokenFile = new File(tokenPath);
+        Path.write(tokenFile, token.getBytes());
     }
 
     public Boolean search() {

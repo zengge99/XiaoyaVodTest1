@@ -30,31 +30,7 @@ public class LazyFileList extends AbstractList<String> {
         }
         throw new IndexOutOfBoundsException("文件行数不足: " + index);
     }
-
-    /*
-    @Override
-    public String get(int index) {
-        try (RandomAccessFile file = new RandomAccessFile(filePath, "r")) {
-            long pointer = 0;
-            int currentLineNumber = 0;
-            while (currentLineNumber < index) {
-                file.seek(pointer);
-                String line = file.readLine();
-                if (line == null) {
-                    return null; // 目标行不存在
-                }
-                currentLineNumber++;
-                pointer = file.getFilePointer();
-            }
-            file.seek(pointer);
-            return file.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    */
-
+    
     @Override
     public Iterator<String> iterator() {
         try {

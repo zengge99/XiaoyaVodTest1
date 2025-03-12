@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.os.Handler;
+import android.os.Looper;
 
 public class LoginDlg {
 

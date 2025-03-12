@@ -5,34 +5,35 @@ import com.github.catvod.spider.Init;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.os.Handler;
-import android.os.Looper;
 import android.widget.EditText;
 import android.widget.Toast;
 
 public class LoginDlg {
 
-    private static volatile boolean isBusy = false;
-    private static String userInput = "";
+    private static final Object lock = new Object(); // 用于线程同步的锁
+    private static boolean isBusy = false; // 是否正在显示对话框
+    private static String userInput = ""; // 用户输入
 
-    public static boolean getIsBusy() {
-        return LoginDlg.isBusy;
-    }
+    /**
+     * 显示登录对话框，并阻塞后台线程直到对话框关闭
+     *
+     * @param hint 输入框的提示文本
+     * @return 用户输入的内容（如果用户取消输入，返回空字符串）
+     */
+    public static String showLoginDlg(String hint) {
+        synchronized (lock) {
+            try {
+                Activity activity = Init.getActivity();
+                if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
+                    return ""; // 如果 Activity 无效，直接返回
+                }
 
-    public static void setIsBusy(boolean isBusy) {
-        LoginDlg.isBusy = isBusy;
-    }
+                // 在主线程显示对话框
+                Init.run(() -> {
+                    synchronized (lock) {
+                        isBusy = true; // 标记为忙碌状态
+                    }
 
-    public static String getUserInput() {
-        return LoginDlg.userInput;
-    }
-
-    public static void showLoginDlg(String hint) {
-        try {
-            Activity activity = Init.getActivity();
-            LoginDlg.setIsBusy(true);
-            Init.run(() -> {
-                if (activity != null && !activity.isFinishing() && !activity.isDestroyed()) {
                     // 创建一个 EditText 用于用户输入
                     final EditText input = new EditText(activity);
                     input.setHint(hint);
@@ -46,33 +47,44 @@ public class LoginDlg {
                             .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    LoginDlg.userInput = input.getText().toString();
-                                    LoginDlg.userInput = LoginDlg.userInput == null ? "" : LoginDlg.userInput;
+                                    synchronized (lock) {
+                                        userInput = input.getText().toString();
+                                        isBusy = false; // 标记为非忙碌状态
+                                        lock.notifyAll(); // 唤醒阻塞的线程
+                                    }
                                 }
                             })
                             .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(activity, "用户取消了输入", Toast.LENGTH_SHORT).show();
-                                    dialog.dismiss(); // 关闭对话框
+                                    synchronized (lock) {
+                                        Toast.makeText(activity, "用户取消了输入", Toast.LENGTH_SHORT).show();
+                                        userInput = ""; // 清空用户输入
+                                        isBusy = false; // 标记为非忙碌状态
+                                        lock.notifyAll(); // 唤醒阻塞的线程
+                                    }
                                 }
                             });
 
                     // 显示对话框
                     AlertDialog dialog = builder.create();
                     dialog.show();
-                    LoginDlg.setIsBusy(false);
-                }
-            }, 500);
-        } catch (Exception e) {
-        }
+                });
 
-        while (LoginDlg.getIsBusy()) {
-            try {
-                Thread.sleep(50);
+                // 阻塞后台线程，直到对话框关闭
+                while (isBusy) {
+                    try {
+                        lock.wait(); // 等待对话框关闭
+                    } catch (InterruptedException e) {
+                        break; // 如果线程被中断，退出循环
+                    }
+                }
+
+                return userInput; // 返回用户输入
             } catch (Exception e) {
-                break;
-            }  
+                e.printStackTrace(); // 记录异常日志
+                return ""; // 发生异常时返回空字符串
+            }
         }
     }
 }

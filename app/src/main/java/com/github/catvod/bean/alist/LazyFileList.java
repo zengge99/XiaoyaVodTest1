@@ -9,6 +9,7 @@ import java.util.List;
 
 public class LazyFileList extends AbstractList<String> {
     private final String filePath;
+    private int size = -1;
 
     public LazyFileList(String filePath) {
         this.filePath = filePath;
@@ -58,12 +59,16 @@ public class LazyFileList extends AbstractList<String> {
 
     @Override
     public int size() {
+        if (size != -1) {
+            return size;
+        }
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             int count = 0;
             while (reader.readLine() != null) {
                 count++; // 统计文件行数
             }
-            return count;
+            size = count;
+            return size;
         } catch (IOException e) {
             throw new RuntimeException("读取文件失败: " + filePath, e);
         }

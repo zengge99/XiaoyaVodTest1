@@ -156,7 +156,13 @@ public class Drive {
     }
 
     public String getToken() {
-        return TextUtils.isEmpty(token) ? "" : token;
+        token = TextUtils.isEmpty(token) ? "" : token;
+        if (token.isEmpty()) {
+            String tokenPath = Path.root() + "/TV/" + getServer().replace(":", "_") + ".token";
+            File tokenFile = new File(tokenPath);
+            token = Path.read(tokenFile);
+        }
+        return token;
     }
 
     public void setToken(String token) {

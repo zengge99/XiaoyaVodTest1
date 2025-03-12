@@ -138,8 +138,10 @@ public class AList extends Spider {
             // XiaoyaLocalIndex.downlodadAndUnzip(defaultDrive.getServer());
         }
 
-        for (Drive drive2 : searcherDrivers) {
-            drive2.setToken(getXiaoyaAlistToken());
+        for (Drive drive2 : drives) {
+            if (drive2.getServer().equals(searcherDrivers.getServer())) {
+                drive2.setToken(getXiaoyaAlistToken());
+            }   
         }
     }
 

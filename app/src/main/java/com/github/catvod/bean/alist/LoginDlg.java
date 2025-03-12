@@ -11,7 +11,6 @@ import android.widget.Toast;
 public class LoginDlg {
 
     private static final Object lock = new Object(); // 用于线程同步的锁
-    private static boolean isBusy = false; // 是否正在显示对话框
     private static String userInput = ""; // 用户输入
 
     /**
@@ -30,10 +29,6 @@ public class LoginDlg {
 
                 // 在主线程显示对话框
                 Init.run(() -> {
-                    synchronized (lock) {
-                        isBusy = true; // 标记为忙碌状态
-                    }
-
                     // 创建一个 EditText 用于用户输入
                     final EditText input = new EditText(activity);
                     input.setHint(hint);
@@ -49,7 +44,6 @@ public class LoginDlg {
                                 public void onClick(DialogInterface dialog, int which) {
                                     synchronized (lock) {
                                         userInput = input.getText().toString();
-                                        isBusy = false; // 标记为非忙碌状态
                                         lock.notifyAll(); // 唤醒阻塞的线程
                                     }
                                 }
@@ -60,7 +54,6 @@ public class LoginDlg {
                                     synchronized (lock) {
                                         Toast.makeText(activity, "用户取消了输入", Toast.LENGTH_SHORT).show();
                                         userInput = ""; // 清空用户输入
-                                        isBusy = false; // 标记为非忙碌状态
                                         lock.notifyAll(); // 唤醒阻塞的线程
                                     }
                                 }
@@ -69,16 +62,10 @@ public class LoginDlg {
                     // 显示对话框
                     AlertDialog dialog = builder.create();
                     dialog.show();
-                });
+                }, 500);
 
                 // 阻塞后台线程，直到对话框关闭
-                while (isBusy) {
-                    try {
-                        lock.wait(); // 等待对话框关闭
-                    } catch (InterruptedException e) {
-                        break; // 如果线程被中断，退出循环
-                    }
-                }
+                lock.wait(); // 等待对话框关闭
 
                 return userInput; // 返回用户输入
             } catch (Exception e) {

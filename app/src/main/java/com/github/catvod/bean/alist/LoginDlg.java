@@ -1,6 +1,7 @@
 package com.github.catvod.bean.alist;
 
 import com.github.catvod.spider.Init;
+import com.github.catvod.spider.Logger;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -44,6 +45,7 @@ public class LoginDlg {
                                 public void onClick(DialogInterface dialog, int which) {
                                     synchronized (lock) {
                                         userInput = input.getText().toString();
+                                        Logger.log("userInput:" + userInput);
                                         lock.notifyAll(); // 唤醒阻塞的线程
                                     }
                                 }

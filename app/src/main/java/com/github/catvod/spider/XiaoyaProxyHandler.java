@@ -35,6 +35,7 @@ import okhttp3.Call;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Callable; 
+import com.github.catvod.bean.alist.LoginDlg;
 
 public class XiaoyaProxyHandler {
 
@@ -499,6 +500,9 @@ public class XiaoyaProxyHandler {
                 return new Object[]{200, "text/plain; charset=utf-8", new ByteArrayInputStream("ok".getBytes("UTF-8"))};
             case "gen":
                 return genProxy(params);
+            case "login":
+                LoginDlg.showLoginDlg(AList.appContext);
+                return new Object[]{200, "text/plain; charset=utf-8", new ByteArrayInputStream("ok".getBytes("UTF-8"))};
             default:
                 return Proxy.proxy(params);
         }

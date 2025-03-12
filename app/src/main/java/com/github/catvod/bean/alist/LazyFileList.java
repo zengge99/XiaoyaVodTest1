@@ -16,7 +16,6 @@ public class LazyFileList extends AbstractList<String> {
         this.filePath = filePath;
     }
 
-    /*
     @Override
     public String get(int index) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -31,8 +30,8 @@ public class LazyFileList extends AbstractList<String> {
         }
         throw new IndexOutOfBoundsException("文件行数不足: " + index);
     }
-    */
 
+    /*
     @Override
     public String get(int index) {
         try (RandomAccessFile file = new RandomAccessFile(filePath, "r")) {
@@ -54,6 +53,7 @@ public class LazyFileList extends AbstractList<String> {
         }
         return null;
     }
+    */
 
     @Override
     public Iterator<String> iterator() {

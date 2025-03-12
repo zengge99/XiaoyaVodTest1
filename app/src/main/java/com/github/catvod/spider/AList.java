@@ -160,7 +160,7 @@ public class AList extends Spider {
     private String post(Drive drive, String url, String param, boolean retry) {
         String response = OkHttp.post(url, param, drive.getHeader()).getBody();
         SpiderDebug.log(response);
-        if (retry && (response.contains("Guest user is disabled") || response.contains("token is invalidated")) && login(drive))
+        if (retry && (response.contains("Guest user is disabled") || response.contains("token is invalidated") || response.contains("without permission") ) && login(drive))
             return post(drive, url, param, false);
         return response;
     }

@@ -139,7 +139,7 @@ public class AList extends Spider {
         }
 
         for (Drive drive2 : drives) {
-            if (drive2.getServer().equals(searcherDrivers.getServer())) {
+            if (drive2.getServer().equals(defaultDrive.getServer())) {
                 drive2.setToken(getXiaoyaAlistToken());
             }   
         }

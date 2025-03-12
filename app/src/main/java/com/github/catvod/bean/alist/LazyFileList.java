@@ -3,6 +3,7 @@ package com.github.catvod.bean.alist;
 import java.io.*;
 import java.util.AbstractList;
 import java.util.Iterator;
+import com.github.catvod.spider.*
 
 public class LazyFileList extends AbstractList<String> {
     private final String filePath;
@@ -41,6 +42,8 @@ public class LazyFileList extends AbstractList<String> {
             }
             return reader.readLine(); // 返回目标行的内容
         } catch (IOException e) {
+            Logger.log("get发生错误");
+            Logger.log(e);
             throw new RuntimeException("读取文件失败: " + filePath, e);
         }
     }

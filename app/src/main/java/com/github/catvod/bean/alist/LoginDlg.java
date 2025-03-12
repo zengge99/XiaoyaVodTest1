@@ -1,7 +1,5 @@
 package com.github.catvod.bean.alist;
 
-import java.util.logging.Handler;
-
 import com.github.catvod.debug.MainActivity;
 
 import android.app.AlertDialog;

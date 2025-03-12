@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 public class LoginDlg {
 
-    private static boolean isBusy = false;
+    private static volatile boolean isBusy = false;
     private static String userInput = "";
 
     public static boolean getIsBusy() {
@@ -27,7 +27,7 @@ public class LoginDlg {
         return LoginDlg.userInput;
     }
 
-    public static String showLoginDlg(String hint) {
+    public static void showLoginDlg(String hint) {
         try {
             Activity activity = Init.getActivity();
             Init.run(() -> {
@@ -68,7 +68,11 @@ public class LoginDlg {
         }
 
         while (LoginDlg.getIsBusy()) {
-            Thread.sleep(50);
+            try {
+                Thread.sleep(50);
+            } catch (Exception e) {
+                break;
+            }  
         }
     }
 }

@@ -13,7 +13,12 @@ import android.widget.Toast;
 public class LoginDlg {
 
     public static void showLoginDlg() {
-        Activity activity = Init.getActivity();
+        Activity activity = null;
+        try {
+            activity = Init.getActivity();
+        } catch (Exception e) {
+        }
+
         Init.run(() -> {
             if (activity != null && !activity.isFinishing() && !activity.isDestroyed()) {
                 // 创建一个 EditText 用于用户输入

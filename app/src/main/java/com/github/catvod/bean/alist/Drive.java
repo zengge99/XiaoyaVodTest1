@@ -158,7 +158,7 @@ public class Drive {
     public String getToken() {
         token = TextUtils.isEmpty(token) ? "" : token;
         if (token.isEmpty()) {
-            String tokenPath = Path.root() + "/TV/" + getServer().replace(":", "_") + ".token";
+            String tokenPath = Path.cache() + "/" + getServer().replace("://", "_").replace(":", "_") + ".token";
             File tokenFile = new File(tokenPath);
             token = Path.read(tokenFile);
         }
@@ -170,7 +170,7 @@ public class Drive {
         if (token.isEmpty())
             return;
         
-        String tokenPath = Path.root() + "/TV/" + getServer().replace(":", "_") + ".token";
+        String tokenPath = Path.cache() + "/" + getServer().replace("://", "_").replace(":", "_") + ".token";
         File tokenFile = new File(tokenPath);
         Path.write(tokenFile, token.getBytes());
     }

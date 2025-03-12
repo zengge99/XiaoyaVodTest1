@@ -61,7 +61,7 @@ public class Drive {
     }
 
     public JSONObject getParamByPath(String path) {
-        if (params !=null ) {
+        if (params != null) {
             List<String> keys = new ArrayList<>();
             Iterator<String> iterator = params.keys();
             while (iterator.hasNext()) {
@@ -72,9 +72,13 @@ public class Drive {
                 if (!path.startsWith(key)) {
                     continue;
                 }
-                Object param = params.get(key);
-                if (param instanceof JSONObject) {
-                    return (JSONObject) param;
+                try {
+                    Object param = params.get(key);
+                    if (param instanceof JSONObject) {
+                        return (JSONObject) param;
+                    }
+                } catch (Exception e) {
+                    continue;
                 }
             }
         }

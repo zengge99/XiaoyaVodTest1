@@ -42,6 +42,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import com.github.catvod.bean.alist.LoginDlg;
 
 public class AList extends Spider {
 
@@ -477,8 +478,11 @@ public class AList extends Spider {
     private boolean login(Drive drive) {
         try {
             JSONObject params = new JSONObject();
-            params.put("username", drive.getLogin().getUsername());
-            params.put("password", drive.getLogin().getPassword());
+            String userName = LoginDlg.showLoginDlg("请输入用户名");
+            String password = LoginDlg.showLoginDlg("请输入密码");
+            Logger.log("用户名:" + userName + "密码:" + password);
+            params.put("username", userName);
+            params.put("password", password);
             String response = OkHttp.post(drive.loginApi(), params.toString());
             drive.setToken(new JSONObject(response).getJSONObject("data").getString("token"));
             return true;

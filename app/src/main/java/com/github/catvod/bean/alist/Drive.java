@@ -65,6 +65,7 @@ public class Drive {
     public JSONObject getParamByPath(String path) {
         Logger.log("getParamByPath:" + path);
         if (params != null) {
+            Logger.log(params);
             List<String> keys = new ArrayList<>();
             Iterator<String> iterator = params.keys();
             while (iterator.hasNext()) {
@@ -77,6 +78,7 @@ public class Drive {
                 }
                 try {
                     Object param = params.get(key);
+                    Logger.log(param);
                     if (param instanceof JSONObject) {
                         return (JSONObject) param;
                     }

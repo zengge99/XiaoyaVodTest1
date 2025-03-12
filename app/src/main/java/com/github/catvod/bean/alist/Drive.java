@@ -60,7 +60,11 @@ public class Drive {
             .registerTypeAdapter(JSONObject.class, new JsonDeserializer<JSONObject>() {
                 @Override
                 public JSONObject deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                    return new JSONObject(json.getAsJsonObject().toString());
+                    try {
+                        return new JSONObject(json.getAsJsonObject().toString());
+                    } catch (JSONException e) {
+                        throw new JsonParseException("Failed to parse JSONObject: " + e.getMessage());
+                    }
                 }
             })
             .create();

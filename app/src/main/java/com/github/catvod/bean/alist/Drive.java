@@ -19,6 +19,8 @@ import java.util.Iterator;
 
 import org.json.JSONObject;
 
+import com.github.catvod.spider.Logger;
+
 public class Drive {
 
     @SerializedName("drives")
@@ -61,6 +63,7 @@ public class Drive {
     }
 
     public JSONObject getParamByPath(String path) {
+        Logger.log("getParamByPath:" + path);
         if (params != null) {
             List<String> keys = new ArrayList<>();
             Iterator<String> iterator = params.keys();

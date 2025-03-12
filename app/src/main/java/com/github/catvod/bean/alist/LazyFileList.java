@@ -33,7 +33,7 @@ public class LazyFileList extends AbstractList<String> {
                 currentIndex = -1;
             }
             // 从当前行号继续读取，直到目标行
-            String line;
+            String line = null;
             while (currentIndex < index) {
                 line = reader.readLine();
                 if (line == null) {

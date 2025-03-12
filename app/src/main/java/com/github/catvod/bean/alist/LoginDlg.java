@@ -73,9 +73,11 @@ public class LoginDlg {
                 // 阻塞后台线程，直到对话框关闭
                 lock.wait(); // 等待对话框关闭
 
+                Logger.log("正确获取输出：" + userInput);
                 return userInput; // 返回用户输入
             } catch (Exception e) {
                 e.printStackTrace(); // 记录异常日志
+                Logger.log("发生异常");
                 return ""; // 发生异常时返回空字符串
             }
         }

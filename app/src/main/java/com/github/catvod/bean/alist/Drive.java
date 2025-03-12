@@ -7,7 +7,8 @@ import com.github.catvod.bean.Class;
 import com.github.catvod.net.OkHttp;
 import com.github.catvod.utils.Image;
 import com.github.catvod.utils.Util;
-import com.google.gson.Gson;
+import com.google.gson.*;
+import java.lang.reflect.Type;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;

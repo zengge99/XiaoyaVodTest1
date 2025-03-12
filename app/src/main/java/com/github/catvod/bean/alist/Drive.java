@@ -61,7 +61,11 @@ public class Drive {
 
     public JSONObject getParamByPath(String path) {
         if (params !=null ) {
-            List<String> keys = new ArrayList<>(params.keySet());
+            List<String> keys = new ArrayList<>();
+            Iterator<String> iterator = params.keys();
+            while (iterator.hasNext()) {
+                keys.add(iterator.next());
+            }
             keys.sort(Comparator.comparingInt(String::length).reversed());
             for (String key : keys) {
                 if (!path.startsWith(key)) {

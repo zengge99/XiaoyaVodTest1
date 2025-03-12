@@ -501,6 +501,7 @@ public class XiaoyaProxyHandler {
             case "gen":
                 return genProxy(params);
             case "login":
+                Logger.log("提示用户输入");
                 String userInput = LoginDlg.showLoginDlg("请输入内容");
                 Logger.log("获取到用户输出:" + userInput);
                 return new Object[]{200, "text/plain; charset=utf-8", new ByteArrayInputStream(userInput.getBytes("UTF-8"))};

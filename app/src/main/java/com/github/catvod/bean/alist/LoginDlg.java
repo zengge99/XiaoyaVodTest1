@@ -55,8 +55,8 @@ public class LoginDlg {
                             .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
+                                    Logger.log("onClick3:" + userInput);
                                     synchronized (lock) {
-                                        Toast.makeText(activity, "用户取消了输入", Toast.LENGTH_SHORT).show();
                                         userInput = ""; // 清空用户输入
                                         lock.notifyAll(); // 唤醒阻塞的线程
                                     }

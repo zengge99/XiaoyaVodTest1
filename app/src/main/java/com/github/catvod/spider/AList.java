@@ -161,6 +161,7 @@ public class AList extends Spider {
         if (retry && (response.contains("Guest user is disabled") || response.contains("token is invalidated")) && login(drive))
             return post(drive, url, param, false);
         return response;
+    }
     
     @Override
     public void init(Context context, String extend) {

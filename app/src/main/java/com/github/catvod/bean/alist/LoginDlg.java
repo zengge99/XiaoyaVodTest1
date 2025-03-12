@@ -15,7 +15,7 @@ public class LoginDlg {
     public static void showLoginDlg() {
         Activity activity = Init.getActivity();
         Init.run(() -> {
-            if (!activity.isFinishing() && !activity.isDestroyed()) {
+            if (activity != null && !activity.isFinishing() && !activity.isDestroyed()) {
                 // 创建一个 EditText 用于用户输入
                 final EditText input = new EditText(activity);
                 input.setHint("请输入内容");

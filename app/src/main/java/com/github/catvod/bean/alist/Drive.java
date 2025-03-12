@@ -50,8 +50,20 @@ public class Drive {
     @SerializedName("pathByApi")
     private Boolean pathByApi;
 
+    //public static Drive objectFrom(String str) {
+    //    return new Gson().fromJson(str, Drive.class);
+    //}
+
     public static Drive objectFrom(String str) {
-        return new Gson().fromJson(str, Drive.class);
+        Gson gson = new GsonBuilder()
+            .registerTypeAdapter(JSONObject.class, new JsonDeserializer<JSONObject>() {
+                @Override
+                public JSONObject deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                    return new JSONObject(json.getAsJsonObject().toString());
+                }
+            })
+            .create();
+        return gson.fromJson(str, Drive.class);
     }
 
     public List<Drive> getDrives() {

@@ -23,7 +23,7 @@ public class LoginDlg {
         LoginDlg.isBusy = isBusy;
     }
 
-    public static getUserInput() {
+    public static String getUserInput() {
         return LoginDlg.userInput;
     }
 

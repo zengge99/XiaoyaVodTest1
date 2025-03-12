@@ -521,6 +521,7 @@ public class AList extends Spider {
             Drive drive = getDrive(key);
             path = path.startsWith(drive.getPath()) ? path : drive.getPath() + path;
             JSONObject params = drive.getParamByPath(path);
+            params.put("path", path);
             String response = post(drive, drive.getApi(), params.toString());
             return Item.objectFrom(getDetailJson(drive.isNew(), response));
         } catch (Exception e) {
@@ -535,6 +536,7 @@ public class AList extends Spider {
             Drive drive = getDrive(key);
             path = path.startsWith(drive.getPath()) ? path : drive.getPath() + path;
             JSONObject params = drive.getParamByPath(path);
+            params.put("path", path);
             String response = post(drive, drive.listApi(), params.toString());
             List<Item> items = Item.arrayFrom(getListJson(drive.isNew(), response));
             Iterator<Item> iterator = items.iterator();

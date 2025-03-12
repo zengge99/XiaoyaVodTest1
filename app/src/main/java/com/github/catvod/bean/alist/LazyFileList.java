@@ -38,7 +38,7 @@ public class LazyFileList extends AbstractList<String> {
         try (RandomAccessFile file = new RandomAccessFile(filePath, "r")) {
             long pointer = 0;
             int currentLineNumber = 0;
-            while (currentLineNumber < targetLineNumber) {
+            while (currentLineNumber < index) {
                 file.seek(pointer);
                 String line = file.readLine();
                 if (line == null) {

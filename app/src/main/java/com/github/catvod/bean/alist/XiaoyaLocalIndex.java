@@ -51,8 +51,8 @@ public class XiaoyaLocalIndex {
             deleteFilesExclude(saveDir, "index.all.txt");
             deleteFiles(saveDir, "*.tgz");
 
-            //lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
-            lines = new LazyFileList(saveDir + "/index.all.txt");
+            lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
+            //lines = new LazyFileList(saveDir + "/index.all.txt");
 
             // 构建倒排索引，用于快速查找
             /*

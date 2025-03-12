@@ -3,7 +3,7 @@ package com.github.catvod.bean.alist;
 import java.io.*;
 import java.util.AbstractList;
 import java.util.Iterator;
-import com.github.catvod.spider.*
+import com.github.catvod.spider.*;
 
 public class LazyFileList extends AbstractList<String> {
     private final String filePath;

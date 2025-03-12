@@ -55,6 +55,7 @@ public class XiaoyaLocalIndex {
             lines = new LazyFileList(saveDir + "/index.all.txt");
 
             // 构建倒排索引，用于快速查找
+            /*
             Map<String, List<Integer>> invertedIndex = new HashMap<>();
             for (int i = 0; i < lines.size(); i++) {
                 String[] words = lines.get(i).split("#");
@@ -63,6 +64,19 @@ public class XiaoyaLocalIndex {
                 }
                 String word = words[1];
                 invertedIndex.computeIfAbsent(word.toLowerCase(), k -> new ArrayList<>()).add(i);
+            }
+            */
+
+            Map<String, List<Integer>> invertedIndex = new HashMap<>();
+            int i = 0;
+            for (String line : lines) {
+                String[] words = line.split("#");
+                if (words.length < 2) {
+                    continue;
+                }
+                String word = words[1];
+                invertedIndex.computeIfAbsent(word.toLowerCase(), k -> new ArrayList<>()).add(i);
+                i++;
             }
 
             invertedIndexMap.put(server, invertedIndex);

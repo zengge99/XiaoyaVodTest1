@@ -51,6 +51,7 @@ public class AList extends Spider {
     private String ext;
     private String xiaoyaAlistToken;
     private Map<String, Vod> vodMap = new HashMap<>();
+    public static Context appContext;
 
     private List<Filter> getFilter(String tid) {
         List<Filter> items = new ArrayList<>();
@@ -164,6 +165,7 @@ public class AList extends Spider {
     @Override
     public void init(Context context, String extend) {
         try {
+            appContext = context;
             ext = extend;
             fetchRule();
         } catch (Exception ignored) {

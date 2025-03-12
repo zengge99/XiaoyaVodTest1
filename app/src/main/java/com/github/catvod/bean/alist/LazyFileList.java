@@ -10,6 +10,7 @@ public class LazyFileList extends AbstractList<String> {
     private int size = -1;
     private BufferedReader reader; // 维护一个 BufferedReader 实例
     private int currentIndex = -1; // 记录当前读取的行号
+    private String currentLine = null;
 
     public LazyFileList(String filePath) {
         this.filePath = filePath;
@@ -33,15 +34,14 @@ public class LazyFileList extends AbstractList<String> {
                 currentIndex = -1;
             }
             // 从当前行号继续读取，直到目标行
-            String line = null;
             while (currentIndex < index) {
-                line = reader.readLine();
-                if (line == null) {
+                currentLine = reader.readLine();
+                if (currentLine == null) {
                     throw new IndexOutOfBoundsException("文件行数不足: " + index);
                 }
                 currentIndex++;
             }
-            return line; // 返回目标行的内容
+            return currentLine; // 返回目标行的内容
         } catch (IOException e) {
             throw new RuntimeException("读取文件失败: " + filePath, e);
         }

@@ -11,16 +11,19 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.json.JSONObject;
 
 public class Drive {
 
     @SerializedName("drives")
     private List<Drive> drives;
     @SerializedName("params")
-    private List<Param> params;
+    private List<JSONObject> params;
     @SerializedName("login")
     private Login login;
     @SerializedName("vodPic")
@@ -52,8 +55,21 @@ public class Drive {
         return drives == null ? new ArrayList<>() : drives;
     }
 
-    public List<Param> getParams() {
-        return params == null ? new ArrayList<>() : params;
+    public JSONObject getParams() {
+        return params == null ? new JSONObject() : params;
+    }
+
+    public JSONObject getParamByPath(String path) {
+        if (params !=null ) {
+            List<String> keys = new ArrayList<>(params.keySet());
+            keys.sort(Comparator.comparingInt(String::length).reversed());
+            for (String key : keys) {
+                if (path.startsWith(key) && (json.get(key) instanceof JSONObject)) {
+                    return json.get(key);
+                }
+            }
+        }
+        return new JSONObject();
     }
 
     public Login getLogin() {
@@ -176,35 +192,12 @@ public class Drive {
         return this;
     }
 
-    public String params(String keyword) {
-        if (isNew()) {
-            Map<String, Object> params = new HashMap<>();
-            params.put("keywords", keyword);
-            params.put("page", 1);
-            params.put("parent", "/");
-            params.put("per_page", 100);
-            return new Gson().toJson(params);
-        } else {
-            Map<String, Object> params = new HashMap<>();
-            params.put("keyword", keyword);
-            params.put("path", "/");
-            return new Gson().toJson(params);
-        }
-    }
-
     public HashMap<String, String> getHeader() {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("User-Agent", Util.CHROME);
         if (!getToken().isEmpty())
             headers.put("Authorization", token);
         return headers;
-    }
-
-    public String findPass(String path) {
-        for (Param param : getParams())
-            if (path.startsWith(param.getPath()))
-                return param.getPass();
-        return "";
     }
 
     @Override

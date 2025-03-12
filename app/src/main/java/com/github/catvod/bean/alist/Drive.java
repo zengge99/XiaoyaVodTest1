@@ -17,11 +17,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
+import com.github.catvod.utils.Path;
 
 import org.json.JSONObject;
 import org.json.JSONException;
 
 import com.github.catvod.spider.Logger;
+import java.io.File;
+
 
 public class Drive {
 
@@ -158,6 +161,10 @@ public class Drive {
 
     public void setToken(String token) {
         this.token = token;
+        if (token.isEmpty())
+            return;
+        
+        String tokenPath = Path.cache() + "/" + getServer().replace(":", "_") + ".token";
     }
 
     public Boolean search() {

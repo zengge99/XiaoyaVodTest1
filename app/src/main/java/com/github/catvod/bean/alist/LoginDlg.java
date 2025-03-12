@@ -30,6 +30,7 @@ public class LoginDlg {
 
                 // 在主线程显示对话框
                 Init.run(() -> {
+                    Logger.log("准备显示对话框");
                     // 创建一个 EditText 用于用户输入
                     final EditText input = new EditText(activity);
                     input.setHint(hint);
@@ -66,6 +67,7 @@ public class LoginDlg {
                     // 显示对话框
                     AlertDialog dialog = builder.create();
                     dialog.show();
+                    Logger.log("显示对话框完成");
                 }, 500);
 
                 // 阻塞后台线程，直到对话框关闭

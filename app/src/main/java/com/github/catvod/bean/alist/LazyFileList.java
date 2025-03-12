@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.List;
+import java.io.RandomAccessFile;
 
 public class LazyFileList extends AbstractList<String> {
     private final String filePath;
@@ -15,6 +16,7 @@ public class LazyFileList extends AbstractList<String> {
         this.filePath = filePath;
     }
 
+    /*
     @Override
     public String get(int index) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -28,6 +30,29 @@ public class LazyFileList extends AbstractList<String> {
             throw new RuntimeException("读取文件失败: " + filePath, e);
         }
         throw new IndexOutOfBoundsException("文件行数不足: " + index);
+    }
+    */
+
+    @Override
+    public String get(int index) {
+        try (RandomAccessFile file = new RandomAccessFile(filePath, "r")) {
+            long pointer = 0;
+            int currentLineNumber = 0;
+            while (currentLineNumber < targetLineNumber) {
+                file.seek(pointer);
+                String line = file.readLine();
+                if (line == null) {
+                    return null; // 目标行不存在
+                }
+                currentLineNumber++;
+                pointer = file.getFilePointer();
+            }
+            file.seek(pointer);
+            return file.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

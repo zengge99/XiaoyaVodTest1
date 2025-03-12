@@ -30,8 +30,8 @@ public class LoginDlg {
     public static void showLoginDlg(String hint) {
         try {
             Activity activity = Init.getActivity();
+            LoginDlg.setIsBusy(true);
             Init.run(() -> {
-                LoginDlg.setIsBusy(true);
                 if (activity != null && !activity.isFinishing() && !activity.isDestroyed()) {
                     // 创建一个 EditText 用于用户输入
                     final EditText input = new EditText(activity);

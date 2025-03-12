@@ -51,27 +51,13 @@ public class XiaoyaLocalIndex {
             deleteFilesExclude(saveDir, "index.all.txt");
             deleteFiles(saveDir, "*.tgz");
 
-            //lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
-            lines = new LazyFileList(saveDir + "/index.all.txt");
+            lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
+            //lines = new LazyFileList(saveDir + "/index.all.txt");
 
             // 构建倒排索引，用于快速查找
-            /*
             Map<String, List<Integer>> invertedIndex = new HashMap<>();
             for (int i = 0; i < lines.size(); i++) {
                 String[] words = lines.get(i).split("#");
-                if (words.length < 2) {
-                    continue;
-                }
-                String word = words[1];
-                invertedIndex.computeIfAbsent(word.toLowerCase(), k -> new ArrayList<>()).add(i);
-            }
-            */
-
-            Map<String, List<Integer>> invertedIndex = new HashMap<>();
-            int i = -1;
-            for (String line : lines) {
-                i++;
-                String[] words = line.split("#");
                 if (words.length < 2) {
                     continue;
                 }

@@ -118,6 +118,10 @@ public class Vod {
         return vodId.substring(vodId.indexOf("/") + 1);
     }
 
+    public String getVodName() {
+        return this.vodName == null ? "" : this.vodName;
+    }
+
     public void setVodName(String vodName) {
         this.vodName = vodName;
     }

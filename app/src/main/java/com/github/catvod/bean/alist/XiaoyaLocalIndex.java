@@ -54,10 +54,10 @@ public class XiaoyaLocalIndex {
             // 4. 删除指定文件
             deleteFilesExclude(saveDir, "index.all.txt");
             deleteFiles(saveDir, "*.tgz");
-  
+
             long startMemory = Debug.getNativeHeapAllocatedSize();
             lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
-            //lines = new LazyFileList(saveDir + "/index.all.txt");
+            // lines = new LazyFileList(saveDir + "/index.all.txt");
             Logger.log("索引列表消耗内存：" + (Debug.getNativeHeapAllocatedSize() - startMemory));
 
             // 构建倒排索引，用于快速查找
@@ -288,6 +288,11 @@ public class XiaoyaLocalIndex {
                     try (BufferedReader reader = Files.newBufferedReader(file)) {
                         String line;
                         while ((line = reader.readLine()) != null) {
+                            if (line.startsWith("./")) {
+                                line = line.substring(2);
+                            }
+                            if (!line.contains("/"))
+                                continue;
                             writer.write(line);
                             writer.newLine();
                         }

@@ -194,7 +194,7 @@ public class AList extends Spider {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
             }
-            XiaoyaLocalIndex.downlodadAndUnzip(tmpDrive.getServer());
+            XiaoyaLocalIndex.downlodadAndUnzip(tmpDrive);
         });
         thread.start();
 
@@ -655,7 +655,7 @@ public class AList extends Spider {
                 return vods;
             } else {
                 vods = XiaoyaLocalIndex.downlodadAndUnzip(drive);
-                if (lines.size() == 0) {
+                if (vods.size() == 0) {
                     List<String> lines = new ArrayList<>();
                     doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword)));
                     for (Element a : doc.select("ul > a"))

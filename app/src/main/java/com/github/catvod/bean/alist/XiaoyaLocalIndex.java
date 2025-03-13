@@ -150,7 +150,7 @@ public class XiaoyaLocalIndex {
             String fileName = splits[0].substring(index + 1);
             item.setName(fileName);
             item.doubanInfo.setName(splits.length >= 2 ? splits[1] : fileName);
-            Vod vod = item.getVod(driveName, Image.FOLDER);
+            Vod vod = item.getVod(driveName, "");
             vod.setVodRemarks(item.doubanInfo.getRating());
             vod.setVodName(item.doubanInfo.getName());
             vod.doubanInfo = item.doubanInfo;

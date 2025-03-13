@@ -183,7 +183,7 @@ public class XiaoyaLocalIndex {
                         createDirectoryIfNotExists(entryPath.toString());
                     } else {
                         try (OutputStream os = Files.newOutputStream(entryPath)) {
-                            byte[] buffer = new byte[8 * 1024]; // 分块读取，每次读取 8KB
+                            byte[] buffer = new byte[1024 * 1024]; // 分块读取，每次读取 1MB
                             int bytesRead;
                             while ((bytesRead = ti.read(buffer)) != -1) {
                                 os.write(buffer, 0, bytesRead);
@@ -291,6 +291,26 @@ public class XiaoyaLocalIndex {
     private static void mergeFiles(String extractDir, String outputFile) throws IOException {
         Path dirPath = Paths.get(extractDir);
         Path outputFilePath = Paths.get(outputFile);
+    
+        try (BufferedWriter writer = Files.newBufferedWriter(outputFilePath)) {
+            try (var stream = Files.newDirectoryStream(dirPath, "*.txt")) {
+                for (Path file : stream) {
+                    if (file.equals(outputFilePath)) {
+                        log("跳过文件: " + file);
+                        continue;
+                    }
+                    Files.copy(file, writer);
+                    log("已合并文件: " + file);
+                }
+            }
+        } catch (IOException e) {
+            throw new IOException("合并文件失败: " + extractDir, e);
+        }
+    }
+    /* 
+    private static void mergeFiles(String extractDir, String outputFile) throws IOException {
+        Path dirPath = Paths.get(extractDir);
+        Path outputFilePath = Paths.get(outputFile);
 
         try (BufferedWriter writer = Files.newBufferedWriter(outputFilePath)) {
             try (var stream = Files.newDirectoryStream(dirPath, "*.txt")) {
@@ -315,6 +335,7 @@ public class XiaoyaLocalIndex {
             throw new IOException("合并文件失败: " + extractDir, e);
         }
     }
+    */
 
     /**
      * 日志输出

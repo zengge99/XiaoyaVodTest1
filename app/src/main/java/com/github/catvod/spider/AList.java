@@ -665,14 +665,14 @@ public class AList extends Spider {
                 return vods;
             } else if (keyword.startsWith("~quick:")) {
                 XiaoyaLocalIndex.downlodadAndUnzip(drive);
-                startTime = System.currentTimeMillis();
+                //startTime = System.currentTimeMillis();
                 vods = XiaoyaLocalIndex.quickSearch(drive, shortKeyword);
-                duration = System.currentTimeMillis() - startTime;
+                //duration = System.currentTimeMillis() - startTime;
                 for (Vod vod : vods) {
                     //vod.setVodDrive(drive.getName());
                     vodMap.put(vod.getVodId(), vod);
                 }
-                Logger.log("快速搜索耗时：" + duration);
+                //Logger.log("快速搜索耗时：" + duration);
                 return vods;
             } else {
                 vods = XiaoyaLocalIndex.downlodadAndUnzip(drive);

@@ -13,20 +13,23 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import com.github.catvod.bean.Vod;
+import com.github.catvod.bean.alist.Item;
 import com.github.catvod.spider.Logger;
+import com.github.catvod.utils.Util;
+
 import android.os.Debug;
 
 public class XiaoyaLocalIndex {
-    private static Map<String, List<String>> cacheMap = new HashMap<>();
+    private static Map<String, List<Vod>> cacheMap = new HashMap<>();
     private static Map<String, Map<String, List<Integer>>> invertedIndexMap = new HashMap<>();
 
-    public static synchronized List<String> downlodadAndUnzip(String server) {
+    public static synchronized List<Vod> downlodadAndUnzip(String server) {
 
         Logger.log("本地索引前的内存：" + Debug.getNativeHeapAllocatedSize());
 
-        List<String> lines = cacheMap.get(server);
-        if (lines != null) {
-            return lines;
+        List<Vod> vods = cacheMap.get(server);
+        if (vods != null) {
+            return vods;
         }
 
         try {
@@ -56,30 +59,28 @@ public class XiaoyaLocalIndex {
             deleteFiles(saveDir, "*.tgz");
 
             long startMemory = Debug.getNativeHeapAllocatedSize();
-            lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
-            // lines = new LazyFileList(saveDir + "/index.all.txt");
+            List<String> lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
+            // List<String> lines = new LazyFileList(saveDir + "/index.all.txt");
             Logger.log("索引列表消耗内存：" + (Debug.getNativeHeapAllocatedSize() - startMemory));
+
+            vods = toVods(lines);
 
             // 构建倒排索引，用于快速查找
             Map<String, List<Integer>> invertedIndex = new HashMap<>();
-            for (int i = 0; i < lines.size(); i++) {
-                String[] words = lines.get(i).split("#");
-                if (words.length < 2) {
-                    continue;
-                }
-                String word = words[1];
-                invertedIndex.computeIfAbsent(word.toLowerCase(), k -> new ArrayList<>()).add(i);
+            for (int i = 0; i < vods.size(); i++) {
+                String word = vods.get(i).getName();
+                invertedIndex.computeIfAbsent(word, k -> new ArrayList<>()).add(i);
             }
 
             invertedIndexMap.put(server, invertedIndex);
-            cacheMap.put(server, lines);
+            cacheMap.put(server, vods);
 
         } catch (IOException e) {
         }
 
         Logger.log("本地索引后的内存：" + Debug.getNativeHeapAllocatedSize());
 
-        return lines;
+        return vods;
     }
 
     public static List<String> quickSearch(String server, String keyword) {
@@ -126,6 +127,46 @@ public class XiaoyaLocalIndex {
         } catch (IOException e) {
             throw new IOException("下载文件失败: " + fileUrl, e);
         }
+    }
+
+    public static List<Vod> toVods(List<String> lines) {
+        List<Vod> list = new ArrayList<>();
+        for (String line : lines) {
+            String[] splits = line.split("#");
+            int index = splits[0].lastIndexOf("/");
+            boolean file = Util.isMedia(splits[0]);
+            if (splits[0].endsWith("/")) {
+                file = false;
+                splits[0] = splits[0].substring(0, index);
+                index = splits[0].lastIndexOf("/");
+            }
+            Item item = new Item();
+            item.setType(0); // 海报模式总是认为是文件模式，直接点击播放
+            item.doubanInfo.setId(splits.length >= 3 ? splits[2] : "");
+            item.doubanInfo.setRating(splits.length >= 4 ? splits[3] : "");
+            item.setThumb(splits.length >= 5 ? splits[4] : "");
+            item.setPath("/" + splits[0].substring(0, index));
+            String fileName = splits[0].substring(index + 1);
+            item.setName(fileName);
+            item.doubanInfo.setName(splits.length >= 2 ? splits[1] : fileName);
+            Vod vod = item.getVod(drive, vodPic);
+            vod.setVodRemarks(item.doubanInfo.getRating());
+            vod.setVodName(item.doubanInfo.getName());
+            vod.doubanInfo = item.doubanInfo;
+            if (!file) {
+                vod.setVodId(vod.getVodId() + "/~soulist");
+            } else {
+                vod.setVodId(vod.getVodId() + "/~soufile");
+            }
+            if (TextUtils.isEmpty(item.getThumb())) {
+                noPicList.add(vod);
+            } else {
+                list.add(vod);
+            }
+            vodMap.put(vod.getVodId(), vod);
+        }
+        list.addAll(noPicList);
+        return list;
     }
 
     /**

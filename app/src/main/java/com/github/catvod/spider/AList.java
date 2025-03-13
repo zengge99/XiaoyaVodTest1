@@ -137,16 +137,7 @@ public class AList extends Spider {
         List<Drive> searcherDrivers = drives.stream().filter(d -> d.search()).collect(Collectors.toList());
         if (searcherDrivers.size() > 0) {
             defaultDrive = searcherDrivers.get(0);
-            // XiaoyaLocalIndex.downlodadAndUnzip(defaultDrive.getServer());
         }
-
-        /*
-        for (Drive drive2 : drives) {
-            if (drive2.getServer().equals(defaultDrive.getServer())) {
-                drive2.setToken(getXiaoyaAlistToken());
-            }   
-        }
-        */
     }
 
     private Drive getDrive(String name) {
@@ -160,11 +151,12 @@ public class AList extends Spider {
     private String post(Drive drive, String url, String param, boolean retry) {
         String response = OkHttp.post(url, param, drive.getHeader()).getBody();
         SpiderDebug.log(response);
-        if (retry && (response.contains("Guest user is disabled") || response.contains("token is invalidated") || response.contains("without permission") ) && login(drive))
+        if (retry && (response.contains("Guest user is disabled") || response.contains("token is invalidated")
+                || response.contains("without permission")) && login(drive))
             return post(drive, url, param, false);
         return response;
     }
-    
+
     @Override
     public void init(Context context, String extend) {
         try {
@@ -206,7 +198,7 @@ public class AList extends Spider {
         });
         thread.start();
 
-        //Logger.log(result);
+        // Logger.log(result);
         return result;
     }
 
@@ -251,7 +243,7 @@ public class AList extends Spider {
         }
         for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
             list.addAll(future.get());
-        //Logger.log(Result.string(list));
+        // Logger.log(Result.string(list));
         return Result.get().vod(list).page().string();
     }
 
@@ -437,7 +429,7 @@ public class AList extends Spider {
             list = VodSorter.sortVods(list, extend);
         }
 
-        //Logger.log(Result.string(list));
+        // Logger.log(Result.string(list));
         return Result.get().vod(list).page().string();
     }
 
@@ -477,7 +469,7 @@ public class AList extends Spider {
             list.add(item.getVod(tid, vodPic));
         for (Item item : files)
             list.add(item.getVod(tid, vodPic));
-        //Logger.log(Result.get().vod(list).page().string());
+        // Logger.log(Result.get().vod(list).page().string());
         return Result.get().vod(list).page().string();
     }
 
@@ -639,76 +631,50 @@ public class AList extends Spider {
             }
             shortKeyword = shortKeyword.length() < 30 ? shortKeyword : shortKeyword.substring(0, 30);
             Document doc;
-            List<String> lines = new ArrayList<>();
+            List<Vod> vods = new ArrayList<>();
             if (keyword.startsWith("~daily:")) {
+                List<String> lines = new ArrayList<>();
                 doc = Jsoup.parse(OkHttp.string(drive.dailySearchApi(shortKeyword)));
-                for (Element a : doc.select("ul > a")) {
+                for (Element a : doc.select("ul > a"))
                     lines.add(a.text());
-                }
+                vods = XiaoyaLocalIndex.toVods(drive, lines);
+                return vods;
             } else if (keyword.startsWith("~search:")) {
+                List<String> lines = new ArrayList<>();
                 doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword)));
                 for (Element a : doc.select("ul > a"))
                     lines.add(a.text());
+                vods = XiaoyaLocalIndex.toVods(drive, lines);
+                return vods;
             } else if (keyword.startsWith("~quick:")) {
-                lines = XiaoyaLocalIndex.downlodadAndUnzip(drive.getServer());
+                XiaoyaLocalIndex.downlodadAndUnzip(drive);
                 startTime = System.currentTimeMillis();
-                lines = XiaoyaLocalIndex.quickSearch(drive.getServer(), shortKeyword);
+                vods = XiaoyaLocalIndex.quickSearch(drive, shortKeyword);
                 duration = System.currentTimeMillis() - startTime;
                 Logger.log("快速搜索耗时：" + duration);
-                // String tmpKeyword = shortKeyword;
-                // lines = lines.stream().filter(i ->
-                // i.contains(tmpKeyword)).collect(Collectors.toList());
+                return vods;
             } else {
-                lines = XiaoyaLocalIndex.downlodadAndUnzip(drive.getServer());
+                vods = XiaoyaLocalIndex.downlodadAndUnzip(drive);
                 if (lines.size() == 0) {
+                    List<String> lines = new ArrayList<>();
                     doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword)));
                     for (Element a : doc.select("ul > a"))
                         lines.add(a.text());
+                    vods = XiaoyaLocalIndex.toVods(drive, lines);
                 }
             }
 
+            List<Vod> filteredVods = new ArrayList<>();
             startTime = System.currentTimeMillis();
-            for (String line : lines) {
-                if (line.startsWith("./")) {
-                    line = line.substring(2);
-                }
-                if (!("/" + line).startsWith(drive.getPath())) {
+            for (Vod vod : vods) {
+                if (!vod.getVodIdWithoutDrivePrefix().startsWith(drive.getPath())) {
                     continue;
                 }
-                String[] splits = line.split("#");
-                if (!splits[0].contains("/"))
-                    continue;
-                int index = splits[0].lastIndexOf("/");
-                boolean file = Util.isMedia(splits[0]);
-                if (splits[0].endsWith("/")) {
-                    file = false;
-                    splits[0] = splits[0].substring(0, index);
-                    index = splits[0].lastIndexOf("/");
-                }
-                Item item = new Item();
-                // item.setType(file ? 0 : 1);
-                item.setType(0); // 海报模式总是认为是文件模式，直接点击播放
-                item.doubanInfo.setId(splits.length >= 3 ? splits[2] : "");
-                item.doubanInfo.setRating(splits.length >= 4 ? splits[3] : "");
-                item.setThumb(splits.length >= 5 ? splits[4] : "");
-                item.setPath("/" + splits[0].substring(0, index));
-                String fileName = splits[0].substring(index + 1);
-                item.setName(fileName);
-                item.doubanInfo.setName(splits.length >= 2 ? splits[1] : fileName);
-                // if (item.getPath().startsWith(drive.getPath())) {
-                Vod vod = item.getVod(drive, vodPic);
-                vod.setVodRemarks(item.doubanInfo.getRating());
-                vod.setVodName(item.doubanInfo.getName());
-                vod.doubanInfo = item.doubanInfo;
-                if (!file) {
-                    vod.setVodId(vod.getVodId() + "/~soulist");
-                } else {
-                    vod.setVodId(vod.getVodId() + "/~soufile");
-                }
-                if (TextUtils.isEmpty(item.getThumb())) {
+
+                if (vod.getVodPic().isEmpty()) {
                     noPicList.add(vod);
                 } else {
-                    list.add(vod);
+                    filteredVods.add(vod);
                 }
                 vodMap.put(vod.getVodId(), vod);
                 // }
@@ -716,8 +682,8 @@ public class AList extends Spider {
             duration = System.currentTimeMillis() - startTime;
             Logger.log("转换Vod耗时：" + duration);
 
-            list.addAll(noPicList);
-            return list;
+            filteredVods.addAll(noPicList);
+            return filteredVods;
         }
     }
 }

@@ -681,6 +681,7 @@ public class AList extends Spider {
             List<Vod> filteredVods = new ArrayList<>();
             startTime = System.currentTimeMillis();
             for (Vod vod : vods) {
+                Logger.log(vod.getVodIdWithoutDrivePrefix() + "~~~~~" + drive.getPath());
                 if (!vod.getVodIdWithoutDrivePrefix().startsWith(drive.getPath())) {
                     continue;
                 }

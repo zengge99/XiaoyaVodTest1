@@ -224,6 +224,22 @@ public class Result {
         return page(1, 1, 0, 1);
     }
 
+    public Result page(int page, boolean auto) {
+        if (!auto) {
+            return page(1, 1, 0, 1);
+        }
+        int limit = 72;
+        int total = this.list.size();
+        int count = (total + limit - 1) / limit;
+        page(page, count, limit, total);
+
+        int fromIndex = (page - 1) * limit;
+        int toIndex = Math.min(fromIndex + limit, total);
+        this.list = this.list.subList(fromIndex, toIndex);
+        
+        return this
+    }
+
     public Result page(int page, int count, int limit, int total) {
         this.page = page > 0 ? page : Integer.MAX_VALUE;
         this.limit = limit > 0 ? limit : Integer.MAX_VALUE;

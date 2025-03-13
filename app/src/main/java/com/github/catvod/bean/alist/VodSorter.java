@@ -38,6 +38,7 @@ public class VodSorter {
         duration = System.currentTimeMillis() - startTime;
         Logger.log("过滤分类耗时：" + duration);
         
+        startTime = System.currentTimeMillis();
         // 解析豆瓣评分阈值（从 HashMap 获取）
         double doubanThreshold = parseDoubleSafe(fl.getOrDefault("douban", "0"));
         // 1. 过滤评分达标的视频
@@ -48,6 +49,7 @@ public class VodSorter {
         duration = System.currentTimeMillis() - startTime;
         Logger.log("过滤豆瓣评分耗时：" + duration);
 
+        startTime = System.currentTimeMillis();
         // 2. 排序处理（从 HashMap 获取排序类型）
         String sortType = fl.getOrDefault("doubansort", "0");
         if (!"0".equals(sortType)) {
@@ -64,17 +66,16 @@ public class VodSorter {
                     break;
             }
         }
-
         duration = System.currentTimeMillis() - startTime;
         Logger.log("豆瓣评分排序耗时：" + duration);
 
+        startTime = System.currentTimeMillis();
         // 3. 随机筛选（从 HashMap 获取随机数量）
         int randomCount = parseIntSafe(fl.getOrDefault("random", "0"));
         if (randomCount > 0) {
             boolean keepOrder = "1".equals(sortType) || "2".equals(sortType);
             filteredVods = getRandomElements(filteredVods, randomCount, keepOrder);
         }
-
         duration = System.currentTimeMillis() - startTime;
         Logger.log("随机筛选耗时：" + duration);
         

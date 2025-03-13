@@ -27,7 +27,6 @@ public class XiaoyaLocalIndex {
             e.printStackTrace();
         }
 
-        System.gc();
         long startMemory = Debug.getNativeHeapAllocatedSize();
         long usedMemory = 0;
 
@@ -37,7 +36,6 @@ public class XiaoyaLocalIndex {
         }
 
         try {
-            System.gc();
             long startMemory2 = Debug.getNativeHeapAllocatedSize();
             String fileUrl = server + "/tvbox/data";
             String saveDir = com.github.catvod.utils.Path.root().getPath() + "/TV/index/" + server.split("//")[1].replace(":", "_port");
@@ -62,15 +60,12 @@ public class XiaoyaLocalIndex {
             // 4. 删除指定文件
             deleteFilesExclude(saveDir, "index.all.txt");
             deleteFiles(saveDir, "*.tgz");
-            System.gc();
             usedMemory = Debug.getNativeHeapAllocatedSize() - startMemory2;
             Logger.log("文件处理消耗内存：" + usedMemory);
 
-            System.gc();
             long startMemory1 = Debug.getNativeHeapAllocatedSize();
             //lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
             lines = new LazyFileList(saveDir + "/index.all.txt");
-            System.gc();
             usedMemory = Debug.getNativeHeapAllocatedSize() - startMemory1;
             Logger.log("仅索引部分消耗内存：" + usedMemory);
 
@@ -85,11 +80,9 @@ public class XiaoyaLocalIndex {
                 invertedIndex.computeIfAbsent(word.toLowerCase(), k -> new ArrayList<>()).add(i);
             }
 
-            System.gc();
             long startMemory3 = Debug.getNativeHeapAllocatedSize();
             invertedIndexMap.put(server, invertedIndex);
             cacheMap.put(server, lines);
-            System.gc();
             usedMemory = Debug.getNativeHeapAllocatedSize() - startMemory3;
             Logger.log("倒排索引消耗内存：" + usedMemory);
 
@@ -97,7 +90,6 @@ public class XiaoyaLocalIndex {
             log("操作失败: " + e.getMessage());
         }
 
-        System.gc();
         usedMemory = Debug.getNativeHeapAllocatedSize() - startMemory;
         Logger.log("本地索引整体消耗内存：" + usedMemory);
 

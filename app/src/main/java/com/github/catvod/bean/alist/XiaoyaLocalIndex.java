@@ -138,8 +138,6 @@ public class XiaoyaLocalIndex {
     }
 
     public static List<Vod> toVods(Drive drive, List<String> lines) {
-        Logger.log("toVods");
-        Logger.log(drive);
         List<Vod> list = new ArrayList<>();
         List<Vod> noPicList = new ArrayList<>();
         for (String line : lines) {

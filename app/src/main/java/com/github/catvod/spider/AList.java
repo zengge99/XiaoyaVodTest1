@@ -671,13 +671,14 @@ public class AList extends Spider {
                     continue;
                 }
 
+                vod.setVodDrive(drive.getName());
+
                 if (vod.getVodPic().isEmpty()) {
                     noPicList.add(vod);
                 } else {
                     filteredVods.add(vod);
                 }
                 vodMap.put(vod.getVodId(), vod);
-                // }
             }
             duration = System.currentTimeMillis() - startTime;
             Logger.log("转换Vod耗时：" + duration);

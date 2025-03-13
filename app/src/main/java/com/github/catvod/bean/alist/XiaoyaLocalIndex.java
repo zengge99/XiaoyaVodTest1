@@ -83,18 +83,18 @@ public class XiaoyaLocalIndex {
         return vods;
     }
 
-    public static List<String> quickSearch(String server, String keyword) {
+    public static List<Vod> quickSearch(String server, String keyword) {
 
         downlodadAndUnzip(server);
         List<Integer> lineNumbers = invertedIndexMap.get(server).get(keyword);
         if (lineNumbers == null) {
             return new ArrayList<>();
         }
-        List<String> lines = new ArrayList<>();
+        List<Vod> vods = new ArrayList<>();
         for (Integer i : lineNumbers) {
-            lines.add(cacheMap.get(server).get(i));
+            vods.add(cacheMap.get(server).get(i));
         }
-        return lines;
+        return vods;
     }
 
     /**

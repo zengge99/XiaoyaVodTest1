@@ -110,6 +110,10 @@ public class Vod {
         return this.vodId;
     }
 
+    public String getVodIdWithoutDrivePrefix() {
+        return vodId.substring(vodId.indexOf("/") + 1);
+    }
+
     public void setVodName(String vodName) {
         this.vodName = vodName;
     }

@@ -15,6 +15,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import com.github.catvod.bean.Vod;
 import com.github.catvod.bean.alist.Item;
 import com.github.catvod.spider.Logger;
+import com.github.catvod.utils.Image;
 import com.github.catvod.utils.Util;
 
 import android.os.Debug;
@@ -149,7 +150,7 @@ public class XiaoyaLocalIndex {
             String fileName = splits[0].substring(index + 1);
             item.setName(fileName);
             item.doubanInfo.setName(splits.length >= 2 ? splits[1] : fileName);
-            Vod vod = item.getVod(drive, vodPic);
+            Vod vod = item.getVod("~default_drive", Image.FOLDER);
             vod.setVodRemarks(item.doubanInfo.getRating());
             vod.setVodName(item.doubanInfo.getName());
             vod.doubanInfo = item.doubanInfo;

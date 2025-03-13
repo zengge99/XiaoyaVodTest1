@@ -202,7 +202,7 @@ public class AList extends Spider {
         });
         thread.start();
 
-        Logger.log(result);
+        //Logger.log(result);
         return result;
     }
 
@@ -247,7 +247,7 @@ public class AList extends Spider {
         }
         for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
             list.addAll(future.get());
-        Logger.log(Result.string(list));
+        //Logger.log(Result.string(list));
         return Result.get().vod(list).page().string();
     }
 
@@ -433,7 +433,7 @@ public class AList extends Spider {
             list = VodSorter.sortVods(list, extend);
         }
 
-        Logger.log(Result.string(list));
+        //Logger.log(Result.string(list));
         return Result.get().vod(list).page().string();
     }
 
@@ -473,7 +473,7 @@ public class AList extends Spider {
             list.add(item.getVod(tid, vodPic));
         for (Item item : files)
             list.add(item.getVod(tid, vodPic));
-        Logger.log(Result.get().vod(list).page().string());
+        //Logger.log(Result.get().vod(list).page().string());
         return Result.get().vod(list).page().string();
     }
 

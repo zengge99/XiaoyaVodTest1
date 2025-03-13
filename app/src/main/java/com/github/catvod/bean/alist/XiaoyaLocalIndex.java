@@ -13,6 +13,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import com.github.catvod.bean.Vod;
+import com.github.catvod.bean.alist.Drive;
 import com.github.catvod.bean.alist.Item;
 import com.github.catvod.spider.Logger;
 import com.github.catvod.utils.Image;
@@ -24,12 +25,16 @@ public class XiaoyaLocalIndex {
     private static Map<String, List<Vod>> cacheMap = new HashMap<>();
     private static Map<String, Map<String, List<Integer>>> invertedIndexMap = new HashMap<>();
 
-    public static synchronized List<Vod> downlodadAndUnzip(String server) {
+    public static synchronized List<Vod> downlodadAndUnzip(Drive drive) {
 
         Logger.log("本地索引前的内存：" + Debug.getNativeHeapAllocatedSize());
 
+        String server = drive.getServer();
         List<Vod> vods = cacheMap.get(server);
         if (vods != null) {
+            for (Vod vod : vods) {
+                vod.setVodDrive(drive.getName());
+            }
             return vods;
         }
 
@@ -64,7 +69,7 @@ public class XiaoyaLocalIndex {
             // List<String> lines = new LazyFileList(saveDir + "/index.all.txt");
             Logger.log("索引列表消耗内存：" + (Debug.getNativeHeapAllocatedSize() - startMemory));
 
-            vods = toVods("~default_drive", lines);
+            vods = toVods(drive.getName(), lines);
 
             // 构建倒排索引，用于快速查找
             Map<String, List<Integer>> invertedIndex = new HashMap<>();

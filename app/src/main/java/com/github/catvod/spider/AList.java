@@ -637,15 +637,23 @@ public class AList extends Spider {
             if (keyword.startsWith("~daily:")) {
                 List<String> lines = new ArrayList<>();
                 doc = Jsoup.parse(OkHttp.string(drive.dailySearchApi(shortKeyword)));
-                for (Element a : doc.select("ul > a"))
+                for (Element a : doc.select("ul > a")) {
+                    String line = a.text();
+                    if (!line.contains("/"))
+                        continue;
                     lines.add(a.text());
+                }
                 vods = XiaoyaLocalIndex.toVods(drive, lines);
                 return vods;
             } else if (keyword.startsWith("~search:")) {
                 List<String> lines = new ArrayList<>();
                 doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword)));
-                for (Element a : doc.select("ul > a"))
+                for (Element a : doc.select("ul > a")) {
+                    String line = a.text();
+                    if (!line.contains("/"))
+                        continue;
                     lines.add(a.text());
+                }
                 vods = XiaoyaLocalIndex.toVods(drive, lines);
                 return vods;
             } else if (keyword.startsWith("~quick:")) {
@@ -660,8 +668,12 @@ public class AList extends Spider {
                 if (vods.size() == 0) {
                     List<String> lines = new ArrayList<>();
                     doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword)));
-                    for (Element a : doc.select("ul > a"))
+                    for (Element a : doc.select("ul > a")) {
+                        String line = a.text();
+                        if (!line.contains("/"))
+                            continue;
                         lines.add(a.text());
+                    }
                     vods = XiaoyaLocalIndex.toVods(drive, lines);
                 }
             }

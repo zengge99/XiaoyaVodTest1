@@ -21,6 +21,11 @@ public class XiaoyaLocalIndex {
     private static Map<String, Map<String, List<Integer>>> invertedIndexMap = new HashMap<>();
 
     public static synchronized List<String> downlodadAndUnzip(String server) {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         System.gc();
         long startMemory = Debug.getNativeHeapAllocatedSize();
@@ -288,6 +293,7 @@ public class XiaoyaLocalIndex {
      * @param extractDir 解压目录
      * @param outputFile 合并后的文件路径
      */
+    /* 
     private static void mergeFiles(String extractDir, String outputFile) throws IOException {
         Path dirPath = Paths.get(extractDir);
         Path outputFilePath = Paths.get(outputFile);
@@ -307,7 +313,8 @@ public class XiaoyaLocalIndex {
             throw new IOException("合并文件失败: " + extractDir, e);
         }
     }
-    /* 
+    */
+    
     private static void mergeFiles(String extractDir, String outputFile) throws IOException {
         Path dirPath = Paths.get(extractDir);
         Path outputFilePath = Paths.get(outputFile);
@@ -335,7 +342,7 @@ public class XiaoyaLocalIndex {
             throw new IOException("合并文件失败: " + extractDir, e);
         }
     }
-    */
+    
 
     /**
      * 日志输出

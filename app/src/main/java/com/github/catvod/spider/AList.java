@@ -479,12 +479,16 @@ public class AList extends Spider {
         try {
             JSONObject params = new JSONObject();
             String userName = LoginDlg.showLoginDlg("用户名(留空默认guest)");
-            String password = LoginDlg.showLoginDlg("密码(留空默认guest_Api789)");
+            String password = LoginDlg.showLoginDlg("密码(留空默认guest_Api789，\"alist-\"打头会被识别为alist token)");
             Logger.log("用户名:" + userName + "密码:" + password);
             userName = userName.isEmpty() ? "guest" : userName;
             password = password.isEmpty() ? "guest_Api789" : password;
             params.put("username", userName);
             params.put("password", password);
+            if (password.startsWith("alist-")) {
+                drive.setToken(password);
+                return true;
+            } 
             String response = OkHttp.post(drive.loginApi(), params.toString());
             drive.setToken(new JSONObject(response).getJSONObject("data").getString("token"));
             return true;

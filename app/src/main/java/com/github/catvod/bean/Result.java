@@ -224,9 +224,14 @@ public class Result {
         return page(1, 1, 0, 1);
     }
 
-    public Result page(int page, boolean auto) {
+    public Result page(String pg, boolean auto) {
         if (!auto) {
             return page(1, 1, 0, 1);
+        }
+        int page = 1; 
+        try {
+            page = Integer.parseInt(pg);
+        } catch (NumberFormatException e) {
         }
         int limit = 72;
         int total = this.list.size();

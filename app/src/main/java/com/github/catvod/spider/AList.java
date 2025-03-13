@@ -307,6 +307,7 @@ public class AList extends Spider {
             vod.setVodId(id);
             vod.setVodName(name);
             vod.setVodPic(vodPic);
+            vod.setVodDrive(drive.getName());
         }
         vod.setVodPlayFrom(from.toString());
         vod.setVodPlayUrl(url.toString());
@@ -346,6 +347,7 @@ public class AList extends Spider {
             vod.setVodId(id);
             vod.setVodName(name);
             vod.setVodPic(vodPic);
+            vod.setVodDrive(drive.getName());
         }
         vod.setVodPlayFrom(drive.getName());
         vod.setVodPlayUrl(name + "$" + path);
@@ -672,12 +674,6 @@ public class AList extends Spider {
                 }
 
                 vod.setVodDrive(drive.getName());
-
-                if (vod.getVodPic().isEmpty()) {
-                    noPicList.add(vod);
-                } else {
-                    filteredVods.add(vod);
-                }
                 vodMap.put(vod.getVodId(), vod);
             }
             duration = System.currentTimeMillis() - startTime;

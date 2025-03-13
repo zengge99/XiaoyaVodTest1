@@ -625,6 +625,8 @@ public class AList extends Spider {
         }
 
         private List<Vod> xiaoya() {
+            long startTime = System.currentTimeMillis();
+            long duration = 0;
             List<Vod> list = new ArrayList<>();
             List<Vod> noPicList = new ArrayList<>();
             String shortKeyword = keyword;
@@ -645,7 +647,10 @@ public class AList extends Spider {
                     lines.add(a.text());
             } else if (keyword.startsWith("~quick:")) {
                 lines = XiaoyaLocalIndex.downlodadAndUnzip(drive.getServer());
+                startTime = System.currentTimeMillis();
                 lines = XiaoyaLocalIndex.quickSearch(drive.getServer(), shortKeyword);
+                duration = System.currentTimeMillis() - startTime;
+                Logger.log("快速搜索耗时：" + duration);
                 // String tmpKeyword = shortKeyword;
                 // lines = lines.stream().filter(i ->
                 // i.contains(tmpKeyword)).collect(Collectors.toList());
@@ -658,6 +663,7 @@ public class AList extends Spider {
                 }
             }
 
+            startTime = System.currentTimeMillis();
             for (String line : lines) {
                 if (line.startsWith("./")) {
                     line = line.substring(2);
@@ -702,6 +708,9 @@ public class AList extends Spider {
                 vodMap.put(vod.getVodId(), vod);
                 // }
             }
+            duration = System.currentTimeMillis() - startTime;
+            Logger.log("转换Vod耗时：" + duration);
+
             list.addAll(noPicList);
             return list;
         }

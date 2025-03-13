@@ -18,6 +18,7 @@ import com.github.catvod.bean.alist.Item;
 import com.github.catvod.spider.Logger;
 import com.github.catvod.utils.Image;
 import com.github.catvod.utils.Util;
+import android.text.TextUtils;
 
 import android.os.Debug;
 
@@ -165,14 +166,10 @@ public class XiaoyaLocalIndex {
             } else {
                 vod.setVodId(vod.getVodId() + "/~soufile");
             }
-            if (TextUtils.isEmpty(item.getThumb())) {
-                noPicList.add(vod);
-            } else {
-                list.add(vod);
-            }
+
+            list.add(vod);
             vodMap.put(vod.getVodId(), vod);
         }
-        list.addAll(noPicList);
         return list;
     }
 

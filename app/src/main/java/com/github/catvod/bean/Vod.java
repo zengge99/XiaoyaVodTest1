@@ -126,6 +126,10 @@ public class Vod {
         this.vodPic = vodPic;
     }
 
+    public String getVodPic() {
+        return this.vodPic == null ? "" : this.vodPic;
+    }
+
     public void setVodRemarks(String vodRemarks) {
         this.vodRemarks = vodRemarks;
     }

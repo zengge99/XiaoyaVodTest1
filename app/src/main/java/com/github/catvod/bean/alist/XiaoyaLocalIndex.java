@@ -1,6 +1,6 @@
 package com.github.catvod.bean.alist;
 
-import java.io.*; 
+import java.io.*;
 import java.net.URL;
 import java.nio.file.*;
 import java.util.ArrayList;
@@ -21,14 +21,8 @@ public class XiaoyaLocalIndex {
     private static Map<String, Map<String, List<Integer>>> invertedIndexMap = new HashMap<>();
 
     public static synchronized List<String> downlodadAndUnzip(String server) {
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
-        long startMemory = Debug.getNativeHeapAllocatedSize();
-        long usedMemory = 0;
+        Logger.log("本地索引前的内存：" + Debug.getNativeHeapAllocatedSize());
 
         List<String> lines = cacheMap.get(server);
         if (lines != null) {
@@ -38,7 +32,8 @@ public class XiaoyaLocalIndex {
         try {
             long startMemory2 = Debug.getNativeHeapAllocatedSize();
             String fileUrl = server + "/tvbox/data";
-            String saveDir = com.github.catvod.utils.Path.root().getPath() + "/TV/index/" + server.split("//")[1].replace(":", "_port");
+            String saveDir = com.github.catvod.utils.Path.root().getPath() + "/TV/index/"
+                    + server.split("//")[1].replace(":", "_port");
             Logger.log(saveDir);
 
             // 0. 清空目录
@@ -60,14 +55,9 @@ public class XiaoyaLocalIndex {
             // 4. 删除指定文件
             deleteFilesExclude(saveDir, "index.all.txt");
             deleteFiles(saveDir, "*.tgz");
-            usedMemory = Debug.getNativeHeapAllocatedSize() - startMemory2;
-            Logger.log("文件处理消耗内存：" + usedMemory);
 
-            long startMemory1 = Debug.getNativeHeapAllocatedSize();
-            //lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
+            // lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
             lines = new LazyFileList(saveDir + "/index.all.txt");
-            usedMemory = Debug.getNativeHeapAllocatedSize() - startMemory1;
-            Logger.log("仅索引部分消耗内存：" + usedMemory);
 
             // 构建倒排索引，用于快速查找
             Map<String, List<Integer>> invertedIndex = new HashMap<>();
@@ -80,18 +70,14 @@ public class XiaoyaLocalIndex {
                 invertedIndex.computeIfAbsent(word.toLowerCase(), k -> new ArrayList<>()).add(i);
             }
 
-            long startMemory3 = Debug.getNativeHeapAllocatedSize();
             invertedIndexMap.put(server, invertedIndex);
             cacheMap.put(server, lines);
-            usedMemory = Debug.getNativeHeapAllocatedSize() - startMemory3;
-            Logger.log("倒排索引消耗内存：" + usedMemory);
 
         } catch (IOException e) {
             log("操作失败: " + e.getMessage());
         }
 
-        usedMemory = Debug.getNativeHeapAllocatedSize() - startMemory;
-        Logger.log("本地索引整体消耗内存：" + usedMemory);
+        Logger.log("本地索引后的内存：" + Debug.getNativeHeapAllocatedSize());
 
         return lines;
     }
@@ -285,28 +271,6 @@ public class XiaoyaLocalIndex {
      * @param extractDir 解压目录
      * @param outputFile 合并后的文件路径
      */
-    /* 
-    private static void mergeFiles(String extractDir, String outputFile) throws IOException {
-        Path dirPath = Paths.get(extractDir);
-        Path outputFilePath = Paths.get(outputFile);
-    
-        try {
-            try (var stream = Files.newDirectoryStream(dirPath, "*.txt")) {
-                for (Path file : stream) {
-                    if (file.equals(outputFilePath)) {
-                        Logger.log("跳过文件: " + file);
-                        continue;
-                    }
-                    Files.copy(file, outputFilePath);
-                    Logger.log("已合并文件: " + file);
-                }
-            }
-        } catch (IOException e) {
-            throw new IOException("合并文件失败: " + extractDir, e);
-        }
-    }
-    */
-    
     private static void mergeFiles(String extractDir, String outputFile) throws IOException {
         Path dirPath = Paths.get(extractDir);
         Path outputFilePath = Paths.get(outputFile);
@@ -334,7 +298,6 @@ public class XiaoyaLocalIndex {
             throw new IOException("合并文件失败: " + extractDir, e);
         }
     }
-    
 
     /**
      * 日志输出

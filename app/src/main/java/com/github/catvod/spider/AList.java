@@ -626,7 +626,6 @@ public class AList extends Spider {
             long startTime = System.currentTimeMillis();
             long duration = 0;
             List<Vod> list = new ArrayList<>();
-            List<Vod> noPicList = new ArrayList<>();
             String shortKeyword = keyword;
             if (keyword.contains(":")) {
                 shortKeyword = keyword.split(":")[1];
@@ -681,18 +680,17 @@ public class AList extends Spider {
             List<Vod> filteredVods = new ArrayList<>();
             startTime = System.currentTimeMillis();
             for (Vod vod : vods) {
-                Logger.log(vod.getVodIdWithoutDrivePrefix() + "~~~~~" + drive.getPath());
                 if (!vod.getVodIdWithoutDrivePrefix().startsWith(drive.getPath())) {
                     continue;
                 }
 
                 vod.setVodDrive(drive.getName());
+                filteredVods.add(vod);
                 vodMap.put(vod.getVodId(), vod);
             }
             duration = System.currentTimeMillis() - startTime;
             Logger.log("转换Vod耗时：" + duration);
 
-            filteredVods.addAll(noPicList);
             return filteredVods;
         }
     }

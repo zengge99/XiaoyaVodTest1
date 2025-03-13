@@ -14,12 +14,16 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import com.github.catvod.bean.Vod;
 import com.github.catvod.spider.Logger;
+import android.os.Debug;
 
 public class XiaoyaLocalIndex {
     private static Map<String, List<String>> cacheMap = new HashMap<>();
     private static Map<String, Map<String, List<Integer>>> invertedIndexMap = new HashMap<>();
 
     public static synchronized List<String> downlodadAndUnzip(String server) {
+
+        long startMemory = Debug.getNativeHeapAllocatedSize();
+        long usedMemory = 0;
 
         List<String> lines = cacheMap.get(server);
         if (lines != null) {
@@ -71,6 +75,9 @@ public class XiaoyaLocalIndex {
         } catch (IOException e) {
             log("操作失败: " + e.getMessage());
         }
+
+        usedMemory = Debug.getNativeHeapAllocatedSize() - startMemory;
+        Logger.log("加载本地索引消耗内存：" + usedMemory);
 
         return lines;
     }

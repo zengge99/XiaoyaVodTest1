@@ -198,6 +198,10 @@ public class AList extends Spider {
         Drive tmpDrive = defaultDrive;
         String result = Result.string(classes, list, filters);
         Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+            }
             XiaoyaLocalIndex.downlodadAndUnzip(tmpDrive.getServer());
         });
         thread.start();

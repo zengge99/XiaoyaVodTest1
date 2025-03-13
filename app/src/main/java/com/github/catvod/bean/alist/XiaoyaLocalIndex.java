@@ -64,7 +64,7 @@ public class XiaoyaLocalIndex {
             // List<String> lines = new LazyFileList(saveDir + "/index.all.txt");
             Logger.log("索引列表消耗内存：" + (Debug.getNativeHeapAllocatedSize() - startMemory));
 
-            vods = toVods(lines);
+            vods = toVods("~default_drive", lines);
 
             // 构建倒排索引，用于快速查找
             Map<String, List<Integer>> invertedIndex = new HashMap<>();
@@ -130,7 +130,7 @@ public class XiaoyaLocalIndex {
         }
     }
 
-    public static List<Vod> toVods(List<String> lines) {
+    public static List<Vod> toVods(String driveName, List<String> lines) {
         List<Vod> list = new ArrayList<>();
         for (String line : lines) {
             String[] splits = line.split("#");
@@ -150,7 +150,7 @@ public class XiaoyaLocalIndex {
             String fileName = splits[0].substring(index + 1);
             item.setName(fileName);
             item.doubanInfo.setName(splits.length >= 2 ? splits[1] : fileName);
-            Vod vod = item.getVod("~default_drive", Image.FOLDER);
+            Vod vod = item.getVod(driveName, Image.FOLDER);
             vod.setVodRemarks(item.doubanInfo.getRating());
             vod.setVodName(item.doubanInfo.getName());
             vod.doubanInfo = item.doubanInfo;

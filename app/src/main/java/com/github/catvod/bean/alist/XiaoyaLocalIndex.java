@@ -139,6 +139,7 @@ public class XiaoyaLocalIndex {
 
     public static List<Vod> toVods(Drive drive, List<String> lines) {
         List<Vod> list = new ArrayList<>();
+        List<Vod> noPicList = new ArrayList<>();
         for (String line : lines) {
             String[] splits = line.split("#");
             int index = splits[0].lastIndexOf("/");
@@ -166,10 +167,14 @@ public class XiaoyaLocalIndex {
             } else {
                 vod.setVodId(vod.getVodId() + "/~soufile");
             }
-
-            list.add(vod);
+            if (TextUtils.isEmpty(item.getThumb())) {
+                noPicList.add(vod);
+            } else {
+                list.add(vod);
+            }
             vodMap.put(vod.getVodId(), vod);
         }
+        list.addAll(noPicList);
         return list;
     }
 

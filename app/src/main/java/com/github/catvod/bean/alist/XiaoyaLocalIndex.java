@@ -30,7 +30,6 @@ public class XiaoyaLocalIndex {
         }
 
         try {
-            long startMemory2 = Debug.getNativeHeapAllocatedSize();
             String fileUrl = server + "/tvbox/data";
             String saveDir = com.github.catvod.utils.Path.root().getPath() + "/TV/index/"
                     + server.split("//")[1].replace(":", "_port");
@@ -56,8 +55,10 @@ public class XiaoyaLocalIndex {
             deleteFilesExclude(saveDir, "index.all.txt");
             deleteFiles(saveDir, "*.tgz");
 
-            // lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
-            lines = new LazyFileList(saveDir + "/index.all.txt");
+            long startMemory = Debug.getNativeHeapAllocatedSize();
+            lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
+            //lines = new LazyFileList(saveDir + "/index.all.txt");
+            Logger.log("索引列表消耗内存：" + (Debug.getNativeHeapAllocatedSize() - startMemory));
 
             // 构建倒排索引，用于快速查找
             Map<String, List<Integer>> invertedIndex = new HashMap<>();

@@ -54,7 +54,7 @@ public class XiaoyaLocalIndex {
             // 4. 删除指定文件
             deleteFilesExclude(saveDir, "index.all.txt");
             deleteFiles(saveDir, "*.tgz");
-
+  
             long startMemory = Debug.getNativeHeapAllocatedSize();
             lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
             //lines = new LazyFileList(saveDir + "/index.all.txt");

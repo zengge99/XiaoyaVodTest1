@@ -55,8 +55,11 @@ public class XiaoyaLocalIndex {
             deleteFilesExclude(saveDir, "index.all.txt");
             deleteFiles(saveDir, "*.tgz");
 
-            lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
-            //lines = new LazyFileList(saveDir + "/index.all.txt");
+            long startMemory1 = Debug.getNativeHeapAllocatedSize();
+            //lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
+            lines = new LazyFileList(saveDir + "/index.all.txt");
+            usedMemory = Debug.getNativeHeapAllocatedSize() - startMemory1;
+            Logger.log("仅索引部分消耗内存：" + usedMemory);
 
             // 构建倒排索引，用于快速查找
             Map<String, List<Integer>> invertedIndex = new HashMap<>();

@@ -75,7 +75,6 @@ public class XiaoyaLocalIndex {
             cacheMap.put(server, lines);
 
         } catch (IOException e) {
-            log("操作失败: " + e.getMessage());
         }
 
         Logger.log("本地索引后的内存：" + Debug.getNativeHeapAllocatedSize());
@@ -106,7 +105,6 @@ public class XiaoyaLocalIndex {
         Path path = Paths.get(dirPath);
         if (!Files.exists(path)) {
             Files.createDirectories(path);
-            log("目录已创建: " + dirPath);
         }
     }
 
@@ -192,7 +190,6 @@ public class XiaoyaLocalIndex {
 
         // 如果目录不存在，直接返回
         if (!Files.exists(path)) {
-            log("目录不存在，无需删除: " + dirPath);
             return;
         }
 
@@ -217,10 +214,8 @@ public class XiaoyaLocalIndex {
                         // 如果是目录，递归删除
                         deleteFilesExclude(file.toString(), excludeFiles);
                         Files.delete(file); // 删除空目录
-                        log("已删除目录: " + file);
                     } else {
                         Files.delete(file);
-                        log("已删除文件: " + file);
                     }
                 }
             }
@@ -240,7 +235,6 @@ public class XiaoyaLocalIndex {
 
         // 如果目录不存在，直接返回
         if (!Files.exists(path)) {
-            log("目录不存在，无需删除: " + dirPath);
             return;
         }
 
@@ -255,10 +249,8 @@ public class XiaoyaLocalIndex {
                     // 如果是目录，递归删除
                     deleteFiles(file.toString(), null);
                     Files.delete(file); // 删除空目录
-                    log("已删除目录: " + file);
                 } else {
                     Files.delete(file);
-                    log("已删除文件: " + file);
                 }
             }
         } catch (IOException e) {
@@ -281,7 +273,6 @@ public class XiaoyaLocalIndex {
                 for (Path file : stream) {
                     // 跳过 outputFile
                     if (file.equals(outputFilePath)) {
-                        log("跳过文件: " + file);
                         continue;
                     }
 
@@ -297,20 +288,10 @@ public class XiaoyaLocalIndex {
                             writer.newLine();
                         }
                     }
-                    log("已合并文件: " + file);
                 }
             }
         } catch (IOException e) {
             throw new IOException("合并文件失败: " + extractDir, e);
         }
-    }
-
-    /**
-     * 日志输出
-     *
-     * @param message 日志信息
-     */
-    private static void log(String message) {
-        System.out.println(message);
     }
 }

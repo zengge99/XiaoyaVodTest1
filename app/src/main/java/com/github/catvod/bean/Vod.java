@@ -115,7 +115,7 @@ public class Vod {
     }
 
     public String getVodIdWithoutDrivePrefix() {
-        return vodId.substring(vodId.indexOf("/") + 1);
+        return vodId.substring(vodId.indexOf("/"));
     }
 
     public String getVodName() {

@@ -296,11 +296,11 @@ public class XiaoyaLocalIndex {
             try (var stream = Files.newDirectoryStream(dirPath, "*.txt")) {
                 for (Path file : stream) {
                     if (file.equals(outputFilePath)) {
-                        log("跳过文件: " + file);
+                        Logger.log("跳过文件: " + file);
                         continue;
                     }
                     Files.copy(file, outputFilePath);
-                    log("已合并文件: " + file);
+                    Logger.log("已合并文件: " + file);
                 }
             }
         } catch (IOException e) {

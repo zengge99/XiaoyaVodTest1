@@ -106,6 +106,10 @@ public class Vod {
         this.vodId = vodId;
     }
 
+    public void setVodDrive(String driveName) {
+        this.vodId = driveName + getVodId().substring(getVodId().indexOf("/"));
+    }
+
     public String getVodId() {
         return this.vodId;
     }

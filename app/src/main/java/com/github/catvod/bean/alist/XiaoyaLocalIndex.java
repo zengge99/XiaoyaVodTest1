@@ -292,14 +292,14 @@ public class XiaoyaLocalIndex {
         Path dirPath = Paths.get(extractDir);
         Path outputFilePath = Paths.get(outputFile);
     
-        try (BufferedWriter writer = Files.newBufferedWriter(outputFilePath)) {
+        try ( Path outputFileObj = Paths.get(outputFilePath)) {
             try (var stream = Files.newDirectoryStream(dirPath, "*.txt")) {
                 for (Path file : stream) {
                     if (file.equals(outputFilePath)) {
                         log("跳过文件: " + file);
                         continue;
                     }
-                    Files.copy(file, writer);
+                    Files.copy(file, outputFileObj);
                     log("已合并文件: " + file);
                 }
             }

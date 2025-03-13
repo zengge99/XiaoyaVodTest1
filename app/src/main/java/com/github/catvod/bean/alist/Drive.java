@@ -84,7 +84,7 @@ public class Drive {
     }
 
     public JSONObject getParamByPath(String path) {
-        Logger.log("getParamByPath:" + path);
+        //Logger.log("getParamByPath:" + path);
         if (params != null) {
             Logger.log(params);
             List<String> keys = new ArrayList<>();

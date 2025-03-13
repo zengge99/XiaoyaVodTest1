@@ -432,7 +432,7 @@ public class AList extends Spider {
         }
 
         // Logger.log(Result.string(list));
-        return Result.get().vod(list).page().string();
+        return Result.get().vod(list).page(pg, true).string();
     }
 
     private String alistCategoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)

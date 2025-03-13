@@ -31,6 +31,7 @@ public class XiaoyaLocalIndex {
         }
 
         try {
+            long startMemory2 = Debug.getNativeHeapAllocatedSize();
             String fileUrl = server + "/tvbox/data";
             String saveDir = com.github.catvod.utils.Path.root().getPath() + "/TV/index/" + server.split("//")[1].replace(":", "_port");
             Logger.log(saveDir);
@@ -54,6 +55,8 @@ public class XiaoyaLocalIndex {
             // 4. 删除指定文件
             deleteFilesExclude(saveDir, "index.all.txt");
             deleteFiles(saveDir, "*.tgz");
+            usedMemory = Debug.getNativeHeapAllocatedSize() - startMemory2;
+            Logger.log("文件处理消耗内存：" + usedMemory);
 
             long startMemory1 = Debug.getNativeHeapAllocatedSize();
             //lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
@@ -72,8 +75,11 @@ public class XiaoyaLocalIndex {
                 invertedIndex.computeIfAbsent(word.toLowerCase(), k -> new ArrayList<>()).add(i);
             }
 
+            long startMemory3 = Debug.getNativeHeapAllocatedSize();
             invertedIndexMap.put(server, invertedIndex);
             cacheMap.put(server, lines);
+            usedMemory = Debug.getNativeHeapAllocatedSize() - startMemory3;
+            Logger.log("倒排索引消耗内存：" + usedMemory);
 
         } catch (IOException e) {
             log("操作失败: " + e.getMessage());

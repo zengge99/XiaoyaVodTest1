@@ -1,310 +1,723 @@
-package com.github.catvod.bean.alist;
+package com.github.catvod.spider;
 
-import java.io.*;
-import java.net.URL;
-import java.nio.file.*;
+import android.content.Context;
+import android.net.Uri;
+import android.text.TextUtils;
+
+import com.github.catvod.bean.Class;
+import com.github.catvod.bean.Filter;
+import com.github.catvod.bean.Result;
+import com.github.catvod.bean.DoubanParser;
+import com.github.catvod.bean.Sub;
+import com.github.catvod.bean.Vod;
+import com.github.catvod.bean.alist.Drive;
+import com.github.catvod.bean.alist.XiaoyaLocalIndex;
+import com.github.catvod.bean.alist.Item;
+import com.github.catvod.bean.alist.Sorter;
+import com.github.catvod.bean.alist.VodSorter;
+import com.github.catvod.crawler.Spider;
+import com.github.catvod.crawler.SpiderDebug;
+import com.github.catvod.net.OkHttp;
+import com.github.catvod.utils.Util;
+
+import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import com.github.catvod.bean.Vod;
-import com.github.catvod.spider.Logger;
-import android.os.Debug;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import com.github.catvod.bean.alist.LoginDlg;
 
-public class XiaoyaLocalIndex {
-    private static Map<String, List<String>> cacheMap = new HashMap<>();
-    private static Map<String, Map<String, List<Integer>>> invertedIndexMap = new HashMap<>();
+public class AList extends Spider {
 
-    public static synchronized List<String> downlodadAndUnzip(String server) {
+    private List<Drive> drives;
+    private Drive defaultDrive;
+    private String vodPic;
+    private String ext;
+    private String xiaoyaAlistToken;
+    private Map<String, Vod> vodMap = new HashMap<>();
+    public static Context appContext;
 
-        Logger.log("本地索引前的内存：" + Debug.getNativeHeapAllocatedSize());
+    private List<Filter> getFilter(String tid) {
+        List<Filter> items = new ArrayList<>();
+        Drive drive = getDrive(tid);
 
-        List<String> lines = cacheMap.get(server);
-        if (lines != null) {
-            return lines;
+        if (drive.noPoster()) {
+            items.add(new Filter("order", "排序：", Arrays.asList(
+                    new Filter.Value("默认排序", "def_def"),
+                    new Filter.Value("名字降序", "name_desc"),
+                    new Filter.Value("名字升序", "name_asc"),
+                    new Filter.Value("时间降序", "date_desc"),
+                    new Filter.Value("时间升序", "date_asc"))));
+            return items;
         }
 
+        List<Filter.Value> values = new ArrayList<>();
+        values.add(new Filter.Value("全部分类", "~all"));
+        for (Item item : getList(tid, true)) {
+            if (item.isFolder())
+                values.add(new Filter.Value(item.getName(), drive.getName() + drive.getPath() + "/" + item.getName()));
+        }
+        if (values.size() > 0) {
+            items.add(new Filter("subpath", "分类", values));
+        }
+
+        items.add(new Filter("douban", "豆瓣评分：", Arrays.asList(
+                new Filter.Value("全部评分", "0"),
+                new Filter.Value("9分以上", "9"),
+                new Filter.Value("8分以上", "8"),
+                new Filter.Value("7分以上", "7"),
+                new Filter.Value("6分以上", "6"),
+                new Filter.Value("5分以上", "5"))));
+
+        items.add(new Filter("doubansort", "豆瓣排序：", Arrays.asList(
+                new Filter.Value("原始顺序", "0"),
+                new Filter.Value("豆瓣评分\u2B07\uFE0F", "1"),
+                new Filter.Value("豆瓣评分\u2B06\uFE0F", "2"))));
+
+        items.add(new Filter("random", "随机显示：", Arrays.asList(
+                new Filter.Value("固定显示", "0"),
+                new Filter.Value("随机显示️", "9999999"),
+                new Filter.Value("随机200个️", "200"),
+                new Filter.Value("随机500个️", "500"))));
+
+        return items;
+    }
+
+    // 临时方案
+    private String getXiaoyaAlistToken() {
+
+        if (xiaoyaAlistToken != null) {
+            return xiaoyaAlistToken;
+        }
+
+        String url = defaultDrive.getServer() + "/tvbox/libs/alist.min.js";
+
+        String regex = "'\\s*Authorization\\s*':\\s*'([^']*)'";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(OkHttp.string(url));
+
+        // 查找并提取目标部分
+        if (matcher.find()) {
+            String token = matcher.group(1); // 获取捕获组的内容
+            xiaoyaAlistToken = token;
+        } else {
+            xiaoyaAlistToken = "";
+        }
+        Logger.log("token:" + xiaoyaAlistToken);
+        return xiaoyaAlistToken;
+    }
+
+    private void fetchRule() {
+        if (drives != null && !drives.isEmpty())
+            return;
+        if (ext.startsWith("http"))
+            ext = OkHttp.string(ext);
+        String ext1 = "{\"drives\":" + ext + "}";
+        Drive drive = Drive.objectFrom(ext1);
+        drives = drive.getDrives();
+        vodPic = drive.getVodPic();
+
+        List<Drive> searcherDrivers = drives.stream().filter(d -> d.search()).collect(Collectors.toList());
+        if (searcherDrivers.size() > 0) {
+            defaultDrive = searcherDrivers.get(0);
+            // XiaoyaLocalIndex.downlodadAndUnzip(defaultDrive.getServer());
+        }
+
+        /*
+        for (Drive drive2 : drives) {
+            if (drive2.getServer().equals(defaultDrive.getServer())) {
+                drive2.setToken(getXiaoyaAlistToken());
+            }   
+        }
+        */
+    }
+
+    private Drive getDrive(String name) {
+        return drives.get(drives.indexOf(new Drive(name))).check();
+    }
+
+    private String post(Drive drive, String url, String param) {
+        return post(drive, url, param, true);
+    }
+
+    private String post(Drive drive, String url, String param, boolean retry) {
+        String response = OkHttp.post(url, param, drive.getHeader()).getBody();
+        SpiderDebug.log(response);
+        if (retry && (response.contains("Guest user is disabled") || response.contains("token is invalidated") || response.contains("without permission") ) && login(drive))
+            return post(drive, url, param, false);
+        return response;
+    }
+    
+    @Override
+    public void init(Context context, String extend) {
         try {
-            long startMemory2 = Debug.getNativeHeapAllocatedSize();
-            String fileUrl = server + "/tvbox/data";
-            String saveDir = com.github.catvod.utils.Path.root().getPath() + "/TV/index/"
-                    + server.split("//")[1].replace(":", "_port");
-            Logger.log(saveDir);
+            appContext = context;
+            ext = extend;
+            fetchRule();
+        } catch (Exception ignored) {
+        }
+    }
 
-            // 0. 清空目录
-            deleteFiles(saveDir, null); // 删除 saveDir 中的所有文件
+    @Override
+    public String homeContent(boolean filter) throws Exception {
+        fetchRule();
+        List<Class> classes = new ArrayList<>();
+        LinkedHashMap<String, List<Filter>> filters = new LinkedHashMap<>();
+        for (Drive drive : drives)
+            if (!drive.hidden())
+                classes.add(drive.toType());
+        for (Class item : classes)
+            filters.put(item.getTypeId(), getFilter(item.getTypeId()));
 
-            // 1. 确保目录存在
-            createDirectoryIfNotExists(saveDir);
+        List<Vod> list = new ArrayList<>();
+        if (defaultDrive != null) {
+            List<Job> jobs = new ArrayList<>();
+            ExecutorService executor = Executors.newCachedThreadPool();
+            jobs.add(new Job(defaultDrive.check(), "~daily:1000"));
+            for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
+                list.addAll(future.get());
+        }
 
-            // 2. 下载文件
-            downloadFile(fileUrl + "/index.video.tgz", saveDir + "/index.video.tgz");
-            downloadFile(fileUrl + "/index.115.tgz", saveDir + "/index.115.tgz");
+        Drive tmpDrive = defaultDrive;
+        String result = Result.string(classes, list, filters);
+        Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+            }
+            XiaoyaLocalIndex.downlodadAndUnzip(tmpDrive.getServer());
+        });
+        thread.start();
 
-            // 3. 解压文件
-            unzipFile(saveDir + "/index.video.tgz", saveDir);
-            unzipFile(saveDir + "/index.115.tgz", saveDir);
+        //Logger.log(result);
+        return result;
+    }
 
-            mergeFiles(saveDir, saveDir + "/index.all.txt");
+    @Override
+    public String categoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)
+            throws Exception {
+        String key = tid.contains("/") ? tid.substring(0, tid.indexOf("/")) : tid;
+        Drive drive = getDrive(key);
+        if (drive.noPoster()) {
+            return alistCategoryContent(tid, pg, filter, extend);
+        } else {
+            return xiaoyaCategoryContent(tid, pg, filter, extend);
+        }
+    }
 
-            // 4. 删除指定文件
-            deleteFilesExclude(saveDir, "index.all.txt");
-            deleteFiles(saveDir, "*.tgz");
+    @Override
+    public String detailContent(List<String> ids) throws Exception {
+        String id = ids.get(0);
+        if (id.endsWith("~soulist") || id.endsWith("~playlist")) {
+            return listDetailContent(ids);
+        }
+        if (id.endsWith("~soufile") || id.endsWith("~playlist")) {
+            return fileDetailContent(ids);
+        }
+        return defaultDetailContent(ids);
+    }
 
-            lines = Files.readAllLines(Paths.get(saveDir + "/index.all.txt"));
-            //lines = new LazyFileList(saveDir + "/index.all.txt");
+    @Override
+    public String searchContent(String keyword, boolean quick) throws Exception {
+        fetchRule();
+        List<Vod> list = new ArrayList<>();
+        List<Job> jobs = new ArrayList<>();
+        ExecutorService executor = Executors.newCachedThreadPool();
+        for (Drive drive : drives) {
+            if (drive.search()) {
+                if (quick) {
+                    jobs.add(new Job(drive.check(), "~quick:" + keyword));
+                } else {
+                    jobs.add(new Job(drive.check(), "~search:" + keyword));
+                }
+            }
+        }
+        for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
+            list.addAll(future.get());
+        //Logger.log(Result.string(list));
+        return Result.get().vod(list).page().string();
+    }
 
-            // 构建倒排索引，用于快速查找
-            Map<String, List<Integer>> invertedIndex = new HashMap<>();
-            for (int i = 0; i < lines.size(); i++) {
-                String[] words = lines.get(i).split("#");
-                if (words.length < 2) {
+    @Override
+    public String playerContent(String flag, String id, List<String> vipFlags) {
+        Logger.log(flag);
+        Logger.log(id);
+        String[] ids = id.split("~~~");
+        String key = ids[0].contains("/") ? ids[0].substring(0, ids[0].indexOf("/")) : ids[0];
+        Drive drive = getDrive(key);
+        String url = getDetail(ids[0]).getUrl();
+        String result = Result.get().url(url).header(drive.getHeader()).subs(getSubs(ids)).string();
+        // String result =
+        // Result.get().url(url).header(getPlayHeader(url)).subs(getSubs(ids)).string();
+        Logger.log(result);
+        return result;
+    }
+
+    private String defaultDetailContent(List<String> ids) throws Exception {
+        Logger.log(ids);
+        fetchRule();
+        String id = ids.get(0);
+        String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
+        String name = id.substring(id.lastIndexOf("/") + 1);
+        Vod vod = new Vod();
+        vod.setVodPlayFrom(key);
+        vod.setVodId(id);
+        vod.setVodName(name);
+        vod.setVodPic(vodPic);
+        vod.setVodPlayUrl(name + "$" + id);
+        Logger.log(Result.string(vod));
+        return Result.string(vod);
+    }
+
+    private String listDetailContent(List<String> ids) throws Exception {
+        fetchRule();
+        String id = ids.get(0);
+        String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
+        String path = id.substring(0, id.lastIndexOf("/"));
+        String name = path.substring(path.lastIndexOf("/") + 1);
+        Drive drive = getDrive(key);
+        StringBuilder from = new StringBuilder();
+        StringBuilder url = new StringBuilder();
+        if (id.endsWith("~soulist")) {
+            walkFolder(drive, path, from, url, true);
+        } else {
+            walkFolder(drive, path, from, url, false);
+        }
+        Vod vod = vodMap.get(id);
+        if (vod == null && id.endsWith("~soulist")) {
+            String keyword = path.substring(path.indexOf("/") + 1);
+            List<Job> jobs = new ArrayList<>();
+            ExecutorService executor = Executors.newCachedThreadPool();
+            jobs.add(new Job(drive.check(), "~search:" + keyword));
+            for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
+                future.get();
+            vod = vodMap.get(id);
+        }
+        if (vod == null) {
+            vod = new Vod();
+            vod.setVodId(id);
+            vod.setVodName(name);
+            vod.setVodPic(vodPic);
+        }
+        vod.setVodPlayFrom(from.toString());
+        vod.setVodPlayUrl(url.toString());
+        if (id.endsWith("~soulist") && vod.doubanInfo.getYear().isEmpty() && !vod.doubanInfo.getId().isEmpty()) {
+            DoubanParser.getDoubanInfo(vod.doubanInfo.getId(), vod.doubanInfo);
+            vod.setVodContent(vod.doubanInfo.getPlot() + "\r\n\r\n文件路径: " + path.substring(path.indexOf("/") + 1));
+            vod.setVodActor(vod.doubanInfo.getActors());
+            vod.setVodDirector(vod.doubanInfo.getDirector());
+            vod.setVodArea(vod.doubanInfo.getRegion());
+            vod.setVodYear(vod.doubanInfo.getYear());
+            vod.setVodRemarks(vod.doubanInfo.getRating());
+            vod.setTypeName(vod.doubanInfo.getType());
+        }
+        Logger.log(Result.string(vod));
+        return Result.string(vod);
+    }
+
+    private String fileDetailContent(List<String> ids) throws Exception {
+        fetchRule();
+        String id = ids.get(0);
+        String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
+        String path = id.substring(0, id.lastIndexOf("/"));
+        String name = path.substring(path.lastIndexOf("/") + 1);
+        Drive drive = getDrive(key);
+        Vod vod = vodMap.get(id);
+        if (vod == null && id.endsWith("~soufile")) {
+            String keyword = path.substring(path.indexOf("/") + 1);
+            List<Job> jobs = new ArrayList<>();
+            ExecutorService executor = Executors.newCachedThreadPool();
+            jobs.add(new Job(drive.check(), keyword));
+            for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
+                future.get();
+            vod = vodMap.get(id);
+        }
+        if (vod == null) {
+            vod = new Vod();
+            vod.setVodId(id);
+            vod.setVodName(name);
+            vod.setVodPic(vodPic);
+        }
+        vod.setVodPlayFrom(drive.getName());
+        vod.setVodPlayUrl(name + "$" + path);
+        if (id.endsWith("~soufile") && vod.doubanInfo.getYear().isEmpty() && !vod.doubanInfo.getId().isEmpty()) {
+            DoubanParser.getDoubanInfo(vod.doubanInfo.getId(), vod.doubanInfo);
+            vod.setVodContent(vod.doubanInfo.getPlot() + "\r\n\r\n文件路径: " + path.substring(path.indexOf("/") + 1));
+            vod.setVodActor(vod.doubanInfo.getActors());
+            vod.setVodDirector(vod.doubanInfo.getDirector());
+            vod.setVodArea(vod.doubanInfo.getRegion());
+            vod.setVodYear(vod.doubanInfo.getYear());
+            vod.setVodRemarks(vod.doubanInfo.getRating());
+            vod.setTypeName(vod.doubanInfo.getType());
+        }
+        Logger.log(Result.string(vod));
+        return Result.string(vod);
+    }
+
+    private void walkFolder(Drive drive, String path, StringBuilder from, StringBuilder url, Boolean recursive)
+            throws Exception {
+        List<Item> items = getList(path, false);
+        String name = path.substring(path.lastIndexOf("/") + 1);
+        Sorter.sort("name", "asc", items);
+        List<String> playUrls = new ArrayList<>();
+        Boolean haveFile = false;
+        for (Item item : items)
+            if (item.isMedia(drive.isNew())) {
+                playUrls.add(item.getName() + "$" + item.getVodId(path) + findSubs(path, items));
+                haveFile = true;
+            }
+        if (haveFile) {
+            url.append("$$$" + TextUtils.join("#", playUrls));
+            from.append("$$$" + name);
+        }
+        if (recursive) {
+            for (Item item : items)
+                if (!item.isMedia(drive.isNew())) {
+                    walkFolder(drive, item.getVodId(path), from, url, recursive);
+                }
+        }
+        if (url.indexOf("$$$") == 0) {
+            url.delete(0, 3);
+            from.delete(0, 3);
+        }
+    }
+
+    private static Map<String, String> getPlayHeader(String url) {
+        try {
+            Uri uri = Uri.parse(url);
+            Map<String, String> header = new HashMap<>();
+            if (uri.getHost().contains("115.com"))
+                header.put("User-Agent", Util.CHROME);
+            else if (uri.getHost().contains("baidupcs.com"))
+                header.put("User-Agent", "pan.baidu.com");
+            return header;
+        } catch (Exception e) {
+            return new HashMap<>();
+        }
+    }
+
+    private String xiaoyaCategoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)
+            throws Exception {
+        Logger.log(tid);
+        fetchRule();
+        List<Vod> list = new ArrayList<>();
+        List<Job> jobs = new ArrayList<>();
+        ExecutorService executor = Executors.newCachedThreadPool();
+        String key = tid.contains("/") ? tid.substring(0, tid.indexOf("/")) : tid;
+        Drive drive = getDrive(key);
+
+        if (!drive.getName().equals("每日更新")) {
+            jobs.add(new Job(drive.check(), drive.getPath()));
+            for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
+                list.addAll(future.get());
+        } else {
+            jobs.add(new Job(drive.check(), "~daily:100000"));
+            for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
+                list.addAll(future.get());
+        }
+
+        if (filter) {
+            list = VodSorter.sortVods(list, extend);
+        }
+
+        //Logger.log(Result.string(list));
+        return Result.get().vod(list).page().string();
+    }
+
+    private String alistCategoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)
+            throws Exception {
+        Logger.log(tid);
+        fetchRule();
+        String order = extend.containsKey("order") ? extend.get("order") : "";
+        List<Item> folders = new ArrayList<>();
+        List<Item> files = new ArrayList<>();
+        List<Vod> list = new ArrayList<>();
+        String key = tid.contains("/") ? tid.substring(0, tid.indexOf("/")) : tid;
+        Drive drive = getDrive(key);
+
+        for (Item item : getList(tid, true)) {
+            if (item.isFolder())
+                folders.add(item);
+            else
+                files.add(item);
+        }
+        if (!TextUtils.isEmpty(order)) {
+            String splits[] = order.split("_");
+            Sorter.sort(splits[0], splits[1], folders);
+            Sorter.sort(splits[0], splits[1], files);
+        }
+
+        Vod playlistVod = null;
+        if (files.size() > 0) {
+            String remark = String.format("共 %d 集", files.size());
+            playlistVod = new Vod(tid + "/~playlist", "播放列表", "", remark, false);
+            playlistVod.setVodPic(drive.getPlaylistPic());
+
+            list.add(playlistVod);
+        }
+
+        for (Item item : folders)
+            list.add(item.getVod(tid, vodPic));
+        for (Item item : files)
+            list.add(item.getVod(tid, vodPic));
+        //Logger.log(Result.get().vod(list).page().string());
+        return Result.get().vod(list).page().string();
+    }
+
+    private boolean login(Drive drive) {
+        try {
+            JSONObject params = new JSONObject();
+            String userName = LoginDlg.showLoginDlg("用户名(留空默认guest)");
+            String password = LoginDlg.showLoginDlg("密码(留空默认guest_Api789)");
+            Logger.log("用户名:" + userName + "密码:" + password);
+            userName = userName.isEmpty() ? "guest" : userName;
+            password = password.isEmpty() ? "guest_Api789" : password;
+            params.put("username", userName);
+            params.put("password", password);
+            String response = OkHttp.post(drive.loginApi(), params.toString());
+            drive.setToken(new JSONObject(response).getJSONObject("data").getString("token"));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private Item getDetail(String id) {
+        String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
+        String path = id.contains("/") ? id.substring(id.indexOf("/")) : "";
+        Drive drive = getDrive(key);
+        Item item;
+        if (drive.pathByApi()) {
+            item = getDetailByApi(id);
+        } else {
+            item = getDetailBy302(id);
+        }
+        Logger.log(item);
+        return item;
+    }
+
+    private Item getDetailBy302(String id) {
+        try {
+            String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
+            String path = id.contains("/") ? id.substring(id.indexOf("/")) : "";
+            Drive drive = getDrive(key);
+            path = path.startsWith(drive.getPath()) ? path : drive.getPath() + path;
+            Item item = new Item();
+            String url = drive.getServer() + "/d" + path;
+            Logger.log(url);
+            item.setUrl(url);
+            return item;
+        } catch (Exception e) {
+            return new Item();
+        }
+    }
+
+    private Item getDetailByApi(String id) {
+        try {
+            String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
+            String path = id.contains("/") ? id.substring(id.indexOf("/")) : "";
+            Drive drive = getDrive(key);
+            path = path.startsWith(drive.getPath()) ? path : drive.getPath() + path;
+            JSONObject params = drive.getParamByPath(path);
+            params.put("path", path);
+            String response = post(drive, drive.getApi(), params.toString());
+            return Item.objectFrom(getDetailJson(drive.isNew(), response));
+        } catch (Exception e) {
+            return new Item();
+        }
+    }
+
+    private List<Item> getList(String id, boolean filter) {
+        try {
+            String key = id.contains("/") ? id.substring(0, id.indexOf("/")) : id;
+            String path = id.contains("/") ? id.substring(id.indexOf("/")) : "";
+            Drive drive = getDrive(key);
+            path = path.startsWith(drive.getPath()) ? path : drive.getPath() + path;
+            JSONObject params = drive.getParamByPath(path);
+            params.put("path", path);
+            String response = post(drive, drive.listApi(), params.toString());
+            List<Item> items = Item.arrayFrom(getListJson(drive.isNew(), response));
+            Iterator<Item> iterator = items.iterator();
+            if (filter)
+                while (iterator.hasNext())
+                    if (iterator.next().ignore(drive.isNew()))
+                        iterator.remove();
+            return items;
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
+
+    private String getListJson(boolean isNew, String response) throws Exception {
+        if (isNew) {
+            return new JSONObject(response).getJSONObject("data").getJSONArray("content").toString();
+        } else {
+            return new JSONObject(response).getJSONObject("data").getJSONArray("files").toString();
+        }
+    }
+
+    private String getDetailJson(boolean isNew, String response) throws Exception {
+        if (isNew) {
+            return new JSONObject(response).getJSONObject("data").toString();
+        } else {
+            return new JSONObject(response).getJSONObject("data").getJSONArray("files").getJSONObject(0).toString();
+        }
+    }
+
+    private String getSearchJson(boolean isNew, String response) throws Exception {
+        if (isNew) {
+            return new JSONObject(response).getJSONObject("data").getJSONArray("content").toString();
+        } else {
+            return new JSONObject(response).getJSONArray("data").toString();
+        }
+    }
+
+    private String findSubs(String path, List<Item> items) {
+        StringBuilder sb = new StringBuilder();
+        for (Item item : items)
+            if (Util.isSub(item.getExt()))
+                sb.append("~~~").append(item.getName()).append("@@@").append(item.getExt()).append("@@@")
+                        .append(item.getVodId(path));
+        return sb.toString();
+    }
+
+    private List<Sub> getSubs(String[] ids) {
+        List<Sub> sub = new ArrayList<>();
+        for (String text : ids) {
+            if (!text.contains("@@@"))
+                continue;
+            String[] split = text.split("@@@");
+            String name = split[0];
+            String ext = split[1];
+            String url = getDetail(split[2]).getUrl();
+            sub.add(Sub.create().name(name).ext(ext).url(url));
+        }
+        return sub;
+    }
+
+    class Job implements Callable<List<Vod>> {
+
+        private final Drive drive;
+        private final String keyword;
+
+        public Job(Drive drive, String keyword) {
+            this.drive = drive;
+            this.keyword = keyword;
+        }
+
+        @Override
+        public List<Vod> call() {
+            return xiaoya();
+        }
+
+        private List<Vod> xiaoya() {
+            long startTime = System.currentTimeMillis();
+            long duration = 0;
+            List<Vod> list = new ArrayList<>();
+            List<Vod> noPicList = new ArrayList<>();
+            String shortKeyword = keyword;
+            if (keyword.contains(":")) {
+                shortKeyword = keyword.split(":")[1];
+            }
+            shortKeyword = shortKeyword.length() < 30 ? shortKeyword : shortKeyword.substring(0, 30);
+            Document doc;
+            List<String> lines = new ArrayList<>();
+            if (keyword.startsWith("~daily:")) {
+                doc = Jsoup.parse(OkHttp.string(drive.dailySearchApi(shortKeyword)));
+                for (Element a : doc.select("ul > a")) {
+                    lines.add(a.text());
+                }
+            } else if (keyword.startsWith("~search:")) {
+                doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword)));
+                for (Element a : doc.select("ul > a"))
+                    lines.add(a.text());
+            } else if (keyword.startsWith("~quick:")) {
+                lines = XiaoyaLocalIndex.downlodadAndUnzip(drive.getServer());
+                startTime = System.currentTimeMillis();
+                lines = XiaoyaLocalIndex.quickSearch(drive.getServer(), shortKeyword);
+                duration = System.currentTimeMillis() - startTime;
+                Logger.log("快速搜索耗时：" + duration);
+                // String tmpKeyword = shortKeyword;
+                // lines = lines.stream().filter(i ->
+                // i.contains(tmpKeyword)).collect(Collectors.toList());
+            } else {
+                lines = XiaoyaLocalIndex.downlodadAndUnzip(drive.getServer());
+                if (lines.size() == 0) {
+                    doc = Jsoup.parse(OkHttp.string(drive.searchApi(shortKeyword)));
+                    for (Element a : doc.select("ul > a"))
+                        lines.add(a.text());
+                }
+            }
+
+            startTime = System.currentTimeMillis();
+            for (String line : lines) {
+                if (line.startsWith("./")) {
+                    line = line.substring(2);
+                }
+                if (!("/" + line).startsWith(drive.getPath())) {
                     continue;
                 }
-                String word = words[1];
-                invertedIndex.computeIfAbsent(word.toLowerCase(), k -> new ArrayList<>()).add(i);
-            }
-
-            invertedIndexMap.put(server, invertedIndex);
-            cacheMap.put(server, lines);
-
-        } catch (IOException e) {
-            log("操作失败: " + e.getMessage());
-        }
-
-        Logger.log("本地索引后的内存：" + Debug.getNativeHeapAllocatedSize());
-
-        return lines;
-    }
-
-    public static List<String> quickSearch(String server, String keyword) {
-
-        downlodadAndUnzip(server);
-        List<Integer> lineNumbers = invertedIndexMap.get(server).get(keyword);
-        if (lineNumbers == null) {
-            return new ArrayList<>();
-        }
-        List<String> lines = new ArrayList<>();
-        for (Integer i : lineNumbers) {
-            lines.add(cacheMap.get(server).get(i));
-        }
-        return lines;
-    }
-
-    /**
-     * 确保目录存在，如果不存在则创建
-     *
-     * @param dirPath 目录路径
-     */
-    private static void createDirectoryIfNotExists(String dirPath) throws IOException {
-        Path path = Paths.get(dirPath);
-        if (!Files.exists(path)) {
-            Files.createDirectories(path);
-            log("目录已创建: " + dirPath);
-        }
-    }
-
-    /**
-     * 下载文件
-     *
-     * @param fileUrl  文件URL
-     * @param savePath 保存路径
-     */
-    private static void downloadFile(String fileUrl, String savePath) throws IOException {
-        URL url = new URL(fileUrl);
-        try (InputStream in = new BufferedInputStream(url.openStream());
-                FileOutputStream out = new FileOutputStream(savePath)) {
-            byte[] buffer = new byte[8 * 1024]; // 分块读取，每次读取 8KB
-            int bytesRead;
-            while ((bytesRead = in.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
-            }
-        } catch (IOException e) {
-            throw new IOException("下载文件失败: " + fileUrl, e);
-        }
-    }
-
-    /**
-     * 解压文件（支持 ZIP 和 TGZ 格式）
-     *
-     * @param filePath   压缩文件路径
-     * @param extractDir 解压目录
-     */
-    private static void unzipFile(String filePath, String extractDir) throws IOException {
-        createDirectoryIfNotExists(extractDir); // 确保解压目录存在
-
-        if (filePath.toLowerCase().endsWith(".zip")) {
-            // 处理 ZIP 文件
-            try (ZipFile zipFile = new ZipFile(filePath)) {
-                var entries = zipFile.entries();
-                while (entries.hasMoreElements()) {
-                    ZipEntry entry = entries.nextElement();
-                    Path entryPath = Paths.get(extractDir, entry.getName());
-                    if (entry.isDirectory()) {
-                        createDirectoryIfNotExists(entryPath.toString());
-                    } else {
-                        try (InputStream is = zipFile.getInputStream(entry)) {
-                            Files.copy(is, entryPath);
-                        }
-                    }
+                String[] splits = line.split("#");
+                if (!splits[0].contains("/"))
+                    continue;
+                int index = splits[0].lastIndexOf("/");
+                boolean file = Util.isMedia(splits[0]);
+                if (splits[0].endsWith("/")) {
+                    file = false;
+                    splits[0] = splits[0].substring(0, index);
+                    index = splits[0].lastIndexOf("/");
                 }
-            }
-        } else if (filePath.toLowerCase().endsWith(".tgz") || filePath.toLowerCase().endsWith(".tar.gz")) {
-            // 处理 TGZ 文件
-            try (InputStream fi = new FileInputStream(filePath);
-                    InputStream gi = new GzipCompressorInputStream(fi);
-                    TarArchiveInputStream ti = new TarArchiveInputStream(gi)) {
-                TarArchiveEntry entry;
-                while ((entry = ti.getNextTarEntry()) != null) {
-                    Path entryPath = Paths.get(extractDir, entry.getName());
-                    if (entry.isDirectory()) {
-                        createDirectoryIfNotExists(entryPath.toString());
-                    } else {
-                        try (OutputStream os = Files.newOutputStream(entryPath)) {
-                            byte[] buffer = new byte[1024 * 1024]; // 分块读取，每次读取 1MB
-                            int bytesRead;
-                            while ((bytesRead = ti.read(buffer)) != -1) {
-                                os.write(buffer, 0, bytesRead);
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            throw new IOException("不支持的文件格式: " + filePath);
-        }
-    }
-
-    /**
-     * 删除目录中除了指定文件以外的所有文件
-     *
-     * @param dirPath      目录路径
-     * @param excludeFiles 需要排除的文件名（不删除这些文件）
-     */
-    private static void deleteFilesExclude(String dirPath, String... excludeFiles) throws IOException {
-        Path path = Paths.get(dirPath);
-
-        // 如果目录不存在，直接返回
-        if (!Files.exists(path)) {
-            log("目录不存在，无需删除: " + dirPath);
-            return;
-        }
-
-        // 如果路径不是目录，抛出异常
-        if (!Files.isDirectory(path)) {
-            throw new IOException("路径不是目录: " + dirPath);
-        }
-
-        try (var stream = Files.newDirectoryStream(path)) {
-            for (Path file : stream) {
-                // 检查是否需要排除该文件
-                boolean shouldExclude = false;
-                for (String excludeFile : excludeFiles) {
-                    if (file.getFileName().toString().equals(excludeFile)) {
-                        shouldExclude = true;
-                        break;
-                    }
-                }
-
-                if (!shouldExclude) {
-                    if (Files.isDirectory(file)) {
-                        // 如果是目录，递归删除
-                        deleteFilesExclude(file.toString(), excludeFiles);
-                        Files.delete(file); // 删除空目录
-                        log("已删除目录: " + file);
-                    } else {
-                        Files.delete(file);
-                        log("已删除文件: " + file);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            throw new IOException("删除文件失败: " + dirPath, e);
-        }
-    }
-
-    /**
-     * 删除指定文件
-     *
-     * @param dirPath 目录路径
-     * @param pattern 文件名模式（支持通配符 *，如果为 null 则删除所有文件）
-     */
-    private static void deleteFiles(String dirPath, String pattern) throws IOException {
-        Path path = Paths.get(dirPath);
-
-        // 如果目录不存在，直接返回
-        if (!Files.exists(path)) {
-            log("目录不存在，无需删除: " + dirPath);
-            return;
-        }
-
-        // 如果路径不是目录，抛出异常
-        if (!Files.isDirectory(path)) {
-            throw new IOException("路径不是目录: " + dirPath);
-        }
-
-        try (var stream = pattern == null ? Files.newDirectoryStream(path) : Files.newDirectoryStream(path, pattern)) {
-            for (Path file : stream) {
-                if (Files.isDirectory(file)) {
-                    // 如果是目录，递归删除
-                    deleteFiles(file.toString(), null);
-                    Files.delete(file); // 删除空目录
-                    log("已删除目录: " + file);
+                Item item = new Item();
+                // item.setType(file ? 0 : 1);
+                item.setType(0); // 海报模式总是认为是文件模式，直接点击播放
+                item.doubanInfo.setId(splits.length >= 3 ? splits[2] : "");
+                item.doubanInfo.setRating(splits.length >= 4 ? splits[3] : "");
+                item.setThumb(splits.length >= 5 ? splits[4] : "");
+                item.setPath("/" + splits[0].substring(0, index));
+                String fileName = splits[0].substring(index + 1);
+                item.setName(fileName);
+                item.doubanInfo.setName(splits.length >= 2 ? splits[1] : fileName);
+                // if (item.getPath().startsWith(drive.getPath())) {
+                Vod vod = item.getVod(drive, vodPic);
+                vod.setVodRemarks(item.doubanInfo.getRating());
+                vod.setVodName(item.doubanInfo.getName());
+                vod.doubanInfo = item.doubanInfo;
+                if (!file) {
+                    vod.setVodId(vod.getVodId() + "/~soulist");
                 } else {
-                    Files.delete(file);
-                    log("已删除文件: " + file);
+                    vod.setVodId(vod.getVodId() + "/~soufile");
                 }
-            }
-        } catch (IOException e) {
-            throw new IOException("删除文件失败: " + dirPath, e);
-        }
-    }
-
-    /**
-     * 合并文件
-     *
-     * @param extractDir 解压目录
-     * @param outputFile 合并后的文件路径
-     */
-    private static void mergeFiles(String extractDir, String outputFile) throws IOException {
-        Path dirPath = Paths.get(extractDir);
-        Path outputFilePath = Paths.get(outputFile);
-
-        try (BufferedWriter writer = Files.newBufferedWriter(outputFilePath)) {
-            try (var stream = Files.newDirectoryStream(dirPath, "*.txt")) {
-                for (Path file : stream) {
-                    // 跳过 outputFile
-                    if (file.equals(outputFilePath)) {
-                        log("跳过文件: " + file);
-                        continue;
-                    }
-
-                    try (BufferedReader reader = Files.newBufferedReader(file)) {
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            writer.write(line);
-                            writer.newLine();
-                        }
-                    }
-                    log("已合并文件: " + file);
+                if (TextUtils.isEmpty(item.getThumb())) {
+                    noPicList.add(vod);
+                } else {
+                    list.add(vod);
                 }
+                vodMap.put(vod.getVodId(), vod);
+                // }
             }
-        } catch (IOException e) {
-            throw new IOException("合并文件失败: " + extractDir, e);
-        }
-    }
+            duration = System.currentTimeMillis() - startTime;
+            Logger.log("转换Vod耗时：" + duration);
 
-    /**
-     * 日志输出
-     *
-     * @param message 日志信息
-     */
-    private static void log(String message) {
-        System.out.println(message);
+            list.addAll(noPicList);
+            return list;
+        }
     }
 }

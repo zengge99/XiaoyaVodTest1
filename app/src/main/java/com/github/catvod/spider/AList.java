@@ -644,7 +644,7 @@ public class AList extends Spider {
                 }
                 vods = XiaoyaLocalIndex.toVods(drive, lines);
                 for (Vod vod : vods) {
-                    vod.setVodDrive(drive.getName());
+                    //vod.setVodDrive(drive.getName());
                     vodMap.put(vod.getVodId(), vod);
                 }
                 return vods;
@@ -659,7 +659,7 @@ public class AList extends Spider {
                 }
                 vods = XiaoyaLocalIndex.toVods(drive, lines);
                 for (Vod vod : vods) {
-                    vod.setVodDrive(drive.getName());
+                    //vod.setVodDrive(drive.getName());
                     vodMap.put(vod.getVodId(), vod);
                 }
                 return vods;
@@ -669,11 +669,11 @@ public class AList extends Spider {
                 vods = XiaoyaLocalIndex.quickSearch(drive, shortKeyword);
                 duration = System.currentTimeMillis() - startTime;
                 for (Vod vod : vods) {
-                    vod.setVodDrive(drive.getName());
+                    //vod.setVodDrive(drive.getName());
                     vodMap.put(vod.getVodId(), vod);
                 }
-                return vods;
                 Logger.log("快速搜索耗时：" + duration);
+                return vods;
             } else {
                 vods = XiaoyaLocalIndex.downlodadAndUnzip(drive);
                 if (vods.size() == 0) {
@@ -696,7 +696,7 @@ public class AList extends Spider {
                     continue;
                 }
 
-                vod.setVodDrive(drive.getName());
+                //vod.setVodDrive(drive.getName());
                 filteredVods.add(vod);
                 vodMap.put(vod.getVodId(), vod);
             }

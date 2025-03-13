@@ -75,7 +75,7 @@ public class XiaoyaLocalIndex {
             // 构建倒排索引，用于快速查找
             Map<String, List<Integer>> invertedIndex = new HashMap<>();
             for (int i = 0; i < vods.size(); i++) {
-                String word = vods.get(i).getName();
+                String word = vods.get(i).getVodName();
                 invertedIndex.computeIfAbsent(word, k -> new ArrayList<>()).add(i);
             }
 
@@ -172,7 +172,6 @@ public class XiaoyaLocalIndex {
             } else {
                 list.add(vod);
             }
-            vodMap.put(vod.getVodId(), vod);
         }
         list.addAll(noPicList);
         return list;

@@ -242,7 +242,7 @@ public class Result {
         int toIndex = Math.min(fromIndex + limit, total);
         this.list = this.list.subList(fromIndex, toIndex);
         
-        return this
+        return this;
     }
 
     public Result page(int page, int count, int limit, int total) {

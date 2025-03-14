@@ -190,7 +190,7 @@ public class AList extends Spider {
         String result = Result.string(classes, list, filters);
         Thread thread = new Thread(() -> {
             try {
-                Thread.sleep(3000);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
             }
             XiaoyaLocalIndex.downlodadAndUnzip(tmpDrive);

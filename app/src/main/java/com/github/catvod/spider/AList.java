@@ -53,6 +53,7 @@ public class AList extends Spider {
     private String xiaoyaAlistToken;
     private Map<String, Vod> vodMap = new HashMap<>();
     private Map<String, List<Vod>> driveVodsMap = new HashMap<>();
+    private ExecutorService executor = Executors.newCachedThreadPool();
 
     private List<Filter> getFilter(String tid) {
         List<Filter> items = new ArrayList<>();
@@ -180,7 +181,6 @@ public class AList extends Spider {
         List<Vod> list = new ArrayList<>();
         if (defaultDrive != null) {
             List<Job> jobs = new ArrayList<>();
-            ExecutorService executor = Executors.newCachedThreadPool();
             jobs.add(new Job(defaultDrive.check(), "~daily:1000"));
             for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
                 list.addAll(future.get());
@@ -230,7 +230,6 @@ public class AList extends Spider {
         fetchRule();
         List<Vod> list = new ArrayList<>();
         List<Job> jobs = new ArrayList<>();
-        ExecutorService executor = Executors.newCachedThreadPool();
         for (Drive drive : drives) {
             if (drive.search()) {
                 if (quick) {
@@ -295,7 +294,6 @@ public class AList extends Spider {
         if (vod == null && id.endsWith("~soulist")) {
             String keyword = path.substring(path.indexOf("/") + 1);
             List<Job> jobs = new ArrayList<>();
-            ExecutorService executor = Executors.newCachedThreadPool();
             jobs.add(new Job(drive.check(), "~search:" + keyword));
             for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
                 future.get();
@@ -334,8 +332,7 @@ public class AList extends Spider {
         Vod vod = vodMap.get(id);
         if (vod == null && id.endsWith("~soufile")) {
             String keyword = path.substring(path.indexOf("/") + 1);
-            List<Job> jobs = new ArrayList<>();
-            ExecutorService executor = Executors.newCachedThreadPool();
+            List<Job> jobs = new ArrayList<>();     
             jobs.add(new Job(drive.check(), keyword));
             for (Future<List<Vod>> future : executor.invokeAll(jobs, 15, TimeUnit.SECONDS))
                 future.get();
@@ -420,8 +417,6 @@ public class AList extends Spider {
 
         list = new ArrayList<>();
         List<Job> jobs = new ArrayList<>();
-        ExecutorService executor = Executors.newCachedThreadPool();
-
 
         if (!drive.getName().equals("每日更新")) {
             jobs.add(new Job(drive.check(), drive.getPath()));

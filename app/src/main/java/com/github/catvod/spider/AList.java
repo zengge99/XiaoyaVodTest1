@@ -52,7 +52,6 @@ public class AList extends Spider {
     private String ext;
     private String xiaoyaAlistToken;
     private Map<String, Vod> vodMap = new HashMap<>();
-    public static Context appContext;
 
     private List<Filter> getFilter(String tid) {
         List<Filter> items = new ArrayList<>();

@@ -160,7 +160,6 @@ public class AList extends Spider {
     @Override
     public void init(Context context, String extend) {
         try {
-            appContext = context;
             ext = extend;
             fetchRule();
         } catch (Exception ignored) {
@@ -439,7 +438,7 @@ public class AList extends Spider {
         }
 
         // Logger.log(Result.string(list));
-        driveVodsMap.add(drive.getName(), list);
+        driveVodsMap.put(drive.getName(), list);
         return Result.get().vod(list).page(pg, true).string();
     }
 

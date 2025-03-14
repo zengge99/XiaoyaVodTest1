@@ -414,6 +414,7 @@ public class AList extends Spider {
         String key = tid.contains("/") ? tid.substring(0, tid.indexOf("/")) : tid;
         Drive drive = getDrive(key);
         List<Vod> list = driveVodsMap.get(drive.getName());
+        Logger.log("当前页数：" + pg);
         if(list != null && !pg.equals("1")) {
             return Result.get().vod(list).page(pg, true).string();
         }

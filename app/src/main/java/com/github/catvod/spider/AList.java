@@ -52,6 +52,7 @@ public class AList extends Spider {
     private String ext;
     private String xiaoyaAlistToken;
     private Map<String, Vod> vodMap = new HashMap<>();
+    private Map<String, List<Vod>> driveVodsMap = new HashMap<>();
 
     private List<Filter> getFilter(String tid) {
         List<Filter> items = new ArrayList<>();
@@ -410,11 +411,17 @@ public class AList extends Spider {
             throws Exception {
         Logger.log(tid);
         fetchRule();
-        List<Vod> list = new ArrayList<>();
-        List<Job> jobs = new ArrayList<>();
-        ExecutorService executor = Executors.newCachedThreadPool();
         String key = tid.contains("/") ? tid.substring(0, tid.indexOf("/")) : tid;
         Drive drive = getDrive(key);
+        List<Vod> list = driveVodsMap.get(drive.getName());
+        if(list != null && !pg.equals("1")) {
+            return Result.get().vod(list).page(pg, true).string();
+        }
+
+        list = new ArrayList<>();
+        List<Job> jobs = new ArrayList<>();
+        ExecutorService executor = Executors.newCachedThreadPool();
+
 
         if (!drive.getName().equals("每日更新")) {
             jobs.add(new Job(drive.check(), drive.getPath()));
@@ -431,6 +438,7 @@ public class AList extends Spider {
         }
 
         // Logger.log(Result.string(list));
+        driveVodsMap.add(drive.getName(), list);
         return Result.get().vod(list).page(pg, true).string();
     }
 

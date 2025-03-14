@@ -52,7 +52,8 @@ public class AList extends Spider {
     private String ext;
     private String xiaoyaAlistToken;
     private Map<String, Vod> vodMap = new HashMap<>();
-    private Map<String, List<Vod>> driveVodsMap = new HashMap<>();
+    // private Map<String, List<Vod>> driveVodsMap = new HashMap<>();
+    private List<Vod> vodCache;
     private ExecutorService executor = Executors.newCachedThreadPool();
 
     private List<Filter> getFilter(String tid) {
@@ -409,7 +410,8 @@ public class AList extends Spider {
         fetchRule();
         String key = tid.contains("/") ? tid.substring(0, tid.indexOf("/")) : tid;
         Drive drive = getDrive(key);
-        List<Vod> list = driveVodsMap.get(drive.getName());
+        //List<Vod> list = driveVodsMap.get(drive.getName());
+        list = vodCache;
         Logger.log("当前页数：" + pg);
         if(list != null && !pg.equals("1")) {
             return Result.get().vod(list).page(pg, true).string();
@@ -433,7 +435,8 @@ public class AList extends Spider {
         }
 
         // Logger.log(Result.string(list));
-        driveVodsMap.put(drive.getName(), list);
+        //driveVodsMap.put(drive.getName(), list);
+        vodCache = list;
         return Result.get().vod(list).page(pg, true).string();
     }
 

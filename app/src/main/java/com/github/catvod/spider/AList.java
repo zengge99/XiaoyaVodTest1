@@ -202,7 +202,7 @@ public class AList extends Spider {
     }
 
     @Override
-    public String synchronized categoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)
+    public synchronized String categoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend)
             throws Exception {
         String key = tid.contains("/") ? tid.substring(0, tid.indexOf("/")) : tid;
         Drive drive = getDrive(key);
